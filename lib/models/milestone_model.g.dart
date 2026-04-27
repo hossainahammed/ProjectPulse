@@ -22,13 +22,14 @@ class MilestoneAdapter extends TypeAdapter<Milestone> {
       deadline: fields[3] as DateTime,
       isCompleted: fields[2] as bool,
       deliveryDate: fields[4] as DateTime?,
+      assignedPeople: (fields[5] as List?)?.cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Milestone obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class MilestoneAdapter extends TypeAdapter<Milestone> {
       ..writeByte(3)
       ..write(obj.deadline)
       ..writeByte(4)
-      ..write(obj.deliveryDate);
+      ..write(obj.deliveryDate)
+      ..writeByte(5)
+      ..write(obj.assignedPeople);
   }
 
   @override

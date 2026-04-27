@@ -292,6 +292,21 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
               ),
             ),
           ),
+          const SizedBox(height: 16),
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Assign People (comma separated)',
+              prefixIcon: const Icon(Icons.people_outline, size: 20),
+              isDense: true,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              filled: true,
+              fillColor: Theme.of(context).cardColor.withOpacity(0.5),
+            ),
+            onChanged: (val) {
+              _milestones[index].assignedPeople =
+                  val.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+            },
+          ),
         ],
       ),
     );

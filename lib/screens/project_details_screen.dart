@@ -231,6 +231,22 @@ class ProjectDetailsScreen extends StatelessWidget {
                         ],
                       ],
                     ),
+                    if (milestone.assignedPeople != null && milestone.assignedPeople!.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.people_outline, size: 12, color: Colors.grey[600]),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              'Assigned: ${milestone.assignedPeople!.join(", ")}',
+                              style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),

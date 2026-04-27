@@ -19,11 +19,15 @@ class Milestone extends HiveObject {
   @HiveField(4)
   DateTime? deliveryDate;
 
+  @HiveField(5)
+  List<String>? assignedPeople;
+
   Milestone({
     required this.title,
     required this.amount,
     required this.deadline,
     this.isCompleted = false,
     this.deliveryDate,
+    this.assignedPeople,
   });
 }

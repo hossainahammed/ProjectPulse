@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:freelance_flow/main.dart';
+import 'package:project_pulse/main.dart';
 
 void main() {
   testWidgets('App should load', (WidgetTester tester) async {
