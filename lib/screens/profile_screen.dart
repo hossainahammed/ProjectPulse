@@ -9,6 +9,7 @@ import 'notification_screen.dart';
 import '../controllers/notification_controller.dart';
 import '../controllers/user_controller.dart';
 import 'learning_progress_screen.dart';
+import 'job_post_list_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   final bool showBackButton;
@@ -36,6 +37,11 @@ class ProfileScreen extends StatelessWidget {
                     Icons.person_outline,
                     'Personal Data',
                     () => Get.to(() => const PersonalDataScreen()),
+                  ),
+                  _MenuItem(
+                    Icons.work_outline_rounded,
+                    'Recent Job Posts',
+                    () => Get.to(() => const JobPostListScreen()),
                   ),
                   _MenuItem(
                     Icons.credit_card_outlined,
@@ -520,7 +526,7 @@ class SecurityScreen extends StatelessWidget {
       ),
     ),
     body: GlassBackground(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
@@ -535,7 +541,7 @@ class SecurityScreen extends StatelessWidget {
               onTap: () => Get.to(() => const ChangePasswordScreen()),
               contentPadding: EdgeInsets.zero,
             ),
-            const Spacer(),
+            const SizedBox(height: 100),
             _buildActionButton(
               'Change Password',
               () => Get.to(() => const ChangePasswordScreen()),
@@ -560,7 +566,7 @@ class ChangePasswordScreen extends StatelessWidget {
       ),
     ),
     body: GlassBackground(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -578,7 +584,7 @@ class ChangePasswordScreen extends StatelessWidget {
             _buildTextField('Old Password'),
             _buildTextField('New Password'),
             _buildTextField('Confirm Password'),
-            const Spacer(),
+            const SizedBox(height: 40),
             _buildActionButton('Reset Password', () => Get.back()),
             const SizedBox(height: 20),
           ],
@@ -621,7 +627,7 @@ class ContactUsScreen extends StatelessWidget {
       ),
     ),
     body: GlassBackground(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
@@ -629,7 +635,7 @@ class ContactUsScreen extends StatelessWidget {
             _buildTextField('Email'),
             _buildTextField('Phone'),
             _buildTextField('How can we help?', maxLines: 5),
-            const Spacer(),
+            const SizedBox(height: 40),
             _buildActionButton('Send', () => Get.back()),
             const SizedBox(height: 20),
           ],

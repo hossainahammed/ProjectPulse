@@ -117,51 +117,65 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         elevation: 0,
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              constraints: BoxConstraints(minHeight: isWide ? 180 : 140),
-              width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  if (_expression.isNotEmpty)
-                    Text(
-                      _expression,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.grey[500],
+        child: OrientationBuilder(
+          builder: (context, orientation) {
+            final isLandscape = orientation == Orientation.landscape;
+            return Column(
+              children: [
+                Container(
+                  constraints: BoxConstraints(
+                    minHeight: isLandscape ? 80 : (isWide ? 180 : 140),
+                    maxHeight: isLandscape ? 120 : double.infinity,
+                  ),
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      if (_expression.isNotEmpty)
+                        Text(
+                          _expression,
+                          style: TextStyle(
+                            fontSize: isLandscape ? 14 : 18,
+                            color: Colors.grey[500],
+                          ),
+                          textAlign: TextAlign.right,
+                        ),
+                      const SizedBox(height: 4),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          _output,
+                          style: TextStyle(
+                            fontSize: isLandscape ? 48 : (isWide ? 84 : 64),
+                            fontWeight: FontWeight.w300,
+                            color: isDark ? Colors.white : const Color(0xFF1E293B),
+                          ),
+                        ),
                       ),
-                      textAlign: TextAlign.right,
-                    ),
-                  const SizedBox(height: 8),
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      _output,
-                      style: TextStyle(
-                        fontSize: isWide ? 84 : 64,
-                        fontWeight: FontWeight.w300,
-                        color: isDark ? Colors.white : const Color(0xFF1E293B),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1),
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).padding.bottom + (isLandscape ? 20 : (isWide ? 40 : 80)),
+                      ),
+                      child: Container(
+                        height: isLandscape ? 400 : null, // Fixed height in landscape to enable scrolling if needed
+                        child: _buildKeypad(isDark, isWide),
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
-            const Divider(height: 1),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).padding.bottom + (isWide ? 40 : 80),
                 ),
-                child: _buildKeypad(isDark, isWide),
-              ),
-            ),
-          ],
+              ],
+            );
+          },
         ),
       ),
     );

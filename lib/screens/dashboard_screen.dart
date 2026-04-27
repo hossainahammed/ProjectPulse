@@ -108,113 +108,109 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          _buildFinancialSummary(context),
-          Expanded(
-            child: CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Obx(() {
-                    // Observing both projects list and isDarkMode triggers rebuild on either change
-                    final _ = controller.projects.toList();
-                    final __ = _userController.isDarkMode.value;
-                    return Center(
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: ProgressChartWidget(
-                            data: statsController.getCurrentMonthProjectsData(),
-                            title: 'Current Month Earnings',
-                            showArrow: false,
-                            aspectRatio: isWide ? 3.0 : 2.5,
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-                  sliver: SliverToBoxAdapter(
-                    child: Text(
-                      'Your Projects',
-                      style: TextStyle(
-                        fontSize: 22, 
-                        fontWeight: FontWeight.bold,
-                        color: _userController.isDarkMode.value ? Colors.white : Colors.black87,
-                      ),
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverToBoxAdapter(
+            child: _buildFinancialSummary(context),
+          ),
+          SliverToBoxAdapter(
+            child: Obx(() {
+              // Observing both projects list and isDarkMode triggers rebuild on either change
+              final _ = controller.projects.toList();
+              final __ = _userController.isDarkMode.value;
+              return Center(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: ProgressChartWidget(
+                      data: statsController.getCurrentMonthProjectsData(),
+                      title: 'Current Month Earnings',
+                      showArrow: false,
+                      aspectRatio: isWide ? 3.0 : 2.5,
                     ),
                   ),
                 ),
-                Obx(() {
-                  final projects = controller.projects.toList();
-                  final isDark = _userController.isDarkMode.value;
-                  
-                  if (projects.isEmpty) {
-                    return const SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.assignment_late_outlined, size: 64, color: Colors.grey),
-                            SizedBox(height: 16),
-                            Text(
-                              'No projects yet. Add one to get started!',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-
-                  if (isWide) {
-                    return SliverPadding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: MediaQuery.of(context).size.width * 0.05,
-                        vertical: 16,
-                      ),
-                      sliver: SliverGrid(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 20,
-                          mainAxisSpacing: 16,
-                          mainAxisExtent: 260,
-                        ),
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            return ProjectCard(project: projects[index], isDark: isDark);
-                          },
-                          childCount: projects.length,
-                        ),
-                      ),
-                    );
-                  }
-
-                  return SliverPadding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: MediaQuery.of(context).size.width * 0.05,
-                      vertical: 16,
-                    ),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          return ProjectCard(project: projects[index], isDark: isDark);
-                        },
-                        childCount: projects.length,
-                      ),
-                    ),
-                  );
-                }),
-                // Spacer for bottom navigation
-                const SliverToBoxAdapter(child: SizedBox(height: 100)),
-              ],
+              );
+            }),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+            sliver: SliverToBoxAdapter(
+              child: Text(
+                'Your Projects',
+                style: TextStyle(
+                  fontSize: 22, 
+                  fontWeight: FontWeight.bold,
+                  color: _userController.isDarkMode.value ? Colors.white : Colors.black87,
+                ),
+              ),
             ),
           ),
+          Obx(() {
+            final projects = controller.projects.toList();
+            final isDark = _userController.isDarkMode.value;
+            
+            if (projects.isEmpty) {
+              return const SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.assignment_late_outlined, size: 64, color: Colors.grey),
+                      SizedBox(height: 16),
+                      Text(
+                        'No projects yet. Add one to get started!',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            if (isWide) {
+              return SliverPadding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * 0.05,
+                  vertical: 16,
+                ),
+                sliver: SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 20,
+                    mainAxisSpacing: 16,
+                    mainAxisExtent: 260,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      return ProjectCard(project: projects[index], isDark: isDark);
+                    },
+                    childCount: projects.length,
+                  ),
+                ),
+              );
+            }
+
+            return SliverPadding(
+              padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.05,
+                vertical: 16,
+              ),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    return ProjectCard(project: projects[index], isDark: isDark);
+                  },
+                  childCount: projects.length,
+                ),
+              ),
+            );
+          }),
+          // Spacer for bottom navigation
+          const SliverToBoxAdapter(child: SizedBox(height: 100)),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
