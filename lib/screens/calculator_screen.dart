@@ -13,164 +13,143 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   String _output = '0';
   String _expression = '';
   double _num1 = 0;
-  double _num2 = 0;
   String _operand = '';
   bool _justEvaluated = false;
+  List<String> _history = [];
+  bool _showHistory = false;
 
-  void _buttonPressed(String buttonText) {
-    HapticFeedback.lightImpact(); // Provide feedback
+  void _buttonPressed(String btnText) {
+    HapticFeedback.lightImpact();
     setState(() {
-      if (buttonText == 'C') {
+      if (btnText == 'AC') {
         _output = '0';
         _expression = '';
         _num1 = 0;
-        _num2 = 0;
         _operand = '';
         _justEvaluated = false;
-      } else if (buttonText == '+' ||
-          buttonText == '-' ||
-          buttonText == '×' ||
-          buttonText == '÷') {
-        _num1 = double.tryParse(_output) ?? 0;
-        _operand = buttonText;
-        _expression = '${_formatNum(_num1)} $buttonText';
-        _justEvaluated = false;
-        _output = '0';
-      } else if (buttonText == '.') {
-        if (_justEvaluated) {
-          _output = '0.';
-          _justEvaluated = false;
-          return;
-        }
-        if (_output.contains('.')) return;
-        _output = '$_output.';
-      } else if (buttonText == '%') {
-        double currentVal = double.tryParse(_output) ?? 0;
-        if (_operand.isNotEmpty) {
-          double percentageVal = _num1 * currentVal / 100;
-          _output = _formatNum(percentageVal);
+      } else if (btnText == '⌫') {
+        if (_output.length > 1) {
+          _output = _output.substring(0, _output.length - 1);
         } else {
-          _output = _formatNum(currentVal / 100);
+          _output = '0';
         }
+      } else if (['+', '-', '×', '÷'].contains(btnText)) {
+        _num1 = double.tryParse(_output) ?? 0;
+        _operand = btnText;
+        _expression = '${_formatNum(_num1)} $btnText';
+        _output = '0';
         _justEvaluated = false;
-      } else if (buttonText == '=') {
-        _num2 = double.tryParse(_output) ?? 0;
-
+      } else if (btnText == '=') {
+        double num2 = double.tryParse(_output) ?? 0;
         double result = 0;
-        if (_operand == '+') result = _num1 + _num2;
-        if (_operand == '-') result = _num1 - _num2;
-        if (_operand == '×') result = _num1 * _num2;
+
+        if (_operand == '+') result = _num1 + num2;
+        if (_operand == '-') result = _num1 - num2;
+        if (_operand == '×') result = _num1 * num2;
         if (_operand == '÷') {
-          if (_num2 == 0) {
+          if (num2 == 0) {
             _output = 'Error';
-            _expression = '';
-            _operand = '';
-            _num1 = 0;
             return;
           }
-          result = _num1 / _num2;
+          result = _num1 / num2;
         }
 
-        _expression = '${_expression} ${_formatNum(_num2)} =';
-        _output = _formatNum(result);
-        _num1 = result;
-        _num2 = 0;
-        _operand = '';
-        _justEvaluated = true;
-      } else {
-        if (_justEvaluated) {
-          _output = buttonText;
-          _justEvaluated = false;
-          return;
+        if (_operand.isNotEmpty) {
+          final fullExpr =
+              '$_expression ${_formatNum(num2)} = ${_formatNum(result)}';
+          _history.insert(0, fullExpr);
+          _output = _formatNum(result);
+          _expression = '';
+          _operand = '';
+          _justEvaluated = true;
         }
-        if (_output == '0') {
-          _output = buttonText;
+      } else if (btnText == '%') {
+        double val = double.tryParse(_output) ?? 0;
+        _output = _formatNum(val / 100);
+      } else if (btnText == '.') {
+        if (!_output.contains('.')) _output += '.';
+      } else {
+        if (_output == '0' || _justEvaluated) {
+          _output = btnText;
+          _justEvaluated = false;
         } else {
-          if (_output.length < 12) {
-            _output = _output + buttonText;
-          }
+          if (_output.length < 12) _output += btnText;
         }
       }
     });
   }
 
   String _formatNum(double val) {
-    if (val == val.truncateToDouble() && !val.isInfinite && !val.isNaN) {
-      return val.toInt().toString();
-    }
-    String s = val.toStringAsFixed(6);
-    s = s.replaceAll(RegExp(r'0*$'), '').replaceAll(RegExp(r'\.$'), '');
-    return s;
+    if (val.isInfinite || val.isNaN) return 'Error';
+    if (val == val.toInt()) return val.toInt().toString();
+    String s = val.toString();
+    if (s.length > 10) s = val.toStringAsPrecision(7);
+    return s.replaceAll(RegExp(r'0*$'), '').replaceAll(RegExp(r'\.$'), '');
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final size = MediaQuery.of(context).size;
-    final isWide = size.width > 600;
-
+    final bgColor = isDark ? const Color(0xFF02020B) : Colors.white;
+    final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
+    
     return Scaffold(
+      backgroundColor: bgColor,
       appBar: AppBar(
-        title: const Text('Assistant Calculator', style: TextStyle(fontWeight: FontWeight.bold)),
-        centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
+        title: Text(
+          'Assistant Calculator',
+          style: TextStyle(fontWeight: FontWeight.bold, color: textColor, fontSize: 18),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
+          onPressed: () => Get.back(),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(_showHistory ? Icons.calculate_outlined : Icons.history_rounded, color: textColor),
+            onPressed: () => setState(() => _showHistory = !_showHistory),
+          ),
+        ],
       ),
       body: SafeArea(
         child: OrientationBuilder(
           builder: (context, orientation) {
             final isLandscape = orientation == Orientation.landscape;
+            
+            if (isLandscape) {
+              return Row(
+                children: [
+                  Expanded(
+                    flex: 4,
+                    child: _showHistory ? _buildHistoryPanel(isDark) : _buildDisplay(isDark, true),
+                  ),
+                  const VerticalDivider(width: 1, indent: 20, endIndent: 20),
+                  Expanded(
+                    flex: 6,
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: _buildKeypad(isDark, true),
+                    ),
+                  ),
+                ],
+              );
+            }
+            
             return Column(
               children: [
-                Container(
-                  constraints: BoxConstraints(
-                    minHeight: isLandscape ? 80 : (isWide ? 180 : 140),
-                    maxHeight: isLandscape ? 120 : double.infinity,
-                  ),
-                  width: double.infinity,
-                  padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      if (_expression.isNotEmpty)
-                        Text(
-                          _expression,
-                          style: TextStyle(
-                            fontSize: isLandscape ? 14 : 18,
-                            color: Colors.grey[500],
-                          ),
-                          textAlign: TextAlign.right,
-                        ),
-                      const SizedBox(height: 4),
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          _output,
-                          style: TextStyle(
-                            fontSize: isLandscape ? 48 : (isWide ? 84 : 64),
-                            fontWeight: FontWeight.w300,
-                            color: isDark ? Colors.white : const Color(0xFF1E293B),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Divider(height: 1),
                 Expanded(
+                  flex: 2,
+                  child: _showHistory ? _buildHistoryPanel(isDark) : _buildDisplay(isDark, false),
+                ),
+                const Divider(height: 1, indent: 20, endIndent: 20),
+                Expanded(
+                  flex: 5,
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).padding.bottom + (isLandscape ? 20 : (isWide ? 40 : 80)),
-                      ),
-                      child: Container(
-                        height: isLandscape ? 400 : null, // Fixed height in landscape to enable scrolling if needed
-                        child: _buildKeypad(isDark, isWide),
-                      ),
-                    ),
+                    child: _buildKeypad(isDark, false),
                   ),
                 ),
               ],
@@ -181,108 +160,180 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     );
   }
 
-  Widget _buildKeypad(bool isDark, bool isWide) {
-    return Padding(
-      padding: const EdgeInsets.all(12),
+  Widget _buildDisplay(bool isDark, bool isLandscape) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+      alignment: Alignment.bottomRight,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          _buildRow([
-            _btn('7', isDark: isDark, isWide: isWide),
-            _btn('8', isDark: isDark, isWide: isWide),
-            _btn('9', isDark: isDark, isWide: isWide),
-            _btn('÷', isDark: isDark, isWide: isWide, type: _BtnType.operator),
-          ]),
-          _buildRow([
-            _btn('4', isDark: isDark, isWide: isWide),
-            _btn('5', isDark: isDark, isWide: isWide),
-            _btn('6', isDark: isDark, isWide: isWide),
-            _btn('×', isDark: isDark, isWide: isWide, type: _BtnType.operator),
-          ]),
-          _buildRow([
-            _btn('1', isDark: isDark, isWide: isWide),
-            _btn('2', isDark: isDark, isWide: isWide),
-            _btn('3', isDark: isDark, isWide: isWide),
-            _btn('-', isDark: isDark, isWide: isWide, type: _BtnType.operator),
-          ]),
-          _buildRow([
-            _btn('.', isDark: isDark, isWide: isWide),
-            _btn('0', isDark: isDark, isWide: isWide),
-            _btn('%', isDark: isDark, isWide: isWide),
-            _btn('C', isDark: isDark, isWide: isWide, type: _BtnType.clear),
-          ]),
-          _buildRow([
-            _btn('+', isDark: isDark, isWide: isWide, type: _BtnType.operator),
-            _btn('=', isDark: isDark, isWide: isWide, type: _BtnType.equal),
-          ]),
+          Text(
+            _expression,
+            style: TextStyle(
+              fontSize: isLandscape ? 16 : 18,
+              color: isDark ? Colors.grey[600] : Colors.grey[400],
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          SizedBox(height: isLandscape ? 4 : 8),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              _output,
+              style: TextStyle(
+                fontSize: isLandscape ? 50 : 72,
+                fontWeight: FontWeight.w300,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildRow(List<Widget> children) {
-    return Expanded(child: Row(children: children));
+  Widget _buildHistoryPanel(bool isDark) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'History',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+              ),
+              TextButton(
+                onPressed: () => setState(() => _history.clear()),
+                child: const Text('Clear', style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
+          Expanded(
+            child: _history.isEmpty
+                ? const Center(child: Text('No history', style: TextStyle(color: Colors.grey)))
+                : ListView.builder(
+                    itemCount: _history.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text(
+                          _history[index],
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: isDark ? Colors.white70 : Colors.black54,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
   }
 
-  Widget _btn(String label, {required bool isDark, required bool isWide, _BtnType type = _BtnType.number}) {
+  Widget _buildKeypad(bool isDark, bool isLandscape) {
+    return Container(
+      padding: EdgeInsets.fromLTRB(16, isLandscape ? 16 : 8, 16, 16),
+      child: Column(
+        children: [
+          _buildRow(['AC', '⌫', '%', '÷'], isDark, isLandscape),
+          _buildRow(['7', '8', '9', '×'], isDark, isLandscape),
+          _buildRow(['4', '5', '6', '-'], isDark, isLandscape),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 3,
+                child: Column(
+                  children: [
+                    _buildRow(['1', '2', '3'], isDark, isLandscape),
+                    _buildRow(['0', '.', '='], isDark, isLandscape),
+                  ],
+                ),
+              ),
+              _buildButton('+', isDark, isTall: true, isLandscape: isLandscape),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRow(List<String> labels, bool isDark, bool isLandscape) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: labels.map<Widget>((label) => _buildButton(label, isDark, isLandscape: isLandscape)).toList(),
+      ),
+    );
+  }
+
+  Widget _buildButton(String label, bool isDark, {bool isTall = false, required bool isLandscape}) {
+    bool isOp = ['÷', '×', '-', '+', '='].contains(label);
+    bool isControl = ['AC', '⌫', '%'].contains(label);
+    bool isEq = label == '=';
+    
     Color bgColor;
     Color txtColor;
 
-    switch (type) {
-      case _BtnType.operator:
-        bgColor = isDark
-            ? const Color(0xFF4F46E5).withOpacity(0.3)
-            : const Color(0xFF4F46E5).withOpacity(0.1);
-        txtColor = isDark ? const Color(0xFFD946EF) : const Color(0xFF4F46E5);
-        break;
-      case _BtnType.equal:
-        bgColor = isDark ? const Color(0xFFD946EF) : const Color(0xFF4F46E5);
-        txtColor = Colors.white;
-        break;
-      case _BtnType.clear:
-        bgColor = isDark
-            ? Colors.red.withOpacity(0.2)
-            : Colors.red.shade50;
-        txtColor = Colors.red;
-        break;
-      case _BtnType.number:
-      default:
-        bgColor = isDark ? const Color(0xFF1E293B) : Colors.grey.shade100;
-        txtColor = isDark ? Colors.white : const Color(0xFF1E293B);
-        break;
+    if (isDark) {
+      bgColor = isEq ? const Color(0xFFD946EF) : (isOp || isControl ? const Color(0xFF16162D) : const Color(0xFF1B1B2F));
+      txtColor = isEq ? Colors.white : (isOp || isControl ? const Color(0xFFA855F7) : Colors.white);
+      if (label == 'AC') txtColor = Colors.red[800]!;
+    } else {
+      bgColor = isEq ? const Color(0xFF6366F1) : (isOp || isControl ? const Color(0xFFF0F5FF) : const Color(0xFFF9FAFB));
+      txtColor = isEq ? Colors.white : (isOp || isControl ? const Color(0xFF6366F1) : Colors.black87);
+      if (label == 'AC') txtColor = Colors.red[400]!;
     }
 
+    final double height = isLandscape ? 44 : 56;
+    final double tallHeight = isLandscape ? 96 : 122;
+
     return Expanded(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => _buttonPressed(label),
-        child: Container(
-          margin: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: bgColor,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              if (type == _BtnType.equal)
+      flex: 1,
+      child: Padding(
+        padding: const EdgeInsets.all(4),
+        child: InkWell(
+          onTap: () => _buttonPressed(label),
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            height: isTall ? tallHeight : height,
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
                 BoxShadow(
-                  color: (isDark ? const Color(0xFFD946EF) : const Color(0xFF4F46E5)).withOpacity(0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
+                  color: Colors.black.withOpacity(isDark ? 0.2 : 0.03),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
                 ),
-            ],
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: isWide ? 32 : 28,
-              fontWeight: FontWeight.w600,
-              color: txtColor,
+              ],
             ),
+            alignment: Alignment.center,
+            child: label == '⌫' 
+              ? Icon(Icons.backspace_outlined, color: txtColor, size: isLandscape ? 18 : 20)
+              : Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: isLandscape ? 18 : 20,
+                    fontWeight: isOp ? FontWeight.bold : FontWeight.w500,
+                    color: txtColor,
+                  ),
+                ),
           ),
         ),
       ),
     );
   }
 }
-
-enum _BtnType { number, operator, equal, clear }
-
