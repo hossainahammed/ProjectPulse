@@ -171,7 +171,7 @@ class ProfileScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'MILAKIB AHMED',
+                'Hossain Ahammed',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -202,7 +202,7 @@ class ProfileScreen extends StatelessWidget {
             ],
           ),
         ),
-        Text('milakib@example.com', style: TextStyle(color: Colors.grey[500])),
+        Text('hossain@example.com', style: TextStyle(color: Colors.grey[500])),
       ],
     );
   }
