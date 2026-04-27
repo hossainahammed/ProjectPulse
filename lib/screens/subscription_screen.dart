@@ -16,7 +16,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? const Color(0xFF020617) : const Color(0xFFF8FAFC);
-    final cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
     final subTextColor = isDark ? Colors.grey[400] : const Color(0xFF64748B);
 
@@ -31,51 +30,70 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 20),
-              Icon(Icons.workspace_premium_rounded, size: 64, color: const Color(0xFFD946EF)),
-              const SizedBox(height: 24),
-              Text(
-                'Go Premium',
-                style: TextStyle(
-                  fontSize: 32, 
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth > 700;
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: isWide ? constraints.maxWidth * 0.15 : 24.0,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 20),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD946EF).withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.workspace_premium_rounded, size: 64, color: Color(0xFFD946EF)),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Go Premium',
+                      style: TextStyle(
+                        fontSize: isWide ? 40 : 32, 
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Unlock the most powerful ProjectPulse assistant and scale your professional workflow.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: subTextColor,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    _buildBenefits(isDark, textColor, subTextColor),
+                    const SizedBox(height: 40),
+                    _buildPlanToggle(isDark, textColor, subTextColor),
+                    const SizedBox(height: 32),
+                    _buildActionButtons(),
+                    const SizedBox(height: 40),
+                  ],
                 ),
               ),
-              const SizedBox(height: 12),
-              Text(
-                'Unlock the most powerful ProjectPulse assistant',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: subTextColor,
-                  fontSize: 16,
-                ),
-              ),
-              const SizedBox(height: 40),
-              _buildBenefits(cardColor, textColor, subTextColor),
-              const Spacer(),
-              _buildPlanToggle(isDark, cardColor, textColor, subTextColor),
-              const SizedBox(height: 32),
-              _buildActionButtons(),
-              const SizedBox(height: 20),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _buildBenefits(Color cardColor, Color textColor, Color? subTextColor) {
+  Widget _buildBenefits(bool isDark, Color textColor, Color? subTextColor) {
+    final cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -86,30 +104,39 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       ),
       child: Column(
         children: [
-          _buildBenefitItem('Unlimited Projects & Milestones'),
-          _buildBenefitItem('AI-Powered Deadline Estimator'),
-          _buildBenefitItem('Export Invoices to PDF/Excel'),
-          _buildBenefitItem('Advanced Financial Analytics'),
-          _buildBenefitItem('Multi-Currency Support'),
+          _buildBenefitItem('Unlimited Projects & Milestones', textColor),
+          _buildBenefitItem('AI-Powered Deadline Estimator', textColor),
+          _buildBenefitItem('Export Invoices to PDF/Excel', textColor),
+          _buildBenefitItem('Advanced Financial Analytics', textColor),
+          _buildBenefitItem('Multi-Currency Support', textColor),
         ],
       ),
     );
   }
 
-  Widget _buildBenefitItem(String text) {
+  Widget _buildBenefitItem(String text, Color textColor) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
         children: [
-          const Icon(Icons.check_circle, color: Color(0xFFD946EF), size: 20),
+          const Icon(Icons.check_circle, color: Color(0xFFD946EF), size: 22),
           const SizedBox(width: 12),
-          Expanded(child: Text(text, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500))),
+          Expanded(
+            child: Text(
+              text, 
+              style: TextStyle(
+                fontSize: 15, 
+                fontWeight: FontWeight.w500,
+                color: textColor.withOpacity(0.9),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildPlanToggle(bool isDark, Color cardColor, Color textColor, Color? subTextColor) {
+  Widget _buildPlanToggle(bool isDark, Color textColor, Color? subTextColor) {
     return Row(
       children: [
         Expanded(
@@ -140,17 +167,25 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   Widget _buildPlanCard(String title, String price, String sub, bool selected, VoidCallback onTap, bool isDark, Color textColor, Color? subTextColor) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: selected 
               ? const Color(0xFFD946EF).withOpacity(0.1) 
               : (isDark ? Colors.white.withOpacity(0.05) : Colors.white),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: selected ? const Color(0xFFD946EF) : (isDark ? Colors.white12 : Colors.grey.shade200),
             width: 2,
           ),
+          boxShadow: selected ? [
+            BoxShadow(
+              color: const Color(0xFFD946EF).withOpacity(0.2),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          ] : [],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,17 +197,18 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   title, 
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: textColor,
+                    fontSize: 16,
+                    color: selected ? const Color(0xFFD946EF) : textColor,
                   )
                 ),
-                if (selected) const Icon(Icons.check_circle, color: Color(0xFFD946EF), size: 16),
+                if (selected) const Icon(Icons.check_circle, color: Color(0xFFD946EF), size: 18),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             Text(
               price, 
               style: TextStyle(
-                fontSize: 20, 
+                fontSize: 24, 
                 fontWeight: FontWeight.bold,
                 color: textColor,
               )
@@ -182,7 +218,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               sub, 
               style: TextStyle(
                 color: subTextColor, 
-                fontSize: 11
+                fontSize: 12
               )
             ),
           ],
@@ -199,13 +235,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFFD946EF),
           foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          elevation: 0,
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          elevation: 8,
+          shadowColor: const Color(0xFFD946EF).withOpacity(0.4),
         ),
         child: Text(
           'Continue - ${isYearly ? '\$200.00 total' : '\$20.00 total'}',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -234,74 +271,104 @@ class SubscriptionDetailScreen extends StatelessWidget {
         title: Text('Membership', style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              Text(
-                isYearly ? 'Yearly Membership' : 'Monthly Membership',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: textColor),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth > 700;
+            return SingleChildScrollView(
+              padding: EdgeInsets.symmetric(
+                horizontal: isWide ? constraints.maxWidth * 0.15 : 24.0,
+                vertical: 24,
               ),
-              const SizedBox(height: 12),
-              Text(
-                'Unlock the most powerful ProjectPulse assistant',
-                style: TextStyle(color: isDark ? Colors.grey[400] : const Color(0xFF64748B)),
-              ),
-              const SizedBox(height: 40),
-              Center(
-                child: Column(
-                  children: [
-                    const Icon(Icons.workspace_premium, size: 80, color: Color(0xFFD946EF)),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          isYearly ? '\$240.00' : '\$25.00',
-                          style: TextStyle(
-                            decoration: TextDecoration.lineThrough,
-                            color: isDark ? Colors.grey[600] : Colors.grey[400],
-                            fontSize: 18,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          isYearly ? '\$200.00' : '\$20.00',
-                          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: textColor),
-                        ),
-                        Text(isYearly ? '/Yearly' : '/Monthly', style: TextStyle(fontSize: 16, color: textColor)),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    const Text('Save 20%', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 40),
-              Text('Feature List', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
-              const SizedBox(height: 16),
-              _buildFeatureItem('Unlimited Projects & Team Members', isDark),
-              _buildFeatureItem('Export Financial Reports (Invoices)', isDark),
-              _buildFeatureItem('Priority Email Support', isDark),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Get.to(() => const AddPaymentScreen()),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD946EF),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                    elevation: 0,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isYearly ? 'Yearly Membership' : 'Monthly Membership',
+                    style: TextStyle(fontSize: isWide ? 36 : 28, fontWeight: FontWeight.bold, color: textColor),
                   ),
-                  child: const Text('Buy Now', style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Unlock the most powerful ProjectPulse assistant and scale your professional workflow.',
+                    style: TextStyle(color: isDark ? Colors.grey[400] : const Color(0xFF64748B), fontSize: 16),
+                  ),
+                  const SizedBox(height: 40),
+                  Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(32),
+                      decoration: BoxDecoration(
+                        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                        borderRadius: BorderRadius.circular(32),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          const Icon(Icons.workspace_premium, size: 80, color: Color(0xFFD946EF)),
+                          const SizedBox(height: 24),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                isYearly ? '\$240.00' : '\$25.00',
+                                style: TextStyle(
+                                  decoration: TextDecoration.lineThrough,
+                                  color: isDark ? Colors.grey[600] : Colors.grey[400],
+                                  fontSize: 18,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                isYearly ? '\$200.00' : '\$20.00',
+                                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: textColor),
+                              ),
+                              Text(isYearly ? '/Year' : '/Month', style: TextStyle(fontSize: 18, color: textColor.withOpacity(0.6))),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.redAccent.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Text('Save 20%', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 48),
+                  Text('Premium Benefits', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor)),
+                  const SizedBox(height: 20),
+                  _buildFeatureItem('Unlimited Projects & Team Members', isDark),
+                  _buildFeatureItem('Export Financial Reports (Invoices)', isDark),
+                  _buildFeatureItem('Priority Email & Chat Support', isDark),
+                  _buildFeatureItem('Advanced AI Assistance', isDark),
+                  const SizedBox(height: 48),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => Get.to(() => const AddPaymentScreen()),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFD946EF),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                        elevation: 8,
+                        shadowColor: const Color(0xFFD946EF).withOpacity(0.4),
+                      ),
+                      child: const Text('Upgrade Now', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
@@ -309,12 +376,12 @@ class SubscriptionDetailScreen extends StatelessWidget {
 
   Widget _buildFeatureItem(String text, bool isDark) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
+      padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
         children: [
-          const Icon(Icons.check, color: Color(0xFFD946EF), size: 18),
-          const SizedBox(width: 12),
-          Text(text, style: TextStyle(color: isDark ? Colors.grey[300] : const Color(0xFF334155), fontSize: 14)),
+          const Icon(Icons.check_circle_outline, color: Color(0xFFD946EF), size: 22),
+          const SizedBox(width: 16),
+          Text(text, style: TextStyle(color: isDark ? Colors.grey[300] : const Color(0xFF334155), fontSize: 16)),
         ],
       ),
     );
@@ -339,60 +406,73 @@ class AddPaymentScreen extends StatelessWidget {
           icon: Icon(Icons.arrow_back_ios_new, size: 20, color: textColor),
           onPressed: () => Get.back(),
         ),
-        title: Text('Add Payment', style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
+        title: Text('Payment', style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              Text('Payment Method', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: textColor)),
-              const SizedBox(height: 12),
-              Text('Select the payment method you want to use.', style: TextStyle(color: isDark ? Colors.grey[400] : const Color(0xFF64748B))),
-              const SizedBox(height: 40),
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFD946EF)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth > 700;
+            return SingleChildScrollView(
+              padding: EdgeInsets.all(isWide ? constraints.maxWidth * 0.15 : 24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  Text('Payment Method', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: textColor)),
+                  const SizedBox(height: 12),
+                  Text('Select the payment method you want to use.', style: TextStyle(color: isDark ? Colors.grey[400] : const Color(0xFF64748B), fontSize: 16)),
+                  const SizedBox(height: 40),
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: const Color(0xFFD946EF), width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.credit_card, color: Colors.blue),
-                    const SizedBox(width: 16),
-                    Text('Stripe', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
-                    const Spacer(),
-                    const Icon(Icons.radio_button_checked, color: Color(0xFFD946EF)),
-                  ],
-                ),
-              ),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Get.to(() => const PaymentSummaryScreen()),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD946EF),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                    elevation: 0,
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.credit_card, color: Colors.blue),
+                        ),
+                        const SizedBox(width: 16),
+                        Text('Stripe Checkout', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
+                        const Spacer(),
+                        const Icon(Icons.radio_button_checked, color: Color(0xFFD946EF), size: 28),
+                      ],
+                    ),
                   ),
-                  child: const Text('Continue', style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
+                  const SizedBox(height: 80),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => Get.to(() => const PaymentSummaryScreen()),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFD946EF),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                        elevation: 8,
+                        shadowColor: const Color(0xFFD946EF).withOpacity(0.4),
+                      ),
+                      child: const Text('Continue to Summary', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
@@ -417,40 +497,49 @@ class PaymentSummaryScreen extends StatelessWidget {
           icon: Icon(Icons.arrow_back_ios_new, size: 20, color: textColor),
           onPressed: () => Get.back(),
         ),
-        title: Text('Summary', style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
+        title: Text('Order Summary', style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              Text('Order Summary', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: textColor)),
-              const SizedBox(height: 40),
-              _buildSummaryCard(isDark, textColor),
-              const SizedBox(height: 40),
-              _buildPriceRow('Amount', '\$20.00', textColor, isDark),
-              _buildPriceRow('Tax', '\$1.99', textColor, isDark),
-              const Divider(height: 40, color: Colors.grey),
-              _buildPriceRow('Total', '\$21.99', textColor, isDark, isTotal: true),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => _showSuccessDialog(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD946EF),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                    elevation: 0,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth > 700;
+            return SingleChildScrollView(
+              padding: EdgeInsets.all(isWide ? constraints.maxWidth * 0.15 : 24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  Text('Confirm Order', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: textColor)),
+                  const SizedBox(height: 40),
+                  _buildSummaryCard(isDark, textColor),
+                  const SizedBox(height: 40),
+                  _buildPriceRow('Subtotal', '\$20.00', textColor, isDark),
+                  _buildPriceRow('Tax', '\$1.99', textColor, isDark),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Divider(color: Colors.white12),
                   ),
-                  child: const Text('Confirm Payment', style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
+                  _buildPriceRow('Total Amount', '\$21.99', textColor, isDark, isTotal: true),
+                  const SizedBox(height: 60),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => _showSuccessDialog(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFD946EF),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                        elevation: 8,
+                        shadowColor: const Color(0xFFD946EF).withOpacity(0.4),
+                      ),
+                      child: const Text('Confirm & Pay', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
@@ -462,6 +551,7 @@ class PaymentSummaryScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1E293B) : Colors.white,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -472,9 +562,9 @@ class PaymentSummaryScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildSummaryItem('Unlimited Projects', textColor),
-          _buildSummaryItem('AI Milestone Helper', textColor),
-          _buildSummaryItem('Premium Support', textColor),
+          _buildSummaryItem('Premium Project Access', textColor),
+          _buildSummaryItem('AI-Powered Assistance', textColor),
+          _buildSummaryItem('Professional PDF Export', textColor),
         ],
       ),
     );
@@ -485,9 +575,9 @@ class PaymentSummaryScreen extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Row(
         children: [
-          const Icon(Icons.check, color: Color(0xFFD946EF), size: 18),
+          const Icon(Icons.check_circle, color: Color(0xFFD946EF), size: 20),
           const SizedBox(width: 12),
-          Text(text, style: TextStyle(fontSize: 14, color: textColor, fontWeight: FontWeight.w500)),
+          Text(text, style: TextStyle(fontSize: 15, color: textColor, fontWeight: FontWeight.w500)),
         ],
       ),
     );
@@ -497,8 +587,8 @@ class PaymentSummaryScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: TextStyle(fontSize: isTotal ? 18 : 14, color: isTotal ? textColor : (isDark ? Colors.grey[400] : const Color(0xFF64748B)))),
-        Text(value, style: TextStyle(fontSize: isTotal ? 22 : 16, fontWeight: FontWeight.bold, color: textColor)),
+        Text(label, style: TextStyle(fontSize: isTotal ? 18 : 16, color: isTotal ? textColor : (isDark ? Colors.grey[400] : const Color(0xFF64748B)))),
+        Text(value, style: TextStyle(fontSize: isTotal ? 28 : 20, fontWeight: FontWeight.bold, color: isTotal ? const Color(0xFFD946EF) : textColor)),
       ],
     );
   }
@@ -537,7 +627,7 @@ class PaymentSummaryScreen extends StatelessWidget {
               Text(
                 'Congratulations!', 
                 style: TextStyle(
-                  fontSize: 24, 
+                  fontSize: 26, 
                   fontWeight: FontWeight.bold, 
                   color: isDark ? Colors.white : const Color(0xFF1E293B)
                 )
@@ -546,9 +636,9 @@ class PaymentSummaryScreen extends StatelessWidget {
               Text(
                 'You have successfully subscribed to Premium. Enjoy all the professional benefits!',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: isDark ? Colors.grey[400] : const Color(0xFF64748B), fontSize: 15),
+                style: TextStyle(color: isDark ? Colors.grey[400] : const Color(0xFF64748B), fontSize: 16),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 40),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -563,11 +653,11 @@ class PaymentSummaryScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFD946EF),
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                     elevation: 0,
                   ),
-                  child: const Text('Done', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  child: const Text('Back to Dashboard', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],

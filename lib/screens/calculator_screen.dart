@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class CalculatorScreen extends StatefulWidget {
@@ -14,9 +15,10 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   double _num1 = 0;
   double _num2 = 0;
   String _operand = '';
-  bool _justEvaluated = false; // Track if = was just pressed
+  bool _justEvaluated = false;
 
   void _buttonPressed(String buttonText) {
+    HapticFeedback.lightImpact(); // Provide feedback
     setState(() {
       if (buttonText == 'C') {
         _output = '0';
@@ -43,12 +45,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         if (_output.contains('.')) return;
         _output = '$_output.';
       } else if (buttonText == '%') {
-        // Contextual percentage:
-        // If an operator is pending: e.g. 100 + 20% → 100 + (100 * 20/100) = 120
-        // If no operator: e.g. 200% → 2 (standalone /100)
         double currentVal = double.tryParse(_output) ?? 0;
         if (_operand.isNotEmpty) {
-          // e.g. num1=100, operand=+, currentVal=20 → percentage = 100 * 20/100 = 20
           double percentageVal = _num1 * currentVal / 100;
           _output = _formatNum(percentageVal);
         } else {
@@ -80,7 +78,6 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         _operand = '';
         _justEvaluated = true;
       } else {
-        // Number input
         if (_justEvaluated) {
           _output = buttonText;
           _justEvaluated = false;
@@ -89,7 +86,6 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         if (_output == '0') {
           _output = buttonText;
         } else {
-          // Limit display length
           if (_output.length < 12) {
             _output = _output + buttonText;
           }
@@ -102,9 +98,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     if (val == val.truncateToDouble() && !val.isInfinite && !val.isNaN) {
       return val.toInt().toString();
     }
-    // Limit decimal places to 6
     String s = val.toStringAsFixed(6);
-    // Remove trailing zeros
     s = s.replaceAll(RegExp(r'0*$'), '').replaceAll(RegExp(r'\.$'), '');
     return s;
   }
@@ -117,7 +111,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Calculator', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Assistant Calculator', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -125,34 +119,31 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // ── DISPLAY AREA ─────────────────────────────────
             Container(
-              constraints: const BoxConstraints(minHeight: 140),
+              constraints: BoxConstraints(minHeight: isWide ? 180 : 140),
               width: double.infinity,
               padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  // Expression (history) line
                   if (_expression.isNotEmpty)
                     Text(
                       _expression,
                       style: TextStyle(
-                        fontSize: 16,
-                        color: isDark ? Colors.grey[500] : Colors.grey[500],
+                        fontSize: 18,
+                        color: Colors.grey[500],
                       ),
                       textAlign: TextAlign.right,
                     ),
-                  const SizedBox(height: 4),
-                  // Main output number
+                  const SizedBox(height: 8),
                   FittedBox(
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.centerRight,
                     child: Text(
                       _output,
                       style: TextStyle(
-                        fontSize: isWide ? 72 : 60,
+                        fontSize: isWide ? 84 : 64,
                         fontWeight: FontWeight.w300,
                         color: isDark ? Colors.white : const Color(0xFF1E293B),
                       ),
@@ -162,12 +153,10 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               ),
             ),
             const Divider(height: 1),
-            // ── KEYPAD ───────────────────────────────────────
             Expanded(
               child: Padding(
-                // Extra bottom padding so buttons don't hide under floating NavBar
                 padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).padding.bottom + 90,
+                  bottom: MediaQuery.of(context).padding.bottom + (isWide ? 40 : 80),
                 ),
                 child: _buildKeypad(isDark, isWide),
               ),
@@ -183,35 +172,30 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       padding: const EdgeInsets.all(12),
       child: Column(
         children: [
-          // Row 1: 7 8 9 ÷
           _buildRow([
             _btn('7', isDark: isDark, isWide: isWide),
             _btn('8', isDark: isDark, isWide: isWide),
             _btn('9', isDark: isDark, isWide: isWide),
             _btn('÷', isDark: isDark, isWide: isWide, type: _BtnType.operator),
           ]),
-          // Row 2: 4 5 6 ×
           _buildRow([
             _btn('4', isDark: isDark, isWide: isWide),
             _btn('5', isDark: isDark, isWide: isWide),
             _btn('6', isDark: isDark, isWide: isWide),
             _btn('×', isDark: isDark, isWide: isWide, type: _BtnType.operator),
           ]),
-          // Row 3: 1 2 3 -
           _buildRow([
             _btn('1', isDark: isDark, isWide: isWide),
             _btn('2', isDark: isDark, isWide: isWide),
             _btn('3', isDark: isDark, isWide: isWide),
             _btn('-', isDark: isDark, isWide: isWide, type: _BtnType.operator),
           ]),
-          // Row 4: . 0 % C
           _buildRow([
             _btn('.', isDark: isDark, isWide: isWide),
             _btn('0', isDark: isDark, isWide: isWide),
             _btn('%', isDark: isDark, isWide: isWide),
             _btn('C', isDark: isDark, isWide: isWide, type: _BtnType.clear),
           ]),
-          // Row 5: + =
           _buildRow([
             _btn('+', isDark: isDark, isWide: isWide, type: _BtnType.operator),
             _btn('=', isDark: isDark, isWide: isWide, type: _BtnType.equal),
@@ -222,7 +206,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   }
 
   Widget _buildRow(List<Widget> children) {
-    return Row(children: children);
+    return Expanded(child: Row(children: children));
   }
 
   Widget _btn(String label, {required bool isDark, required bool isWide, _BtnType type = _BtnType.number}) {
@@ -254,25 +238,30 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     }
 
     return Expanded(
-      child: Container(
-        margin: const EdgeInsets.all(6),
-        child: Material(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(18),
-          child: InkWell(
-            onTap: () => _buttonPressed(label),
-            borderRadius: BorderRadius.circular(18),
-            child: Container(
-              height: isWide ? 80 : 70,
-              alignment: Alignment.center,
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w500,
-                  color: txtColor,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => _buttonPressed(label),
+        child: Container(
+          margin: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              if (type == _BtnType.equal)
+                BoxShadow(
+                  color: (isDark ? const Color(0xFFD946EF) : const Color(0xFF4F46E5)).withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
                 ),
-              ),
+            ],
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: isWide ? 32 : 28,
+              fontWeight: FontWeight.w600,
+              color: txtColor,
             ),
           ),
         ),
@@ -282,3 +271,4 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 }
 
 enum _BtnType { number, operator, equal, clear }
+
