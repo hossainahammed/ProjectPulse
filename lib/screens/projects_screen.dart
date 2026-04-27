@@ -94,68 +94,58 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
               ),
             ),
             Expanded(
-              child: Builder(
-                builder: (context) {
-                  // Filter and Sort by deadline priority
-                  final filteredProjects = controller.projects.where((project) {
-                    return project.name.toLowerCase().contains(_searchQuery) ||
-                        project.clientName.toLowerCase().contains(_searchQuery);
-                  }).toList();
+              child: Obx(() {
+                // Accessing projects list early to ensure Obx tracks changes
+                final allProjects = controller.projects.toList();
+                
+                // Filter and Sort by deadline priority
+                final filteredProjects = allProjects.where((project) {
+                  return project.name.toLowerCase().contains(_searchQuery) ||
+                      project.clientName.toLowerCase().contains(_searchQuery);
+                }).toList();
 
-                  filteredProjects.sort(
-                    (a, b) => a.deadline.compareTo(b.deadline),
+                filteredProjects.sort(
+                  (a, b) => a.deadline.compareTo(b.deadline),
+                );
+
+                if (filteredProjects.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.search_off_rounded,
+                          size: 64,
+                          color: isDark ? Colors.grey[700] : Colors.grey[300],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No projects found',
+                          style: TextStyle(
+                            color: isDark ? Colors.grey[500] : Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
                   );
+                }
 
-                  if (filteredProjects.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.search_off_rounded,
-                            size: 64,
-                            color: isDark ? Colors.grey[700] : Colors.grey[300],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No projects found',
-                            style: TextStyle(
-                              color: isDark ? Colors.grey[500] : Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
+                final size = MediaQuery.of(context).size;
+                final isWide = size.width > 600;
 
-                  final size = MediaQuery.of(context).size;
-                  final isWide = size.width > 600;
-
-                  if (isWide) {
-                    return GridView.builder(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 8,
-                      ),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 20,
-                            mainAxisSpacing: 4,
-                            mainAxisExtent: 260,
-                          ),
-                      itemCount: filteredProjects.length,
-                      itemBuilder: (context, index) {
-                        return ProjectCard(
-                          project: filteredProjects[index],
-                          isDark: isDark,
-                        );
-                      },
-                    );
-                  }
-
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                if (isWide) {
+                  return GridView.builder(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 8,
+                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 20,
+                          mainAxisSpacing: 4,
+                          mainAxisExtent: 260,
+                        ),
                     itemCount: filteredProjects.length,
                     itemBuilder: (context, index) {
                       return ProjectCard(
@@ -164,8 +154,19 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                       );
                     },
                   );
-                },
-              ),
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  itemCount: filteredProjects.length,
+                  itemBuilder: (context, index) {
+                    return ProjectCard(
+                      project: filteredProjects[index],
+                      isDark: isDark,
+                    );
+                  },
+                );
+              }),
             ),
           ],
         ),

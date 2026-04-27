@@ -23,6 +23,7 @@ class ProjectController extends GetxController {
   Future<void> addProject(Project project) async {
     await _projectBox.add(project);
     projects.add(project);
+    projects.refresh();
     
     // Add Notification
     await _notificationController.addNotification(
@@ -65,9 +66,11 @@ class ProjectController extends GetxController {
   }
 
   Future<void> deleteProject(Project project) async {
+    final id = project.id;
     await project.delete();
-    projects.remove(project);
-    NotificationService.cancelNotification(project.id.hashCode);
+    projects.removeWhere((p) => p.id == id);
+    projects.refresh();
+    NotificationService.cancelNotification(id.hashCode);
   }
 
   double get totalEarned {
