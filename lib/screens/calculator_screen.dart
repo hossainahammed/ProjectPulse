@@ -15,7 +15,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   double _num1 = 0;
   String _operand = '';
   bool _justEvaluated = false;
-  List<String> _history = [];
+  final List<String> _history = [];
   bool _showHistory = false;
 
   void _buttonPressed(String btnText) {
@@ -354,7 +354,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(isDark ? 0.2 : 0.03),
+                  color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),

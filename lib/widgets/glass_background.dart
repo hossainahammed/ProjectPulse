@@ -16,41 +16,43 @@ class GlassBackground extends StatelessWidget {
               : const Color(0xFFF8FAFC),
         ),
         
-        if (Theme.of(context).brightness == Brightness.dark) ...[
-          // Soft Purple Blob Top Left
-          Positioned(
-            top: -100,
-            left: -50,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFFD946EF).withOpacity(0.15),
-              ),
+        // Soft Purple Blob Top Left
+        Positioned(
+          top: -100,
+          left: -50,
+          child: Container(
+            width: 300,
+            height: 300,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xFFD946EF).withValues(alpha: 0.15)
+                  : const Color(0xFF4F46E5).withValues(alpha: 0.06),
             ),
           ),
-          
-          // Soft Blue Blob Bottom Right
-          Positioned(
-            bottom: -50,
-            right: -50,
-            child: Container(
-              width: 400,
-              height: 400,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFF8B5CF6).withOpacity(0.15),
-              ),
+        ),
+        
+        // Soft Blue/Purple Blob Bottom Right
+        Positioned(
+          bottom: -50,
+          right: -50,
+          child: Container(
+            width: 400,
+            height: 400,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xFF8B5CF6).withValues(alpha: 0.15)
+                  : const Color(0xFF7C3AED).withValues(alpha: 0.06),
             ),
           ),
-          
-          // Blur Layer
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
-            child: Container(color: Colors.transparent),
-          ),
-        ],
+        ),
+        
+        // Blur Layer
+        BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+          child: Container(color: Colors.transparent),
+        ),
         
         child,
       ],

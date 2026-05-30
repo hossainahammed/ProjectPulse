@@ -46,7 +46,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFD946EF).withOpacity(0.1),
+                        color: const Color(0xFFD946EF).withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(Icons.workspace_premium_rounded, size: 64, color: Color(0xFFD946EF)),
@@ -96,7 +96,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -127,7 +127,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               style: TextStyle(
                 fontSize: 15, 
                 fontWeight: FontWeight.w500,
-                color: textColor.withOpacity(0.9),
+                color: textColor.withValues(alpha: 0.9),
               ),
             ),
           ),
@@ -172,8 +172,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: selected 
-              ? const Color(0xFFD946EF).withOpacity(0.1) 
-              : (isDark ? Colors.white.withOpacity(0.05) : Colors.white),
+              ? const Color(0xFFD946EF).withValues(alpha: 0.1) 
+              : (isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: selected ? const Color(0xFFD946EF) : (isDark ? Colors.white12 : Colors.grey.shade200),
@@ -181,7 +181,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           ),
           boxShadow: selected ? [
             BoxShadow(
-              color: const Color(0xFFD946EF).withOpacity(0.2),
+              color: const Color(0xFFD946EF).withValues(alpha: 0.2),
               blurRadius: 10,
               offset: const Offset(0, 4),
             )
@@ -238,7 +238,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           padding: const EdgeInsets.symmetric(vertical: 20),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
           elevation: 8,
-          shadowColor: const Color(0xFFD946EF).withOpacity(0.4),
+          shadowColor: const Color(0xFFD946EF).withValues(alpha: 0.4),
         ),
         child: Text(
           'Continue - ${isYearly ? '\$200.00 total' : '\$20.00 total'}',
@@ -300,7 +300,7 @@ class SubscriptionDetailScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(32),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 20,
                             offset: const Offset(0, 10),
                           ),
@@ -326,14 +326,14 @@ class SubscriptionDetailScreen extends StatelessWidget {
                                 isYearly ? '\$200.00' : '\$20.00',
                                 style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: textColor),
                               ),
-                              Text(isYearly ? '/Year' : '/Month', style: TextStyle(fontSize: 18, color: textColor.withOpacity(0.6))),
+                              Text(isYearly ? '/Year' : '/Month', style: TextStyle(fontSize: 18, color: textColor.withValues(alpha: 0.6))),
                             ],
                           ),
                           const SizedBox(height: 12),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                             decoration: BoxDecoration(
-                              color: Colors.redAccent.withOpacity(0.1),
+                              color: Colors.redAccent.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: const Text('Save 20%', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
@@ -360,7 +360,7 @@ class SubscriptionDetailScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 20),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                         elevation: 8,
-                        shadowColor: const Color(0xFFD946EF).withOpacity(0.4),
+                        shadowColor: const Color(0xFFD946EF).withValues(alpha: 0.4),
                       ),
                       child: const Text('Upgrade Now', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                     ),
@@ -430,7 +430,7 @@ class AddPaymentScreen extends StatelessWidget {
                       border: Border.all(color: const Color(0xFFD946EF), width: 2),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
                         ),
@@ -441,7 +441,7 @@ class AddPaymentScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.blue.withOpacity(0.1),
+                            color: Colors.blue.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Icon(Icons.credit_card, color: Colors.blue),
@@ -464,7 +464,7 @@ class AddPaymentScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 20),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                         elevation: 8,
-                        shadowColor: const Color(0xFFD946EF).withOpacity(0.4),
+                        shadowColor: const Color(0xFFD946EF).withValues(alpha: 0.4),
                       ),
                       child: const Text('Continue to Summary', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                     ),
@@ -531,7 +531,7 @@ class PaymentSummaryScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 20),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                         elevation: 8,
-                        shadowColor: const Color(0xFFD946EF).withOpacity(0.4),
+                        shadowColor: const Color(0xFFD946EF).withValues(alpha: 0.4),
                       ),
                       child: const Text('Confirm & Pay', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                     ),
@@ -554,7 +554,7 @@ class PaymentSummaryScreen extends StatelessWidget {
         border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -606,7 +606,7 @@ class PaymentSummaryScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(32),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withValues(alpha: 0.2),
                 blurRadius: 30,
                 offset: const Offset(0, 15),
               ),
@@ -618,7 +618,7 @@ class PaymentSummaryScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFD946EF).withOpacity(0.1),
+                  color: const Color(0xFFD946EF).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.workspace_premium, color: Color(0xFFD946EF), size: 56),

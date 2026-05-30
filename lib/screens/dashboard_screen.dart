@@ -5,7 +5,7 @@ import 'package:badges/badges.dart' as badges;
 import '../controllers/project_controller.dart';
 import '../controllers/notification_controller.dart';
 import '../controllers/user_controller.dart';
-import '../models/project_model.dart';
+
 import 'notification_screen.dart';
 import 'profile_screen.dart';
 import '../widgets/add_project_dialog.dart';
@@ -45,7 +45,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Image.asset(
@@ -94,7 +94,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             );
           }),
           GestureDetector(
-            onTap: () => Get.to(() => ProfileScreen()),
+            onTap: () => Get.to(() => const ProfileScreen()),
             child: Padding(
               padding: const EdgeInsets.only(right: 16.0),
               child: CircleAvatar(
@@ -119,7 +119,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: Obx(() {
                     // Observing both projects list and isDarkMode triggers rebuild on either change
                     final _ = controller.projects.toList();
-                    final __ = _userController.isDarkMode.value;
+                    _userController.isDarkMode.value; // trigger rebuild on theme change
                     return Center(
                       child: SizedBox(
                         width: MediaQuery.of(context).size.width * 0.9,
@@ -218,7 +218,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Get.dialog(AddProjectDialog()),
+        onPressed: () => Get.dialog(const AddProjectDialog()),
         label: const Text('New Project'),
         icon: const Icon(Icons.add),
       ),
@@ -244,7 +244,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Get.theme.colorScheme.primary.withOpacity(0.3),
+              color: Get.theme.colorScheme.primary.withValues(alpha: 0.3),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),

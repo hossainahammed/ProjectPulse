@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:device_preview/device_preview.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'models/project_model.dart';
 import 'models/milestone_model.dart';
 import 'models/notification_model.dart';
@@ -13,11 +15,17 @@ import 'controllers/user_controller.dart';
 import 'controllers/note_controller.dart';
 import 'controllers/project_stats_controller.dart';
 import 'services/notification_service.dart';
-import 'screens/dashboard_screen.dart';
-import 'screens/main_screen.dart';
+
+import 'controllers/auth_controller.dart';
+import 'screens/root_auth_wrapper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   
   // Initialize Hive
   await Hive.initFlutter();
@@ -42,6 +50,7 @@ void main() async {
   Get.put(UserController());
   Get.put(NoteController());
   Get.put(ProjectStatsController());
+  Get.put(AuthController());
 
   runApp(
     DevicePreview(
@@ -96,7 +105,6 @@ class FreelanceFlowApp extends StatelessWidget {
           brightness: Brightness.dark,
           primary: const Color(0xFFD946EF),
           secondary: const Color(0xFF8B5CF6),
-          background: const Color(0xFF0F172A),
           surface: const Color(0xFF1E293B),
         ),
         scaffoldBackgroundColor: const Color(0xFF020617),
@@ -112,7 +120,7 @@ class FreelanceFlowApp extends StatelessWidget {
         ),
       ),
       themeMode: ThemeMode.system,
-      home: const MainScreen(),
+      home: const RootAuthWrapper(),
     );
   }
 }

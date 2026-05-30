@@ -58,7 +58,7 @@ class JobPostListScreen extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -114,7 +114,7 @@ class JobPostListScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFD946EF).withOpacity(0.1),
+                        color: const Color(0xFFD946EF).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
@@ -136,7 +136,7 @@ class JobPostListScreen extends StatelessWidget {
                 Text(
                   'Subscribe to Premium to see company details, location, and budget.',
                   style: TextStyle(
-                    color: Colors.amber.withOpacity(0.8),
+                    color: Colors.amber.withValues(alpha: 0.8),
                     fontSize: 12,
                     fontStyle: FontStyle.italic,
                   ),

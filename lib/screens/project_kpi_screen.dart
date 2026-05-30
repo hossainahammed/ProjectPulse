@@ -228,6 +228,9 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
   void _saveConfig() async {
     if (!_formKey.currentState!.validate()) return;
 
+    // Capture primary color before async gaps
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
     final enabledComps = _components.where((c) => c.enabled).toList();
     if (enabledComps.isEmpty) {
       Get.snackbar(
@@ -298,7 +301,7 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.1),
+                  color: Colors.green.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -334,7 +337,7 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
                     Get.back(); // Go back to Project Details screen
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    backgroundColor: primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -456,7 +459,7 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
         border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.2 : 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           )
@@ -488,7 +491,7 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: primaryColor.withOpacity(0.1),
+                  color: primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -533,14 +536,14 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
 
   Widget _buildSumIndicatorSection(double sum, bool isValid, bool isDark) {
     final alertColor = isValid ? Colors.green[600]! : Colors.amber[800]!;
-    final alertBg = isValid ? Colors.green.withOpacity(0.08) : Colors.amber.withOpacity(0.08);
+    final alertBg = isValid ? Colors.green.withValues(alpha: 0.08) : Colors.amber.withValues(alpha: 0.08);
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: alertBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: alertColor.withOpacity(0.3)),
+        border: Border.all(color: alertColor.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
@@ -606,13 +609,13 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: state.enabled 
-                ? state.themeColor.withOpacity(0.5) 
+                ? state.themeColor.withValues(alpha: 0.5) 
                 : (isDark ? Colors.white10 : Colors.grey.shade200),
             width: state.enabled ? 1.5 : 1.0,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.15 : 0.01),
+              color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.01),
               blurRadius: 8,
               offset: const Offset(0, 2),
             )
@@ -669,7 +672,7 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: state.themeColor.withOpacity(0.1),
+                    color: state.themeColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(

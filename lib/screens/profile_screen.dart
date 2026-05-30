@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../widgets/glass_background.dart';
+import '../controllers/auth_controller.dart';
 import 'subscription_screen.dart';
 import 'notes_screen.dart';
 import 'notification_screen.dart';
@@ -17,7 +21,6 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final UserController userController = Get.find<UserController>();
     final isWide = MediaQuery.of(context).size.width > 600;
     final padding = isWide ? MediaQuery.of(context).size.width * 0.1 : 24.0;
 
@@ -138,10 +141,15 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              child: const CircleAvatar(
-                radius: 60,
-                backgroundImage: AssetImage('assets/images/user_profile.png'),
-              ),
+              child: Obx(() {
+                final imageUrl = userController.profileImageUrl.value;
+                return CircleAvatar(
+                  radius: 60,
+                  backgroundImage: imageUrl.isNotEmpty
+                      ? NetworkImage(imageUrl) as ImageProvider
+                      : const AssetImage('assets/images/user_profile.png'),
+                );
+              }),
             ),
             Positioned(
               bottom: 0,
@@ -170,9 +178,11 @@ class ProfileScreen extends StatelessWidget {
           () => Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'Hossain Ahammed',
-                style: TextStyle(
+              Text(
+                userController.name.value.isNotEmpty
+                    ? userController.name.value
+                    : 'User Profile',
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.2,
@@ -202,7 +212,15 @@ class ProfileScreen extends StatelessWidget {
             ],
           ),
         ),
-        Text('hossain@example.com', style: TextStyle(color: Colors.grey[500])),
+        Obx(() {
+          final displayEmail = userController.email.value.isNotEmpty
+              ? userController.email.value
+              : (FirebaseAuth.instance.currentUser?.email ?? '');
+          return Text(
+            displayEmail.isNotEmpty ? displayEmail : 'No email set',
+            style: TextStyle(color: Colors.grey[500]),
+          );
+        }),
       ],
     );
   }
@@ -246,17 +264,41 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildSourceOption(IconData icon, String label, ImageSource source) {
+    final UserController userController = Get.find<UserController>();
     return GestureDetector(
       onTap: () async {
         Get.back();
         final picker = ImagePicker();
         final XFile? image = await picker.pickImage(source: source);
         if (image != null) {
-          Get.snackbar(
-            'Success',
-            'Profile image updated (simulated)',
-            snackPosition: SnackPosition.BOTTOM,
+          Get.dialog(
+            const Center(
+              child: CircularProgressIndicator(),
+            ),
+            barrierDismissible: false,
           );
+          
+          final success = await userController.uploadProfileImage(File(image.path));
+          
+          Get.back(); // Close loading dialog
+          
+          if (success) {
+            Get.snackbar(
+              'Success 🎉',
+              'Profile image updated successfully.',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.green[600],
+              colorText: Colors.white,
+            );
+          } else {
+            Get.snackbar(
+              'Error ❌',
+              'Failed to upload profile image.',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.red[600],
+              colorText: Colors.white,
+            );
+          }
         }
       },
       child: Column(
@@ -264,7 +306,7 @@ class ProfileScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Get.theme.colorScheme.primary.withOpacity(0.1),
+              color: Get.theme.colorScheme.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: Get.theme.colorScheme.primary, size: 30),
@@ -299,7 +341,7 @@ class ProfileScreen extends StatelessWidget {
             color: Theme.of(context).cardTheme.color,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: Theme.of(context).dividerColor.withOpacity(0.05),
+              color: Theme.of(context).dividerColor.withValues(alpha: 0.05),
             ),
           ),
           child: Column(
@@ -326,7 +368,7 @@ class ProfileScreen extends StatelessWidget {
                     Divider(
                       height: 1,
                       indent: 56,
-                      color: Colors.grey.withOpacity(0.1),
+                      color: Colors.grey.withValues(alpha: 0.1),
                     ),
                 ],
               );
@@ -340,7 +382,7 @@ class ProfileScreen extends StatelessWidget {
   Widget _buildLogoutButton() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF8B5CF6).withOpacity(0.25),
+        color: const Color(0xFF8B5CF6).withValues(alpha: 0.25),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.white),
       ),
@@ -375,7 +417,7 @@ class ProfileScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -413,7 +455,10 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () => Get.back(),
+                      onPressed: () {
+                        Get.back(); // Close dialog
+                        Get.find<AuthController>().signOut(); // Sign out from Firebase
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
@@ -445,77 +490,179 @@ class _MenuItem {
 }
 
 // Redesigned Screens from Image
-class PersonalDataScreen extends StatelessWidget {
+class PersonalDataScreen extends StatefulWidget {
   const PersonalDataScreen({super.key});
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('Personal Data'),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-        onPressed: () => Get.back(),
-      ),
-    ),
-    body: GlassBackground(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            const CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage('assets/images/user_profile.png'),
-            ),
-            const SizedBox(height: 32),
-            _buildField('Name', 'MILAKIB AHMED'),
-            _buildField('Email', 'milakib@example.com'),
-            _buildField(
-              'Date of Birth',
-              '08 June 1999',
-              icon: Icons.calendar_today_outlined,
-            ),
-            _buildField(
-              'Location',
-              'Select Your Country',
-              icon: Icons.keyboard_arrow_down,
-            ),
-            const SizedBox(height: 40),
-            _buildActionButton('Save', () => Get.back()),
-          ],
+  State<PersonalDataScreen> createState() => _PersonalDataScreenState();
+}
+
+class _PersonalDataScreenState extends State<PersonalDataScreen> {
+  final UserController _userController = Get.find<UserController>();
+  final _formKey = GlobalKey<FormState>();
+  
+  late final TextEditingController _nameController;
+  late final TextEditingController _dobController;
+  late final TextEditingController _locationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: _userController.name.value);
+    _dobController = TextEditingController(text: _userController.dob.value);
+    _locationController = TextEditingController(text: _userController.location.value);
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _dobController.dispose();
+    _locationController.dispose();
+    super.dispose();
+  }
+
+  void _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().subtract(const Duration(days: 365 * 20)),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      final months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+      final dateStr = "${picked.day} ${months[picked.month - 1]} ${picked.year}";
+      setState(() {
+        _dobController.text = dateStr;
+      });
+    }
+  }
+
+  void _save() async {
+    if (_formKey.currentState!.validate()) {
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
+      );
+      
+      final success = await _userController.updateUserProfile(
+        name: _nameController.text.trim(),
+        dob: _dobController.text.trim(),
+        location: _locationController.text.trim(),
+      );
+      
+      Get.back(); // close loader
+      
+      if (success) {
+        Get.snackbar(
+          'Profile Updated! 🎉',
+          'Your profile data has been saved successfully.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green[600],
+          colorText: Colors.white,
+        );
+        Get.back(); // return to settings
+      } else {
+        Get.snackbar(
+          'Failed ❌',
+          'Could not update profile data.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red[600],
+          colorText: Colors.white,
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Personal Data'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+          onPressed: () => Get.back(),
         ),
       ),
-    ),
-  );
-
-  Widget _buildField(String label, String value, {IconData? icon}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: TextStyle(color: Colors.grey[500], fontSize: 12)),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+      body: GlassBackground(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                Obx(() {
+                  final imageUrl = _userController.profileImageUrl.value;
+                  return CircleAvatar(
+                    radius: 50,
+                    backgroundImage: imageUrl.isNotEmpty
+                        ? NetworkImage(imageUrl) as ImageProvider
+                        : const AssetImage('assets/images/user_profile.png'),
+                  );
+                }),
+                const SizedBox(height: 32),
+                TextFormField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Name',
+                    border: UnderlineInputBorder(),
+                  ),
+                  validator: (v) => v == null || v.trim().isEmpty ? 'Name is required' : null,
                 ),
-              ),
-              if (icon != null) Icon(icon, size: 20, color: Colors.grey),
-            ],
+                const SizedBox(height: 20),
+                TextFormField(
+                  initialValue: _userController.email.value,
+                  readOnly: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Email Address',
+                    helperText: 'Email cannot be changed',
+                    border: UnderlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: _dobController,
+                  readOnly: true,
+                  onTap: () => _selectDate(context),
+                  decoration: const InputDecoration(
+                    labelText: 'Date of Birth',
+                    suffixIcon: Icon(Icons.calendar_today_outlined, size: 20),
+                    border: UnderlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: _locationController,
+                  decoration: const InputDecoration(
+                    labelText: 'Location / Country',
+                    suffixIcon: Icon(Icons.keyboard_arrow_down, size: 20),
+                    border: UnderlineInputBorder(),
+                  ),
+                  validator: (v) => v == null || v.trim().isEmpty ? 'Location is required' : null,
+                ),
+                const SizedBox(height: 40),
+                _buildActionButton('Save', _save),
+              ],
+            ),
           ),
-          const Divider(height: 16),
-        ],
+        ),
       ),
     );
   }
 }
 
-class SecurityScreen extends StatelessWidget {
+class SecurityScreen extends StatefulWidget {
   const SecurityScreen({super.key});
+
+  @override
+  State<SecurityScreen> createState() => _SecurityScreenState();
+}
+
+class _SecurityScreenState extends State<SecurityScreen> {
+  bool _rememberMe = true;
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
@@ -532,7 +679,14 @@ class SecurityScreen extends StatelessWidget {
           children: [
             ListTile(
               title: const Text('Remember Me'),
-              trailing: Switch(value: true, onChanged: (v) {}),
+              trailing: Switch(
+                value: _rememberMe,
+                onChanged: (v) {
+                  setState(() {
+                    _rememberMe = v;
+                  });
+                },
+              ),
               contentPadding: EdgeInsets.zero,
             ),
             ListTile(
@@ -554,56 +708,321 @@ class SecurityScreen extends StatelessWidget {
   );
 }
 
-class ChangePasswordScreen extends StatelessWidget {
+class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('Change Password'),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-        onPressed: () => Get.back(),
-      ),
-    ),
-    body: GlassBackground(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Create new password',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+  State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
+}
+
+class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _oldPasswordController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+
+  bool _obscureOld = true;
+  bool _obscureNew = true;
+  bool _obscureConfirm = true;
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _oldPasswordController.dispose();
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  void _submit() async {
+    if (_formKey.currentState!.validate()) {
+      // Capture context values before any async gaps
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      final primaryColor = Theme.of(context).colorScheme.primary;
+
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        final User? user = FirebaseAuth.instance.currentUser;
+        if (user != null && user.email != null) {
+          // Reauthenticate the user first
+          final AuthCredential credential = EmailAuthProvider.credential(
+            email: user.email!,
+            password: _oldPasswordController.text,
+          );
+          
+          await user.reauthenticateWithCredential(credential);
+          
+          // Update the password
+          await user.updatePassword(_newPasswordController.text);
+          
+          if (!mounted) return;
+          setState(() {
+            _isLoading = false;
+          });
+
+          // Show Success dialog
+          Get.dialog(
+            Dialog(
+              backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(
+                  color: isDark ? Colors.white10 : Colors.grey.shade200,
+                  width: 1,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check_circle_outline_rounded,
+                        color: Colors.green,
+                        size: 54,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Password Changed! 🎉',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Your password has been successfully updated. Please use your new credentials next time.',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Get.back(); // Close Dialog
+                          Get.back(); // Pop back to SecurityScreen
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColor,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          'OK',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Your new password must be unique from those previously used.',
-              style: TextStyle(color: Colors.grey[500]),
-            ),
-            const SizedBox(height: 32),
-            _buildTextField('Old Password'),
-            _buildTextField('New Password'),
-            _buildTextField('Confirm Password'),
-            const SizedBox(height: 40),
-            _buildActionButton('Reset Password', () => Get.back()),
-            const SizedBox(height: 20),
-          ],
+            barrierDismissible: false,
+          );
+        } else {
+          throw Exception('No authenticated user found.');
+        }
+      } on FirebaseAuthException catch (e) {
+        setState(() {
+          _isLoading = false;
+        });
+        String errorMsg = e.message ?? 'An error occurred while changing password.';
+        if (e.code == 'wrong-password') {
+          errorMsg = 'The old password you entered is incorrect.';
+        } else if (e.code == 'weak-password') {
+          errorMsg = 'The new password provided is too weak.';
+        }
+        _showErrorPopup(errorMsg);
+      } catch (e) {
+        setState(() {
+          _isLoading = false;
+        });
+        _showErrorPopup(e.toString());
+      }
+    }
+  }
+
+  void _showErrorPopup(String message) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    Get.dialog(
+      Dialog(
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(
+            color: isDark ? Colors.white10 : Colors.grey.shade200,
+            width: 1,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.error_outline_rounded,
+                  color: Colors.red,
+                  size: 54,
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Change Failed',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                message,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: isDark ? Colors.grey[400] : Colors.grey[600],
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Get.back(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'OK',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 
-  Widget _buildTextField(String hint) {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Change Password'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+          onPressed: () => Get.back(),
+        ),
+      ),
+      body: GlassBackground(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Create new password',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Your new password must be unique from those previously used.',
+                  style: TextStyle(color: Colors.grey[500]),
+                ),
+                const SizedBox(height: 32),
+                _buildPasswordField('Old Password', _oldPasswordController, _obscureOld, (v) {
+                  setState(() { _obscureOld = !v; });
+                }, (v) => v == null || v.isEmpty ? 'Old Password is required' : null),
+                _buildPasswordField('New Password', _newPasswordController, _obscureNew, (v) {
+                  setState(() { _obscureNew = !v; });
+                }, (v) {
+                  if (v == null || v.isEmpty) return 'New Password is required';
+                  if (v.length < 6) return 'Password must be at least 6 characters';
+                  return null;
+                }),
+                _buildPasswordField('Confirm Password', _confirmPasswordController, _obscureConfirm, (v) {
+                  setState(() { _obscureConfirm = !v; });
+                }, (v) {
+                  if (v == null || v.isEmpty) return 'Confirm your password';
+                  if (v != _newPasswordController.text) return 'Passwords do not match';
+                  return null;
+                }),
+                const SizedBox(height: 40),
+                _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _buildActionButton('Reset Password', _submit),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPasswordField(
+    String hint, 
+    TextEditingController controller, 
+    bool obscure, 
+    ValueChanged<bool> onToggleVisibility,
+    FormFieldValidator<String> validator,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Get.theme.colorScheme.surfaceVariant.withOpacity(0.3),
+        color: Get.theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: TextField(
-        obscureText: true,
+      child: TextFormField(
+        controller: controller,
+        obscureText: obscure,
+        validator: validator,
         decoration: InputDecoration(
           hintText: hint,
+          suffixIcon: IconButton(
+            icon: Icon(
+              obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+              size: 20,
+            ),
+            onPressed: () => onToggleVisibility(obscure),
+          ),
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 20,
             vertical: 16,
@@ -615,44 +1034,217 @@ class ChangePasswordScreen extends StatelessWidget {
   }
 }
 
-class ContactUsScreen extends StatelessWidget {
+class ContactUsScreen extends StatefulWidget {
   const ContactUsScreen({super.key});
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('Contact Us'),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-        onPressed: () => Get.back(),
-      ),
-    ),
-    body: GlassBackground(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            _buildTextField('Name'),
-            _buildTextField('Email'),
-            _buildTextField('Phone'),
-            _buildTextField('How can we help?', maxLines: 5),
-            const SizedBox(height: 40),
-            _buildActionButton('Send', () => Get.back()),
-            const SizedBox(height: 20),
-          ],
+  State<ContactUsScreen> createState() => _ContactUsScreenState();
+}
+
+class _ContactUsScreenState extends State<ContactUsScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _messageController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _messageController.dispose();
+    super.dispose();
+  }
+
+  void _send() async {
+    if (_formKey.currentState!.validate()) {
+      // Capture context values before async gaps
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      final primaryColor = Theme.of(context).colorScheme.primary;
+
+      setState(() {
+        _isLoading = true;
+      });
+
+      final String name = _nameController.text.trim();
+      final String email = _emailController.text.trim();
+      final String phone = _phoneController.text.trim();
+      final String message = _messageController.text.trim();
+
+      try {
+        // 1. Save to Cloud Firestore
+        await FirebaseFirestore.instance.collection('contact_messages').add({
+          'name': name,
+          'email': email,
+          'phone': phone,
+          'message': message,
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+
+        // 2. Pre-fill and launch default mail client
+        final Uri emailLaunchUri = Uri(
+          scheme: 'mailto',
+          path: 'hossainahammed627@gmail.com',
+          query: 'subject=ProjectPulse%20Support%20Query%20from%20${Uri.encodeComponent(name)}&body=${Uri.encodeComponent("Hi Support,\n\n$message\n\nContact Details:\nPhone: $phone\nEmail: $email")}',
+        );
+
+        await launchUrl(emailLaunchUri);
+
+        if (!mounted) return;
+        setState(() {
+          _isLoading = false;
+        });
+
+        // Show themed success popup
+        Get.dialog(
+          Dialog(
+            backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+              side: BorderSide(
+                color: isDark ? Colors.white10 : Colors.grey.shade200,
+                width: 1,
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.check_circle_outline_rounded,
+                      color: Colors.green,
+                      size: 54,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Message Sent! ✉️',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Your message has been saved in our system and we are opening your mail client to send it.',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Get.back(); // Close Dialog
+                        Get.back(); // Pop back to Settings
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'OK',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          barrierDismissible: false,
+        );
+      } catch (e) {
+        setState(() {
+          _isLoading = false;
+        });
+        Get.snackbar(
+          'Error ❌',
+          'Failed to send message: $e',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red[600],
+          colorText: Colors.white,
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Contact Us'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+          onPressed: () => Get.back(),
         ),
       ),
-    ),
-  );
+      body: GlassBackground(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                _buildFormTextField('Name', _nameController, (v) => v == null || v.trim().isEmpty ? 'Name is required' : null),
+                _buildFormTextField('Email', _emailController, (v) {
+                  if (v == null || v.trim().isEmpty) return 'Email is required';
+                  if (!GetUtils.isEmail(v.trim())) return 'Enter a valid email';
+                  return null;
+                }, keyboardType: TextInputType.emailAddress),
+                _buildFormTextField('Phone', _phoneController, (v) => v == null || v.trim().isEmpty ? 'Phone is required' : null, keyboardType: TextInputType.phone),
+                _buildFormTextField('How can we help?', _messageController, (v) => v == null || v.trim().isEmpty ? 'Message is required' : null, maxLines: 5),
+                const SizedBox(height: 40),
+                _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _buildActionButton('Send', _send),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
-  Widget _buildTextField(String hint, {int maxLines = 1}) {
+  Widget _buildFormTextField(
+    String hint, 
+    TextEditingController controller, 
+    FormFieldValidator<String> validator, {
+    int maxLines = 1,
+    TextInputType? keyboardType,
+  }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Get.theme.colorScheme.surfaceVariant.withOpacity(0.3),
+        color: Get.theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: TextField(
+      child: TextFormField(
+        controller: controller,
+        validator: validator,
         maxLines: maxLines,
+        keyboardType: keyboardType,
         decoration: InputDecoration(
           hintText: hint,
           contentPadding: const EdgeInsets.symmetric(
@@ -769,7 +1361,7 @@ class NotificationSettingsScreen extends StatelessWidget {
   Widget _buildSettingGroup(List<Widget> children) {
     return Container(
       decoration: BoxDecoration(
-        color: Get.theme.colorScheme.surfaceVariant.withOpacity(0.3),
+        color: Get.theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(children: children),
@@ -822,9 +1414,9 @@ class NotificationSettingsScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: const Color(0xFFD946EF).withOpacity(0.1),
+          color: const Color(0xFFD946EF).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: const Color(0xFFD946EF).withOpacity(0.5)),
+          border: Border.all(color: const Color(0xFFD946EF).withValues(alpha: 0.5)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

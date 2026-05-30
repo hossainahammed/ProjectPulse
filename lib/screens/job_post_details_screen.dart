@@ -38,7 +38,7 @@ class JobPostDetailsScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -52,7 +52,7 @@ class JobPostDetailsScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFD946EF).withOpacity(0.1),
+                          color: const Color(0xFFD946EF).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: const Icon(Icons.work_rounded, color: Color(0xFFD946EF)),
@@ -108,7 +108,7 @@ class JobPostDetailsScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                   elevation: 8,
-                  shadowColor: const Color(0xFFD946EF).withOpacity(0.4),
+                  shadowColor: const Color(0xFFD946EF).withValues(alpha: 0.4),
                 ),
                 child: const Text('Apply Now', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ),

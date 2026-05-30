@@ -46,7 +46,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
+                      color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),

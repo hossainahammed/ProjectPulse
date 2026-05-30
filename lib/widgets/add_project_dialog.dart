@@ -127,7 +127,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
             borderSide: BorderSide(color: isDark ? Colors.white10 : Colors.grey.shade200),
           ),
           filled: true,
-          fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade50,
+          fillColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade50,
           labelStyle: TextStyle(color: isDark ? Colors.grey[400] : const Color(0xFF64748B)),
         ),
         validator: (value) {
@@ -167,7 +167,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
               borderSide: BorderSide(color: isDark ? Colors.white10 : Colors.grey.shade200),
             ),
             filled: true,
-            fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade50,
+            fillColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade50,
           ),
           child: Text(
             DateFormat('yyyy-MM-dd').format(_selectedDate),
@@ -205,7 +205,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
               borderSide: BorderSide(color: isDark ? Colors.white10 : Colors.grey.shade200),
             ),
             filled: true,
-            fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade50,
+            fillColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade50,
           ),
           child: Text(
             DateFormat('yyyy-MM-dd').format(_assignDate),
@@ -221,12 +221,12 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Get.theme.colorScheme.primary.withOpacity(0.05),
+        color: Get.theme.colorScheme.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Get.theme.colorScheme.primary.withOpacity(0.1)),
+        border: Border.all(color: Get.theme.colorScheme.primary.withValues(alpha: 0.1)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -284,7 +284,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 isDense: true,
                 filled: true,
-                fillColor: Theme.of(context).cardColor.withOpacity(0.5),
+                fillColor: Theme.of(context).cardColor.withValues(alpha: 0.5),
               ),
               child: Text(
                 DateFormat('MMM dd, yyyy').format(_milestones[index].deadline),
@@ -300,7 +300,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
               isDense: true,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               filled: true,
-              fillColor: Theme.of(context).cardColor.withOpacity(0.5),
+              fillColor: Theme.of(context).cardColor.withValues(alpha: 0.5),
             ),
             onChanged: (val) {
               _milestones[index].assignedPeople =

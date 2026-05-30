@@ -1,10 +1,22 @@
 # This is a generated file; do not edit or check into version control.
+cloud_firestore=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\cloud_firestore-6.4.1\\
+cloud_firestore_web=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\cloud_firestore_web-5.4.1\\
 file_selector_linux=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\file_selector_linux-0.9.3+2\\
 file_selector_macos=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\file_selector_macos-0.9.4+4\\
 file_selector_windows=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\file_selector_windows-0.9.3+4\\
+firebase_auth=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\firebase_auth-6.5.1\\
+firebase_auth_web=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\firebase_auth_web-6.2.1\\
+firebase_core=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\firebase_core-4.9.0\\
+firebase_core_web=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\firebase_core_web-3.7.0\\
+firebase_storage=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\firebase_storage-13.4.1\\
+firebase_storage_web=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\firebase_storage_web-3.11.7\\
 flutter_local_notifications=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\flutter_local_notifications-17.2.4\\
 flutter_local_notifications_linux=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\flutter_local_notifications_linux-4.0.1\\
 flutter_plugin_android_lifecycle=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\flutter_plugin_android_lifecycle-2.0.31\\
+google_sign_in=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\google_sign_in-6.2.1\\
+google_sign_in_android=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\google_sign_in_android-6.2.1\\
+google_sign_in_ios=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\google_sign_in_ios-5.9.0\\
+google_sign_in_web=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\google_sign_in_web-0.12.4+4\\
 image_picker=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\image_picker-1.2.1\\
 image_picker_android=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\image_picker_android-0.8.13+1\\
 image_picker_for_web=C:\\Users\\USER\\AppData\\Local\\Pub\\Cache\\hosted\\pub.dev\\image_picker_for_web-3.1.0\\

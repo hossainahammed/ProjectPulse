@@ -32,7 +32,7 @@ class ProgressChartWidget extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.03),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.03),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -181,7 +181,7 @@ class ProgressChartWidget extends StatelessWidget {
         const Color(0xFF7C3AED), // Violet
         t,
       )!;
-      final bottomColor = topColor.withOpacity(0.55);
+      final bottomColor = topColor.withValues(alpha: 0.55);
       return [bottomColor, topColor];
     } else {
       // Day mode: Indigo → Violet gradient
@@ -190,7 +190,7 @@ class ProgressChartWidget extends StatelessWidget {
         const Color(0xFF8B5CF6), // Purple
         t,
       )!;
-      final bottomColor = topColor.withOpacity(0.45);
+      final bottomColor = topColor.withValues(alpha: 0.45);
       return [bottomColor, topColor];
     }
   }
@@ -210,7 +210,7 @@ class ArrowPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final shadowPaint = Paint()
-      ..color = color.withOpacity(0.3)
+      ..color = color.withValues(alpha: 0.3)
       ..strokeWidth = 4
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
@@ -243,7 +243,7 @@ class ArrowPainter extends CustomPainter {
     canvas.drawPath(path, paint);
 
     // Draw Arrowhead
-    final arrowHeadSize = 12.0;
+    const arrowHeadSize = 12.0;
     // Calculate angle at the end of the curve
     // For quadratic bezier: tangent at end is 2*(1-t)*(P1-P0) + 2*t*(P2-P1) where t=1
     // Tangent = 2*(P2-P1)

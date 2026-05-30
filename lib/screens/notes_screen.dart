@@ -47,7 +47,7 @@ class _NotesScreenState extends State<NotesScreen> {
                 'Saved',
                 'Your notes have been saved.',
                 snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: const Color(0xFFD946EF).withOpacity(0.1),
+                backgroundColor: const Color(0xFFD946EF).withValues(alpha: 0.1),
                 colorText: const Color(0xFFD946EF),
               );
             },
@@ -78,7 +78,7 @@ class _NotesScreenState extends State<NotesScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Get.isDarkMode ? Colors.white10 : Colors.white.withOpacity(0.5),
+                    color: Get.isDarkMode ? Colors.white10 : Colors.white.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: Get.isDarkMode ? Colors.white12 : Colors.grey.shade200,

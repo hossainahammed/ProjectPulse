@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'project_controller.dart';
-import '../models/project_model.dart';
 import 'package:intl/intl.dart';
 
 class ProjectStatsController extends GetxController {

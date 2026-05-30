@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "57932149579",
+    "project_id": "projectpulse-1faf3",
+    "storage_bucket": "projectpulse-1faf3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:57932149579:android:18c099a5d473a5a37b6ece",
+        "android_client_info": {
+          "package_name": "com.example.freelance_flow"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDr3tp7NRW3GweYalAxPauyRApFstbEjIU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

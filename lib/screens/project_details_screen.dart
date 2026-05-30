@@ -21,7 +21,7 @@ class ProjectDetailsScreen extends StatelessWidget {
     if (project.deliveryDate == null) return true;
 
     // Calculate if 6 months have passed since delivery
-    final sixMonthsInDays = 182; // Approx 6 months
+    const sixMonthsInDays = 182; // Approx 6 months
     final difference = DateTime.now().difference(project.deliveryDate!).inDays;
     
     return difference >= sixMonthsInDays;
@@ -69,7 +69,7 @@ class ProjectDetailsScreen extends StatelessWidget {
   Widget _buildInfoCard() {
     return Card(
       elevation: 0,
-      color: Get.theme.colorScheme.surfaceVariant.withOpacity(0.3),
+      color: Get.theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -320,7 +320,7 @@ class ProjectDetailsScreen extends StatelessWidget {
           border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.2 : 0.02),
+              color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
               blurRadius: 10,
               offset: const Offset(0, 4),
             )
@@ -339,7 +339,7 @@ class ProjectDetailsScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Get.theme.colorScheme.primary.withOpacity(0.1),
+                        color: Get.theme.colorScheme.primary.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
