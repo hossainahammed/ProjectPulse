@@ -29,13 +29,14 @@ class ProjectAdapter extends TypeAdapter<Project> {
       assignDate: fields[9] as DateTime?,
       deliveryDate: fields[10] as DateTime?,
       driveLink: fields[11] as String?,
+      kpiConfigJson: fields[12] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Project obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -59,7 +60,9 @@ class ProjectAdapter extends TypeAdapter<Project> {
       ..writeByte(10)
       ..write(obj.deliveryDate)
       ..writeByte(11)
-      ..write(obj.driveLink);
+      ..write(obj.driveLink)
+      ..writeByte(12)
+      ..write(obj.kpiConfigJson);
   }
 
   @override

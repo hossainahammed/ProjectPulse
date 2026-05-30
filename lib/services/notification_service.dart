@@ -15,7 +15,7 @@ class NotificationService {
         InitializationSettings(android: initializationSettingsAndroid);
 
     await _notificationsPlugin.initialize(
-      settings: initializationSettings,
+      initializationSettings,
       onDidReceiveNotificationResponse: (details) {
         // Handle notification tap
       },
@@ -32,11 +32,11 @@ class NotificationService {
     if (scheduledTime.isBefore(DateTime.now())) return;
 
     await _notificationsPlugin.zonedSchedule(
-      id: id,
-      title: title,
-      body: body,
-      scheduledDate: tz.TZDateTime.from(scheduledTime, tz.local),
-      notificationDetails: const NotificationDetails(
+      id,
+      title,
+      body,
+      tz.TZDateTime.from(scheduledTime, tz.local),
+      const NotificationDetails(
         android: AndroidNotificationDetails(
           'alerts',
           'General Alerts',
@@ -45,10 +45,12 @@ class NotificationService {
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
     );
   }
 
   static Future<void> cancelNotification(int id) async {
-    await _notificationsPlugin.cancel(id: id);
+    await _notificationsPlugin.cancel(id);
   }
 }

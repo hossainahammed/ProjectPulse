@@ -28,18 +28,44 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         _operand = '';
         _justEvaluated = false;
       } else if (btnText == '⌫') {
-        if (_output.length > 1) {
+        if (_output == 'Error') {
+          _output = '0';
+        } else if (_output.length > 1) {
           _output = _output.substring(0, _output.length - 1);
         } else {
           _output = '0';
         }
       } else if (['+', '-', '×', '÷'].contains(btnText)) {
-        _num1 = double.tryParse(_output) ?? 0;
+        if (_output == 'Error') {
+          _output = '0';
+        }
+        if (_operand.isNotEmpty && !_justEvaluated) {
+          double num2 = double.tryParse(_output) ?? 0;
+          double result = 0;
+          if (_operand == '+') result = _num1 + num2;
+          if (_operand == '-') result = _num1 - num2;
+          if (_operand == '×') result = _num1 * num2;
+          if (_operand == '÷') {
+            if (num2 == 0) {
+              _output = 'Error';
+              _expression = '';
+              _operand = '';
+              _num1 = 0;
+              _justEvaluated = true;
+              return;
+            }
+            result = _num1 / num2;
+          }
+          _num1 = result;
+        } else if (_operand.isEmpty) {
+          _num1 = double.tryParse(_output) ?? 0;
+        }
         _operand = btnText;
         _expression = '${_formatNum(_num1)} $btnText';
-        _output = '0';
-        _justEvaluated = false;
+        _output = _formatNum(_num1);
+        _justEvaluated = true;
       } else if (btnText == '=') {
+        if (_output == 'Error') return;
         double num2 = double.tryParse(_output) ?? 0;
         double result = 0;
 
@@ -49,6 +75,10 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         if (_operand == '÷') {
           if (num2 == 0) {
             _output = 'Error';
+            _expression = '';
+            _operand = '';
+            _num1 = 0;
+            _justEvaluated = true;
             return;
           }
           result = _num1 / num2;
@@ -64,12 +94,22 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           _justEvaluated = true;
         }
       } else if (btnText == '%') {
+        if (_output == 'Error') return;
         double val = double.tryParse(_output) ?? 0;
-        _output = _formatNum(val / 100);
+        if (_operand == '+' || _operand == '-') {
+          _output = _formatNum(_num1 * (val / 100));
+        } else {
+          _output = _formatNum(val / 100);
+        }
       } else if (btnText == '.') {
-        if (!_output.contains('.')) _output += '.';
+        if (_output == 'Error') {
+          _output = '0.';
+          _justEvaluated = false;
+        } else if (!_output.contains('.')) {
+          _output += '.';
+        }
       } else {
-        if (_output == '0' || _justEvaluated) {
+        if (_output == '0' || _output == 'Error' || _justEvaluated) {
           _output = btnText;
           _justEvaluated = false;
         } else {

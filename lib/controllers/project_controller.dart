@@ -53,7 +53,19 @@ class ProjectController extends GetxController {
   }
 
   Future<void> updateProject(Project project) async {
-    await project.save();
+    if (project.key != null) {
+      await _projectBox.put(project.key, project);
+    } else {
+      final key = _projectBox.keys.firstWhere(
+        (k) => _projectBox.get(k)?.id == project.id,
+        orElse: () => null,
+      );
+      if (key != null) {
+        await _projectBox.put(key, project);
+      } else {
+        await _projectBox.add(project);
+      }
+    }
     loadProjects();
     
     // Reschedule notification

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:device_preview/device_preview.dart';
 import 'models/project_model.dart';
 import 'models/milestone_model.dart';
 import 'models/notification_model.dart';
@@ -41,7 +43,12 @@ void main() async {
   Get.put(NoteController());
   Get.put(ProjectStatsController());
 
-  runApp(const FreelanceFlowApp());
+  runApp(
+    DevicePreview(
+      enabled: !kReleaseMode,
+      builder: (context) => const FreelanceFlowApp(),
+    ),
+  );
 }
 
 class FreelanceFlowApp extends StatelessWidget {
@@ -50,6 +57,9 @@ class FreelanceFlowApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      useInheritedMediaQuery: true,
+      locale: DevicePreview.locale(context),
+      builder: DevicePreview.appBuilder,
       title: 'ProjectPulse',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

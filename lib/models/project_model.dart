@@ -41,6 +41,9 @@ class Project extends HiveObject {
   @HiveField(11)
   String? driveLink;
 
+  @HiveField(12)
+  String? kpiConfigJson;
+
   Project({
     required this.id,
     required this.name,
@@ -54,5 +57,6 @@ class Project extends HiveObject {
     this.assignDate,
     this.deliveryDate,
     this.driveLink,
+    this.kpiConfigJson,
   });
 }

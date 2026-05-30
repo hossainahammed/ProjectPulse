@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../controllers/project_controller.dart';
 import '../models/project_model.dart';
+import '../models/project_kpi_config.dart';
+import 'project_kpi_screen.dart';
 
 class ProjectDetailsScreen extends StatelessWidget {
   final Project project;
@@ -48,6 +51,8 @@ class ProjectDetailsScreen extends StatelessWidget {
             _buildInfoCard(),
             const SizedBox(height: 32),
             _buildLinkSection(),
+            const SizedBox(height: 32),
+            _buildKPICard(context),
             const SizedBox(height: 32),
             const Text(
               'Milestones',
@@ -281,5 +286,106 @@ class ProjectDetailsScreen extends StatelessWidget {
         Get.back(); // Go back to dashboard
       },
     );
+  }
+
+  Widget _buildKPICard(BuildContext context) {
+    return Obx(() {
+      final freshProject = controller.projects.firstWhere((p) => p.id == project.id, orElse: () => project);
+      final hasConfig = freshProject.kpiConfigJson != null && freshProject.kpiConfigJson!.isNotEmpty;
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      final cardColor = Theme.of(context).cardColor;
+      
+      String statusText = 'Not Configured';
+      Color statusColor = Colors.grey;
+      if (hasConfig) {
+        try {
+          final config = ProjectKpiConfig.fromJson(jsonDecode(freshProject.kpiConfigJson!));
+          final activeComps = config.components
+              .where((c) => c.enabled)
+              .map((c) => '${c.label.split(" ").first}: ${c.percentage.toStringAsFixed(0)}%')
+              .join(', ');
+          statusText = activeComps.isNotEmpty ? activeComps : 'No components enabled';
+          statusColor = Theme.of(context).colorScheme.primary;
+        } catch (e) {
+          statusText = 'Configured';
+          statusColor = Theme.of(context).colorScheme.primary;
+        }
+      }
+
+      return Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(isDark ? 0.2 : 0.02),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => Get.to(() => ProjectKpiScreen(project: freshProject)),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Get.theme.colorScheme.primary.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.analytics_outlined,
+                        color: Get.theme.colorScheme.primary,
+                        size: 26,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'KPI & Value Distribution',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            statusText,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: statusColor,
+                              fontWeight: hasConfig ? FontWeight.w600 : FontWeight.normal,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      color: Colors.grey[400],
+                      size: 16,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    });
   }
 }
