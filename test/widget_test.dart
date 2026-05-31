@@ -58,6 +58,9 @@ class MockUserController extends GetxController implements UserController {
   final RxBool isPremium = false.obs;
 
   @override
+  final RxBool isAdmin = false.obs;
+
+  @override
   final RxBool isDarkMode = false.obs;
 
   @override
@@ -110,6 +113,11 @@ class MockUserController extends GetxController implements UserController {
   Future<bool> uploadProfileImage(File imageFile) async => true;
 
   @override
+  ImageProvider getProfileImageProvider(String imageUrl) {
+    return const AssetImage('assets/images/user_profile.png');
+  }
+
+  @override
   void clearProfile() {
     name.value = '';
     email.value = '';
@@ -117,6 +125,14 @@ class MockUserController extends GetxController implements UserController {
     location.value = '';
     profileImageUrl.value = '';
   }
+
+  @override
+  Future<bool> recordSubscription({
+    required String planType,
+    required double amount,
+    required String paymentMethod,
+  }) async =>
+      true;
 }
 
 class MockAuthController extends GetxController implements AuthController {

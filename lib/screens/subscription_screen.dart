@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/user_controller.dart';
+import 'payment_webview_screen.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -104,11 +105,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       ),
       child: Column(
         children: [
-          _buildBenefitItem('Unlimited Projects & Milestones', textColor),
-          _buildBenefitItem('AI-Powered Deadline Estimator', textColor),
+          _buildBenefitItem('View Recent Job Postings', textColor),
+          _buildBenefitItem('Apply to Premium Jobs', textColor),
           _buildBenefitItem('Export Invoices to PDF/Excel', textColor),
           _buildBenefitItem('Advanced Financial Analytics', textColor),
-          _buildBenefitItem('Multi-Currency Support', textColor),
+          _buildBenefitItem('AI-Powered Deadline Estimator', textColor),
         ],
       ),
     );
@@ -137,31 +138,36 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Widget _buildPlanToggle(bool isDark, Color textColor, Color? subTextColor) {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildPlanCard(
-            'Monthly',
-            '\$20.00',
-            'Billed Monthly',
-            !isYearly,
-            () => setState(() => isYearly = false),
-            isDark, textColor, subTextColor
+    final userCtrl = Get.find<UserController>();
+    return Obx(() {
+      final monthly = userCtrl.monthlyPrice.value.toStringAsFixed(0);
+      final yearly = userCtrl.yearlyPrice.value.toStringAsFixed(0);
+      return Row(
+        children: [
+          Expanded(
+            child: _buildPlanCard(
+              'Monthly',
+              '$monthly BDT',
+              'Billed Monthly',
+              !isYearly,
+              () => setState(() => isYearly = false),
+              isDark, textColor, subTextColor
+            ),
           ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _buildPlanCard(
-            'Yearly',
-            '\$200.00',
-            'Save \$40.00',
-            isYearly,
-            () => setState(() => isYearly = true),
-            isDark, textColor, subTextColor
+          const SizedBox(width: 16),
+          Expanded(
+            child: _buildPlanCard(
+              'Yearly',
+              '$yearly BDT',
+              'Save 50%',
+              isYearly,
+              () => setState(() => isYearly = true),
+              isDark, textColor, subTextColor
+            ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    });
   }
 
   Widget _buildPlanCard(String title, String price, String sub, bool selected, VoidCallback onTap, bool isDark, Color textColor, Color? subTextColor) {
@@ -241,7 +247,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           shadowColor: const Color(0xFFD946EF).withValues(alpha: 0.4),
         ),
         child: Text(
-          'Continue - ${isYearly ? '\$200.00 total' : '\$20.00 total'}',
+          'Continue - ${isYearly ? '600 BDT total' : '100 BDT total'}',
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),
@@ -268,7 +274,7 @@ class SubscriptionDetailScreen extends StatelessWidget {
           icon: Icon(Icons.arrow_back_ios_new, size: 20, color: textColor),
           onPressed: () => Get.back(),
         ),
-        title: Text('Membership', style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
+        title: Text('Membership Plan', style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
       ),
       body: SafeArea(
         child: LayoutBuilder(
@@ -314,7 +320,7 @@ class SubscriptionDetailScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                isYearly ? '\$240.00' : '\$25.00',
+                                isYearly ? '1,200 BDT' : '200 BDT',
                                 style: TextStyle(
                                   decoration: TextDecoration.lineThrough,
                                   color: isDark ? Colors.grey[600] : Colors.grey[400],
@@ -323,21 +329,23 @@ class SubscriptionDetailScreen extends StatelessWidget {
                               ),
                               const SizedBox(width: 12),
                               Text(
-                                isYearly ? '\$200.00' : '\$20.00',
+                                isYearly ? '600 BDT' : '100 BDT',
                                 style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: textColor),
                               ),
                               Text(isYearly ? '/Year' : '/Month', style: TextStyle(fontSize: 18, color: textColor.withValues(alpha: 0.6))),
                             ],
                           ),
-                          const SizedBox(height: 12),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.redAccent.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(20),
+                          if (isYearly) ...[
+                            const SizedBox(height: 12),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.redAccent.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Text('Save 50%', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
                             ),
-                            child: const Text('Save 20%', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
-                          ),
+                          ],
                         ],
                       ),
                     ),
@@ -345,15 +353,15 @@ class SubscriptionDetailScreen extends StatelessWidget {
                   const SizedBox(height: 48),
                   Text('Premium Benefits', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor)),
                   const SizedBox(height: 20),
-                  _buildFeatureItem('Unlimited Projects & Team Members', isDark),
+                  _buildFeatureItem('Access Recent Job Postings', isDark),
+                  _buildFeatureItem('Apply to Premium Jobs', isDark),
                   _buildFeatureItem('Export Financial Reports (Invoices)', isDark),
-                  _buildFeatureItem('Priority Email & Chat Support', isDark),
-                  _buildFeatureItem('Advanced AI Assistance', isDark),
+                  _buildFeatureItem('Advanced AI Assistance & KPI Stats', isDark),
                   const SizedBox(height: 48),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () => Get.to(() => const AddPaymentScreen()),
+                      onPressed: () => Get.to(() => AddPaymentScreen(isYearly: isYearly)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFD946EF),
                         foregroundColor: Colors.white,
@@ -388,8 +396,16 @@ class SubscriptionDetailScreen extends StatelessWidget {
   }
 }
 
-class AddPaymentScreen extends StatelessWidget {
-  const AddPaymentScreen({super.key});
+class AddPaymentScreen extends StatefulWidget {
+  final bool isYearly;
+  const AddPaymentScreen({super.key, required this.isYearly});
+
+  @override
+  State<AddPaymentScreen> createState() => _AddPaymentScreenState();
+}
+
+class _AddPaymentScreenState extends State<AddPaymentScreen> {
+  String selectedMethod = 'Stripe'; // 'Stripe' or 'Mobile Banking'
 
   @override
   Widget build(BuildContext context) {
@@ -422,42 +438,114 @@ class AddPaymentScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   Text('Select the payment method you want to use.', style: TextStyle(color: isDark ? Colors.grey[400] : const Color(0xFF64748B), fontSize: 16)),
                   const SizedBox(height: 40),
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: const Color(0xFFD946EF), width: 2),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 15,
-                          offset: const Offset(0, 5),
+                  
+                  // Stripe Selection
+                  GestureDetector(
+                    onTap: () => setState(() => selectedMethod = 'Stripe'),
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(
+                          color: selectedMethod == 'Stripe' ? const Color(0xFFD946EF) : (isDark ? Colors.white12 : Colors.grey.shade200),
+                          width: 2,
                         ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 15,
+                            offset: const Offset(0, 5),
                           ),
-                          child: const Icon(Icons.credit_card, color: Colors.blue),
-                        ),
-                        const SizedBox(width: 16),
-                        Text('Stripe Checkout', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
-                        const Spacer(),
-                        const Icon(Icons.radio_button_checked, color: Color(0xFFD946EF), size: 28),
-                      ],
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(Icons.credit_card, color: Colors.blue, size: 22),
+                          ),
+                          const SizedBox(width: 14),
+                          Flexible(
+                            child: Text(
+                              'Stripe Checkout',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Icon(
+                            selectedMethod == 'Stripe' ? Icons.radio_button_checked : Icons.radio_button_off,
+                            color: selectedMethod == 'Stripe' ? const Color(0xFFD946EF) : Colors.grey,
+                            size: 26,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
+                  const SizedBox(height: 16),
+
+                  // Mobile Banking Selection
+                  GestureDetector(
+                    onTap: () => setState(() => selectedMethod = 'Mobile Banking'),
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(
+                          color: selectedMethod == 'Mobile Banking' ? const Color(0xFFD946EF) : (isDark ? Colors.white12 : Colors.grey.shade200),
+                          width: 2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 15,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.pink.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(Icons.phone_android_rounded, color: Colors.pink, size: 22),
+                          ),
+                          const SizedBox(width: 14),
+                          Flexible(
+                            child: Text(
+                              'Mobile Banking (bKash/Nagad)',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Icon(
+                            selectedMethod == 'Mobile Banking' ? Icons.radio_button_checked : Icons.radio_button_off,
+                            color: selectedMethod == 'Mobile Banking' ? const Color(0xFFD946EF) : Colors.grey,
+                            size: 26,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
                   const SizedBox(height: 80),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () => Get.to(() => const PaymentSummaryScreen()),
+                      onPressed: () => Get.to(() => PaymentSummaryScreen(
+                        isYearly: widget.isYearly,
+                        paymentMethod: selectedMethod,
+                      )),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFD946EF),
                         foregroundColor: Colors.white,
@@ -480,13 +568,26 @@ class AddPaymentScreen extends StatelessWidget {
 }
 
 class PaymentSummaryScreen extends StatelessWidget {
-  const PaymentSummaryScreen({super.key});
+  final bool isYearly;
+  final String paymentMethod;
+
+  const PaymentSummaryScreen({
+    super.key, 
+    required this.isYearly,
+    required this.paymentMethod,
+  });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? const Color(0xFF020617) : const Color(0xFFF8FAFC);
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
+
+    final userCtrl = Get.find<UserController>();
+    final monthly = userCtrl.monthlyPrice.value;
+    final yearly = userCtrl.yearlyPrice.value;
+    final priceAmt = isYearly ? yearly : monthly;
+    final priceText = '${priceAmt.toStringAsFixed(0)} BDT';
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -513,18 +614,22 @@ class PaymentSummaryScreen extends StatelessWidget {
                   const SizedBox(height: 40),
                   _buildSummaryCard(isDark, textColor),
                   const SizedBox(height: 40),
-                  _buildPriceRow('Subtotal', '\$20.00', textColor, isDark),
-                  _buildPriceRow('Tax', '\$1.99', textColor, isDark),
+                  _buildPriceRow('Subscription Plan', isYearly ? 'Yearly' : 'Monthly', textColor, isDark),
+                  const SizedBox(height: 8),
+                  _buildPriceRow('Payment Method', paymentMethod, textColor, isDark),
+                  const SizedBox(height: 8),
+                  _buildPriceRow('Subtotal', priceText, textColor, isDark),
+                  _buildPriceRow('Tax / Service Charge', '0 BDT', textColor, isDark),
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 20),
                     child: Divider(color: Colors.white12),
                   ),
-                  _buildPriceRow('Total Amount', '\$21.99', textColor, isDark, isTotal: true),
+                  _buildPriceRow('Total Amount', priceText, textColor, isDark, isTotal: true),
                   const SizedBox(height: 60),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () => _showSuccessDialog(context),
+                      onPressed: () => _startPaymentFlow(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFD946EF),
                         foregroundColor: Colors.white,
@@ -545,6 +650,49 @@ class PaymentSummaryScreen extends StatelessWidget {
     );
   }
 
+  Future<void> _startPaymentFlow(BuildContext context) async {
+    final amountText = isYearly ? '600 BDT' : '100 BDT';
+    final isStripe = paymentMethod == 'Stripe';
+
+    // Navigate to simulated payment WebView and await response
+    final result = await Get.to(() => PaymentWebViewScreen(
+      paymentMethod: isStripe ? 'stripe' : 'mobile',
+      amount: amountText,
+      title: isStripe ? 'Stripe Checkout' : 'Mobile Banking (bKash/Nagad)',
+    ));
+
+    if (result == 'success') {
+      final UserController userController = Get.find<UserController>();
+      // Record transaction in Firestore and grant premium membership status
+      final success = await userController.recordSubscription(
+        planType: isYearly ? 'Yearly' : 'Monthly',
+        amount: isYearly ? userController.yearlyPrice.value : userController.monthlyPrice.value,
+        paymentMethod: paymentMethod,
+      );
+
+      if (success) {
+        if (!context.mounted) return;
+        _showSuccessDialog(context);
+      } else {
+        Get.snackbar(
+          'Payment Error ❌',
+          'Failed to record subscription status. Please contact support.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red[600],
+          colorText: Colors.white,
+        );
+      }
+    } else {
+      Get.snackbar(
+        'Cancelled ⚠️',
+        'Payment process was cancelled or failed.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.amber[700],
+        colorText: Colors.white,
+      );
+    }
+  }
+
   Widget _buildSummaryCard(bool isDark, Color textColor) {
     return Container(
       padding: const EdgeInsets.all(24),
@@ -563,8 +711,8 @@ class PaymentSummaryScreen extends StatelessWidget {
       child: Column(
         children: [
           _buildSummaryItem('Premium Project Access', textColor),
-          _buildSummaryItem('AI-Powered Assistance', textColor),
-          _buildSummaryItem('Professional PDF Export', textColor),
+          _buildSummaryItem('View & Apply to Job Posts', textColor),
+          _buildSummaryItem('AI Assistance & KPI Estimations', textColor),
         ],
       ),
     );
@@ -643,7 +791,6 @@ class PaymentSummaryScreen extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    Get.find<UserController>().isPremium.value = true;
                     Get.back(); // Close dialog
                     Get.back(); // Back from Summary
                     Get.back(); // Back from Add Payment

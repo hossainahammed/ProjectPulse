@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:country_picker/country_picker.dart';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,7 +14,8 @@ import 'notification_screen.dart';
 import '../controllers/notification_controller.dart';
 import '../controllers/user_controller.dart';
 import 'learning_progress_screen.dart';
-import 'job_post_list_screen.dart';
+import 'calculator_screen.dart';
+import 'admin_panel_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   final bool showBackButton;
@@ -29,73 +31,88 @@ class ProfileScreen extends StatelessWidget {
         child: SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: padding, vertical: 24.0),
-            child: Column(
-              children: [
-                _buildHeader(context),
-                const SizedBox(height: 32),
-                _buildProfileCard(context),
-                const SizedBox(height: 32),
-                _buildMenuSection(context, 'Personal Info', [
-                  _MenuItem(
-                    Icons.person_outline,
-                    'Personal Data',
-                    () => Get.to(() => const PersonalDataScreen()),
-                  ),
-                  _MenuItem(
-                    Icons.work_outline_rounded,
-                    'Recent Job Posts',
-                    () => Get.to(() => const JobPostListScreen()),
-                  ),
-                  _MenuItem(
-                    Icons.credit_card_outlined,
-                    'Payment History',
-                    () => Get.to(() => const PaymentHistoryScreen()),
-                  ),
-                  _MenuItem(
-                    Icons.workspace_premium_outlined,
-                    'Subscription',
-                    () => Get.to(() => const SubscriptionScreen()),
-                  ),
-                  _MenuItem(
-                    Icons.trending_up_rounded,
-                    'Learning Progress',
-                    () => Get.to(() => const LearningProgressScreen()),
-                  ),
-                ]),
-                const SizedBox(height: 24),
-                _buildMenuSection(context, 'Security', [
-                  _MenuItem(
-                    Icons.lock_outline,
-                    'Security',
-                    () => Get.to(() => const SecurityScreen()),
-                  ),
-                  _MenuItem(
-                    Icons.notifications_none_rounded,
-                    'Notification Settings',
-                    () => Get.to(() => const NotificationSettingsScreen()),
-                  ),
-                ]),
-                const SizedBox(height: 24),
-                _buildMenuSection(context, 'Support & About', [
-                  _MenuItem(
-                    Icons.note_alt_outlined,
-                    'My Notes',
-                    () => Get.to(() => const NotesScreen()),
-                  ),
-                  _MenuItem(
-                    Icons.help_outline,
-                    'Contact Us',
-                    () => Get.to(() => const ContactUsScreen()),
-                  ),
-                  _MenuItem(Icons.brightness_6_outlined, 'Dark Mode', () {
-                    final isDark = Get.isDarkMode;
-                    Get.find<UserController>().setDarkMode(!isDark);
-                  }, isToggle: true),
-                ]),
-                const SizedBox(height: 32),
-                _buildLogoutButton(),
-              ],
-            ),
+            child: Obx(() {
+              final UserController userController = Get.find<UserController>();
+              return Column(
+                children: [
+                  _buildHeader(context),
+                  const SizedBox(height: 32),
+                  _buildProfileCard(context),
+                  const SizedBox(height: 20),
+                  _buildSubscriptionPlanCard(context),
+                  const SizedBox(height: 32),
+                  if (userController.isAdmin.value) ...[
+                    _buildMenuSection(context, 'Admin Features', [
+                      _MenuItem(
+                        Icons.dashboard_customize_rounded,
+                        'Admin Dashboard',
+                        () => Get.to(() => const AdminPanelScreen()),
+                      ),
+                    ]),
+                    const SizedBox(height: 24),
+                  ],
+                  _buildMenuSection(context, 'Personal Info', [
+                    _MenuItem(
+                      Icons.person_outline,
+                      'Personal Data',
+                      () => Get.to(() => const PersonalDataScreen()),
+                    ),
+                    _MenuItem(
+                      Icons.calculate_outlined,
+                      'Calculator',
+                      () => Get.to(() => const CalculatorScreen()),
+                    ),
+                    _MenuItem(
+                      Icons.credit_card_outlined,
+                      'Payment History',
+                      () => Get.to(() => const PaymentHistoryScreen()),
+                    ),
+                    _MenuItem(
+                      Icons.workspace_premium_outlined,
+                      'Subscription',
+                      () => Get.to(() => const SubscriptionScreen()),
+                    ),
+                    _MenuItem(
+                      Icons.trending_up_rounded,
+                      'Learning Progress',
+                      () => Get.to(() => const LearningProgressScreen()),
+                    ),
+                  ]),
+                  const SizedBox(height: 24),
+                  _buildMenuSection(context, 'Security', [
+                    _MenuItem(
+                      Icons.lock_outline,
+                      'Security',
+                      () => Get.to(() => const SecurityScreen()),
+                    ),
+                    _MenuItem(
+                      Icons.notifications_none_rounded,
+                      'Notification Settings',
+                      () => Get.to(() => const NotificationSettingsScreen()),
+                    ),
+                  ]),
+                  const SizedBox(height: 24),
+                  _buildMenuSection(context, 'Support & About', [
+                    _MenuItem(
+                      Icons.note_alt_outlined,
+                      'My Notes',
+                      () => Get.to(() => const NotesScreen()),
+                    ),
+                    _MenuItem(
+                      Icons.help_outline,
+                      'Contact Us',
+                      () => Get.to(() => const ContactUsScreen()),
+                    ),
+                    _MenuItem(Icons.brightness_6_outlined, 'Dark Mode', () {
+                      final isDark = Get.isDarkMode;
+                      Get.find<UserController>().setDarkMode(!isDark);
+                    }, isToggle: true),
+                  ]),
+                  const SizedBox(height: 32),
+                  _buildLogoutButton(),
+                ],
+              );
+            }),
           ),
         ),
       ),
@@ -119,7 +136,7 @@ class ProfileScreen extends StatelessWidget {
             ),
           ],
         ),
-        IconButton(onPressed: () {}, icon: const Icon(Icons.settings_outlined)),
+        //IconButton(onPressed: () {}, icon: const Icon(Icons.settings_outlined)),
       ],
     );
   }
@@ -146,7 +163,7 @@ class ProfileScreen extends StatelessWidget {
                 return CircleAvatar(
                   radius: 60,
                   backgroundImage: imageUrl.isNotEmpty
-                      ? NetworkImage(imageUrl) as ImageProvider
+                      ? userController.getProfileImageProvider(imageUrl)
                       : const AssetImage('assets/images/user_profile.png'),
                 );
               }),
@@ -225,6 +242,154 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildSubscriptionPlanCard(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Obx(() {
+      final userCtrl = Get.find<UserController>();
+      final plan = userCtrl.planType.value; // 'Free', 'Monthly', 'Yearly'
+
+      // Plan display config
+      final String planLabel;
+      final IconData planIcon;
+      final Color planColor;
+      final bool showUpgrade;
+      final String upgradeLabel;
+      final bool isYearlyUpgrade;
+
+      switch (plan) {
+        case 'Yearly':
+          planLabel = 'Yearly Plan';
+          planIcon = Icons.workspace_premium_rounded;
+          planColor = const Color(0xFF8B5CF6);
+          showUpgrade = false;
+          upgradeLabel = '';
+          isYearlyUpgrade = false;
+          break;
+        case 'Monthly':
+          planLabel = 'Monthly Plan';
+          planIcon = Icons.star_rounded;
+          planColor = const Color(0xFFD946EF);
+          showUpgrade = true;
+          upgradeLabel = 'Upgrade';
+          isYearlyUpgrade = true; // upgrade to Yearly
+          break;
+        default: // 'Free'
+          planLabel = 'Free Plan';
+          planIcon = Icons.star_border_rounded;
+          planColor = const Color(0xFF6366F1);
+          showUpgrade = true;
+          upgradeLabel = 'Upgrade';
+          isYearlyUpgrade = false; // upgrade to Monthly
+      }
+
+      final bool isYearly = plan == 'Yearly';
+      final gradientColors = isYearly
+          ? [
+              const Color(0xFF8B5CF6).withValues(alpha: 0.15),
+              const Color(0xFF6366F1).withValues(alpha: 0.15)
+            ]
+          : plan == 'Monthly'
+              ? [
+                  const Color(0xFFD946EF).withValues(alpha: 0.15),
+                  const Color(0xFF8B5CF6).withValues(alpha: 0.10)
+                ]
+              : [
+                  const Color(0xFF6366F1).withValues(alpha: 0.10),
+                  const Color(0xFF334155).withValues(alpha: 0.06)
+                ];
+
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: gradientColors,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: planColor.withValues(alpha: 0.4),
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: planColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(planIcon, color: planColor, size: 26),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Your Plan',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color:
+                          isDark ? Colors.grey[500] : const Color(0xFF64748B),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    planLabel,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: planColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (showUpgrade)
+              ElevatedButton(
+                onPressed: () => Get.to(
+                  () => SubscriptionDetailScreen(isYearly: isYearlyUpgrade),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: planColor,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  elevation: 0,
+                ),
+                child: Text(upgradeLabel,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 13)),
+              ),
+            if (!showUpgrade)
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: planColor.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  'Active ✓',
+                  style: TextStyle(
+                    color: planColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      );
+    });
+  }
+
   void _showImageSourceDialog() {
     Get.bottomSheet(
       Container(
@@ -277,11 +442,12 @@ class ProfileScreen extends StatelessWidget {
             ),
             barrierDismissible: false,
           );
-          
-          final success = await userController.uploadProfileImage(File(image.path));
-          
+
+          final success =
+              await userController.uploadProfileImage(File(image.path));
+
           Get.back(); // Close loading dialog
-          
+
           if (success) {
             Get.snackbar(
               'Success 🎉',
@@ -457,7 +623,8 @@ class ProfileScreen extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {
                         Get.back(); // Close dialog
-                        Get.find<AuthController>().signOut(); // Sign out from Firebase
+                        Get.find<AuthController>()
+                            .signOut(); // Sign out from Firebase
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
@@ -490,6 +657,7 @@ class _MenuItem {
 }
 
 // Redesigned Screens from Image
+
 class PersonalDataScreen extends StatefulWidget {
   const PersonalDataScreen({super.key});
 
@@ -500,17 +668,19 @@ class PersonalDataScreen extends StatefulWidget {
 class _PersonalDataScreenState extends State<PersonalDataScreen> {
   final UserController _userController = Get.find<UserController>();
   final _formKey = GlobalKey<FormState>();
-  
+
   late final TextEditingController _nameController;
   late final TextEditingController _dobController;
   late final TextEditingController _locationController;
+  File? _imageFile;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: _userController.name.value);
     _dobController = TextEditingController(text: _userController.dob.value);
-    _locationController = TextEditingController(text: _userController.location.value);
+    _locationController =
+        TextEditingController(text: _userController.location.value);
   }
 
   @override
@@ -530,14 +700,134 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     );
     if (picked != null) {
       final months = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
       ];
-      final dateStr = "${picked.day} ${months[picked.month - 1]} ${picked.year}";
+      final dateStr =
+          "${picked.day} ${months[picked.month - 1]} ${picked.year}";
       setState(() {
         _dobController.text = dateStr;
       });
     }
+  }
+
+  void _showImageSourceDialog() {
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Get.isDarkMode ? const Color(0xFF1E1E2C) : Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Select Image Source',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildSourceOption(
+                  Icons.camera_alt_rounded,
+                  'Camera',
+                  ImageSource.camera,
+                ),
+                _buildSourceOption(
+                  Icons.photo_library_rounded,
+                  'Gallery',
+                  ImageSource.gallery,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSourceOption(IconData icon, String label, ImageSource source) {
+    return GestureDetector(
+      onTap: () async {
+        Get.back();
+        final picker = ImagePicker();
+        final XFile? image = await picker.pickImage(source: source);
+        if (image != null) {
+          setState(() {
+            _imageFile = File(image.path);
+          });
+        }
+      },
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Get.theme.colorScheme.primary.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: Get.theme.colorScheme.primary, size: 30),
+          ),
+          const SizedBox(height: 8),
+          Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
+        ],
+      ),
+    );
+  }
+
+  void _showCountryPickerDialog() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showCountryPicker(
+      context: context,
+      showPhoneCode: false,
+      onSelect: (Country country) {
+        setState(() {
+          _locationController.text = country.name;
+        });
+      },
+      countryListTheme: CountryListThemeData(
+        bottomSheetHeight: 400, // Restricted, minimalistic height
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+        textStyle: TextStyle(
+          color: isDark ? Colors.white70 : Colors.black87,
+          fontSize: 14, // Compact font
+        ),
+        searchTextStyle: TextStyle(
+          color: isDark ? Colors.white : const Color(0xFF1E293B),
+          fontSize: 14,
+        ),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        inputDecoration: InputDecoration(
+          hintText: 'Search country...',
+          prefixIcon: const Icon(Icons.search, size: 18),
+          isDense: true, // Compact design
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          border: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: isDark ? Colors.white10 : Colors.grey.shade200,
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          filled: true,
+          fillColor: isDark ? const Color(0xFF0F172A) : Colors.grey.shade100,
+        ),
+      ),
+    );
   }
 
   void _save() async {
@@ -546,28 +836,115 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
         const Center(child: CircularProgressIndicator()),
         barrierDismissible: false,
       );
-      
-      final success = await _userController.updateUserProfile(
-        name: _nameController.text.trim(),
-        dob: _dobController.text.trim(),
-        location: _locationController.text.trim(),
-      );
-      
-      Get.back(); // close loader
-      
-      if (success) {
-        Get.snackbar(
-          'Profile Updated! 🎉',
-          'Your profile data has been saved successfully.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green[600],
-          colorText: Colors.white,
+
+      bool uploadSuccess = true;
+      if (_imageFile != null) {
+        uploadSuccess = await _userController.uploadProfileImage(_imageFile!);
+      }
+
+      if (uploadSuccess) {
+        final success = await _userController.updateUserProfile(
+          name: _nameController.text.trim(),
+          dob: _dobController.text.trim(),
+          location: _locationController.text.trim(),
         );
-        Get.back(); // return to settings
+
+        Get.back(); // close loader
+
+        if (success) {
+          final isDark = Get.isDarkMode;
+          final primaryColor = Get.theme.colorScheme.primary;
+
+          Get.dialog(
+            Dialog(
+              backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(
+                  color: isDark ? Colors.white10 : Colors.grey.shade200,
+                  width: 1,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check_circle_outline_rounded,
+                        color: Colors.green,
+                        size: 54,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Profile Updated! 🎉',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Your profile data has been saved successfully.',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Get.back(); // close dialog
+                          Get.back(); // return to settings/profile
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColor,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          'OK',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            barrierDismissible: false,
+          );
+        } else {
+          Get.snackbar(
+            'Failed ❌',
+            'Could not update profile data.',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red[600],
+            colorText: Colors.white,
+          );
+        }
       } else {
+        Get.back(); // close loader
         Get.snackbar(
-          'Failed ❌',
-          'Could not update profile data.',
+          'Upload Failed ❌',
+          'Could not upload profile picture.',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red[600],
           colorText: Colors.white,
@@ -593,15 +970,55 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
             key: _formKey,
             child: Column(
               children: [
-                Obx(() {
-                  final imageUrl = _userController.profileImageUrl.value;
-                  return CircleAvatar(
-                    radius: 50,
-                    backgroundImage: imageUrl.isNotEmpty
-                        ? NetworkImage(imageUrl) as ImageProvider
-                        : const AssetImage('assets/images/user_profile.png'),
-                  );
-                }),
+                Stack(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [
+                            Get.theme.colorScheme.primary,
+                            Get.theme.colorScheme.secondary,
+                          ],
+                        ),
+                      ),
+                      child: Obx(() {
+                        final imageUrl = _userController.profileImageUrl.value;
+                        return CircleAvatar(
+                          radius: 50,
+                          backgroundImage: _imageFile != null
+                              ? FileImage(_imageFile!) as ImageProvider
+                              : (imageUrl.isNotEmpty
+                                  ? _userController
+                                      .getProfileImageProvider(imageUrl)
+                                  : const AssetImage(
+                                      'assets/images/user_profile.png')),
+                        );
+                      }),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: _showImageSourceDialog,
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Get.theme.colorScheme.primary,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                          child: const Icon(
+                            Icons.camera_alt_outlined,
+                            size: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 32),
                 TextFormField(
                   controller: _nameController,
@@ -609,11 +1026,14 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                     labelText: 'Name',
                     border: UnderlineInputBorder(),
                   ),
-                  validator: (v) => v == null || v.trim().isEmpty ? 'Name is required' : null,
+                  validator: (v) =>
+                      v == null || v.trim().isEmpty ? 'Name is required' : null,
                 ),
                 const SizedBox(height: 20),
                 TextFormField(
-                  initialValue: _userController.email.value,
+                  initialValue: _userController.email.value.isNotEmpty
+                      ? _userController.email.value
+                      : (FirebaseAuth.instance.currentUser?.email ?? ''),
                   readOnly: true,
                   decoration: const InputDecoration(
                     labelText: 'Email Address',
@@ -635,12 +1055,16 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _locationController,
+                  readOnly: true,
+                  onTap: _showCountryPickerDialog,
                   decoration: const InputDecoration(
                     labelText: 'Location / Country',
                     suffixIcon: Icon(Icons.keyboard_arrow_down, size: 20),
                     border: UnderlineInputBorder(),
                   ),
-                  validator: (v) => v == null || v.trim().isEmpty ? 'Location is required' : null,
+                  validator: (v) => v == null || v.trim().isEmpty
+                      ? 'Location is required'
+                      : null,
                 ),
                 const SizedBox(height: 40),
                 _buildActionButton('Save', _save),
@@ -665,47 +1089,47 @@ class _SecurityScreenState extends State<SecurityScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('Security'),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-        onPressed: () => Get.back(),
-      ),
-    ),
-    body: GlassBackground(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            ListTile(
-              title: const Text('Remember Me'),
-              trailing: Switch(
-                value: _rememberMe,
-                onChanged: (v) {
-                  setState(() {
-                    _rememberMe = v;
-                  });
-                },
-              ),
-              contentPadding: EdgeInsets.zero,
-            ),
-            ListTile(
-              title: const Text('Change Password'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Get.to(() => const ChangePasswordScreen()),
-              contentPadding: EdgeInsets.zero,
-            ),
-            const SizedBox(height: 100),
-            _buildActionButton(
-              'Change Password',
-              () => Get.to(() => const ChangePasswordScreen()),
-            ),
-            const SizedBox(height: 20),
-          ],
+        appBar: AppBar(
+          title: const Text('Security'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+            onPressed: () => Get.back(),
+          ),
         ),
-      ),
-    ),
-  );
+        body: GlassBackground(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                ListTile(
+                  title: const Text('Remember Me'),
+                  trailing: Switch(
+                    value: _rememberMe,
+                    onChanged: (v) {
+                      setState(() {
+                        _rememberMe = v;
+                      });
+                    },
+                  ),
+                  contentPadding: EdgeInsets.zero,
+                ),
+                ListTile(
+                  title: const Text('Change Password'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Get.to(() => const ChangePasswordScreen()),
+                  contentPadding: EdgeInsets.zero,
+                ),
+                const SizedBox(height: 100),
+                _buildActionButton(
+                  'Change Password',
+                  () => Get.to(() => const ChangePasswordScreen()),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+        ),
+      );
 }
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -719,7 +1143,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   bool _obscureOld = true;
   bool _obscureNew = true;
@@ -752,12 +1177,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             email: user.email!,
             password: _oldPasswordController.text,
           );
-          
+
           await user.reauthenticateWithCredential(credential);
-          
+
           // Update the password
           await user.updatePassword(_newPasswordController.text);
-          
+
           if (!mounted) return;
           setState(() {
             _isLoading = false;
@@ -847,7 +1272,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         setState(() {
           _isLoading = false;
         });
-        String errorMsg = e.message ?? 'An error occurred while changing password.';
+        String errorMsg =
+            e.message ?? 'An error occurred while changing password.';
         if (e.code == 'wrong-password') {
           errorMsg = 'The old password you entered is incorrect.';
         } else if (e.code == 'weak-password') {
@@ -967,21 +1393,35 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   style: TextStyle(color: Colors.grey[500]),
                 ),
                 const SizedBox(height: 32),
-                _buildPasswordField('Old Password', _oldPasswordController, _obscureOld, (v) {
-                  setState(() { _obscureOld = !v; });
-                }, (v) => v == null || v.isEmpty ? 'Old Password is required' : null),
-                _buildPasswordField('New Password', _newPasswordController, _obscureNew, (v) {
-                  setState(() { _obscureNew = !v; });
+                _buildPasswordField(
+                    'Old Password', _oldPasswordController, _obscureOld, (v) {
+                  setState(() {
+                    _obscureOld = !v;
+                  });
+                },
+                    (v) => v == null || v.isEmpty
+                        ? 'Old Password is required'
+                        : null),
+                _buildPasswordField(
+                    'New Password', _newPasswordController, _obscureNew, (v) {
+                  setState(() {
+                    _obscureNew = !v;
+                  });
                 }, (v) {
                   if (v == null || v.isEmpty) return 'New Password is required';
-                  if (v.length < 6) return 'Password must be at least 6 characters';
+                  if (v.length < 6)
+                    return 'Password must be at least 6 characters';
                   return null;
                 }),
-                _buildPasswordField('Confirm Password', _confirmPasswordController, _obscureConfirm, (v) {
-                  setState(() { _obscureConfirm = !v; });
+                _buildPasswordField('Confirm Password',
+                    _confirmPasswordController, _obscureConfirm, (v) {
+                  setState(() {
+                    _obscureConfirm = !v;
+                  });
                 }, (v) {
                   if (v == null || v.isEmpty) return 'Confirm your password';
-                  if (v != _newPasswordController.text) return 'Passwords do not match';
+                  if (v != _newPasswordController.text)
+                    return 'Passwords do not match';
                   return null;
                 }),
                 const SizedBox(height: 40),
@@ -998,16 +1438,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   Widget _buildPasswordField(
-    String hint, 
-    TextEditingController controller, 
-    bool obscure, 
+    String hint,
+    TextEditingController controller,
+    bool obscure,
     ValueChanged<bool> onToggleVisibility,
     FormFieldValidator<String> validator,
   ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Get.theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        color: Get.theme.colorScheme.surfaceContainerHighest
+            .withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
       ),
       child: TextFormField(
@@ -1018,7 +1459,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           hintText: hint,
           suffixIcon: IconButton(
             icon: Icon(
-              obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+              obscure
+                  ? Icons.visibility_outlined
+                  : Icons.visibility_off_outlined,
               size: 20,
             ),
             onPressed: () => onToggleVisibility(obscure),
@@ -1048,6 +1491,16 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final UserController uc = Get.find<UserController>();
+    _nameController.text = uc.name.value;
+    _emailController.text = uc.email.value.isNotEmpty
+        ? uc.email.value
+        : (FirebaseAuth.instance.currentUser?.email ?? '');
+  }
 
   @override
   void dispose() {
@@ -1087,7 +1540,11 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
         final Uri emailLaunchUri = Uri(
           scheme: 'mailto',
           path: 'hossainahammed627@gmail.com',
-          query: 'subject=ProjectPulse%20Support%20Query%20from%20${Uri.encodeComponent(name)}&body=${Uri.encodeComponent("Hi Support,\n\n$message\n\nContact Details:\nPhone: $phone\nEmail: $email")}',
+          queryParameters: {
+            'subject': 'ProjectPulse Support Query from $name',
+            'body':
+                'Hi Support,\n\n$message\n\nContact Details:\nPhone: $phone\nEmail: $email',
+          },
         );
 
         await launchUrl(emailLaunchUri);
@@ -1206,14 +1663,31 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
             key: _formKey,
             child: Column(
               children: [
-                _buildFormTextField('Name', _nameController, (v) => v == null || v.trim().isEmpty ? 'Name is required' : null),
+                _buildFormTextField(
+                    'Name',
+                    _nameController,
+                    (v) => v == null || v.trim().isEmpty
+                        ? 'Name is required'
+                        : null),
                 _buildFormTextField('Email', _emailController, (v) {
                   if (v == null || v.trim().isEmpty) return 'Email is required';
                   if (!GetUtils.isEmail(v.trim())) return 'Enter a valid email';
                   return null;
                 }, keyboardType: TextInputType.emailAddress),
-                _buildFormTextField('Phone', _phoneController, (v) => v == null || v.trim().isEmpty ? 'Phone is required' : null, keyboardType: TextInputType.phone),
-                _buildFormTextField('How can we help?', _messageController, (v) => v == null || v.trim().isEmpty ? 'Message is required' : null, maxLines: 5),
+                _buildFormTextField(
+                    'Phone',
+                    _phoneController,
+                    (v) => v == null || v.trim().isEmpty
+                        ? 'Phone is required'
+                        : null,
+                    keyboardType: TextInputType.phone),
+                _buildFormTextField(
+                    'How can we help?',
+                    _messageController,
+                    (v) => v == null || v.trim().isEmpty
+                        ? 'Message is required'
+                        : null,
+                    maxLines: 5),
                 const SizedBox(height: 40),
                 _isLoading
                     ? const Center(child: CircularProgressIndicator())
@@ -1228,8 +1702,8 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
   }
 
   Widget _buildFormTextField(
-    String hint, 
-    TextEditingController controller, 
+    String hint,
+    TextEditingController controller,
     FormFieldValidator<String> validator, {
     int maxLines = 1,
     TextInputType? keyboardType,
@@ -1237,7 +1711,8 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Get.theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        color: Get.theme.colorScheme.surfaceContainerHighest
+            .withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
       ),
       child: TextFormField(
@@ -1259,15 +1734,21 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
 }
 
 Widget _buildActionButton(String label, VoidCallback onTap) {
+  final isDark = Get.isDarkMode;
   return SizedBox(
     width: double.infinity,
     child: ElevatedButton(
       onPressed: onTap,
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFD946EF), // Fuchsia 500
+        backgroundColor: const Color(0xFFD946EF),
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 18),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        elevation: isDark ? 0 : 6,
+        shadowColor: const Color(0xFFD946EF).withValues(alpha: 0.4),
+        side: isDark
+            ? const BorderSide(color: Color(0xFFD946EF), width: 1.5)
+            : BorderSide.none,
       ),
       child: Text(
         label,
@@ -1361,7 +1842,8 @@ class NotificationSettingsScreen extends StatelessWidget {
   Widget _buildSettingGroup(List<Widget> children) {
     return Container(
       decoration: BoxDecoration(
-        color: Get.theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        color: Get.theme.colorScheme.surfaceContainerHighest
+            .withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(children: children),
@@ -1400,7 +1882,7 @@ class NotificationSettingsScreen extends StatelessWidget {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: const Color(0xFFD946EF),
+            activeThumbColor: const Color(0xFFD946EF),
           ),
         ],
       ),
@@ -1416,7 +1898,8 @@ class NotificationSettingsScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFFD946EF).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: const Color(0xFFD946EF).withValues(alpha: 0.5)),
+          border:
+              Border.all(color: const Color(0xFFD946EF).withValues(alpha: 0.5)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -1440,30 +1923,318 @@ class NotificationSettingsScreen extends StatelessWidget {
 
 class PaymentHistoryScreen extends StatelessWidget {
   const PaymentHistoryScreen({super.key});
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('Payment History'),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-        onPressed: () => Get.back(),
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF020617) : const Color(0xFFF8FAFC);
+    final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+
+    return Scaffold(
+      backgroundColor: bgColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text('Payment History',
+            style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new, size: 20, color: textColor),
+          onPressed: () => Get.back(),
+        ),
       ),
-    ),
-    body: const GlassBackground(child: Center(child: Text('Payment History'))),
-  );
+      body: uid == null
+          ? const Center(child: Text('Not logged in'))
+          : StreamBuilder<QuerySnapshot>(
+              // No orderBy here — avoids requiring a composite Firestore index.
+              // We sort client-side after fetching.
+              stream: FirebaseFirestore.instance
+                  .collection('subscriptions')
+                  .where('userId', isEqualTo: uid)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}',
+                        style: TextStyle(color: textColor)),
+                  );
+                }
+                // Sort client-side: newest first
+                final docs = List.from(snapshot.data?.docs ?? []);
+                docs.sort((a, b) {
+                  final aData = a.data() as Map<String, dynamic>;
+                  final bData = b.data() as Map<String, dynamic>;
+                  final aTs = (aData['timestamp'] as Timestamp?)
+                          ?.millisecondsSinceEpoch ??
+                      0;
+                  final bTs = (bData['timestamp'] as Timestamp?)
+                          ?.millisecondsSinceEpoch ??
+                      0;
+                  return bTs.compareTo(aTs);
+                });
+                if (docs.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color:
+                                const Color(0xFFD946EF).withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.receipt_long_rounded,
+                              size: 56, color: Color(0xFFD946EF)),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          'No Payment History',
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: textColor),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Your subscription payments will appear here.',
+                          style: TextStyle(
+                              color: isDark
+                                  ? Colors.grey[400]
+                                  : const Color(0xFF64748B)),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return ListView.builder(
+                  padding: const EdgeInsets.all(24),
+                  itemCount: docs.length,
+                  itemBuilder: (context, index) {
+                    final doc = docs[index];
+                    final docId = (doc as QueryDocumentSnapshot).id;
+                    final data = doc.data() as Map<String, dynamic>;
+                    final planType = data['planType'] as String? ?? 'Monthly';
+                    final amount = data['amount']?.toString() ?? '100';
+                    final paymentMethod =
+                        data['paymentMethod'] as String? ?? 'Stripe';
+                    final status = data['status'] as String? ?? 'success';
+                    final Timestamp? t = data['timestamp'] as Timestamp?;
+                    final dateStr = t != null
+                        ? '${t.toDate().day}/${t.toDate().month}/${t.toDate().year}  ${t.toDate().hour.toString().padLeft(2, '0')}:${t.toDate().minute.toString().padLeft(2, '0')}'
+                        : 'Unknown Date';
+                    final isYearlyPlan = planType.toLowerCase() == 'yearly';
+                    final planColor = isYearlyPlan
+                        ? const Color(0xFF8B5CF6)
+                        : const Color(0xFFD946EF);
+
+                    return Dismissible(
+                      key: Key(docId),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade400,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 24),
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.delete_outline_rounded,
+                                color: Colors.white, size: 28),
+                            SizedBox(height: 4),
+                            Text('Delete',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
+                      onDismissed: (_) {
+                        FirebaseFirestore.instance
+                            .collection('subscriptions')
+                            .doc(docId)
+                            .delete();
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color:
+                              isDark ? const Color(0xFF1E293B) : Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                              color: isDark
+                                  ? Colors.white10
+                                  : Colors.grey.shade200),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.04),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: planColor.withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(
+                                    isYearlyPlan
+                                        ? Icons.calendar_today_rounded
+                                        : Icons.calendar_month_rounded,
+                                    color: planColor,
+                                    size: 22,
+                                  ),
+                                ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '$planType Subscription',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: textColor),
+                                      ),
+                                      Text(
+                                        dateStr,
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: isDark
+                                                ? Colors.grey[500]
+                                                : const Color(0xFF94A3B8)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: status == 'success'
+                                        ? Colors.green.withValues(alpha: 0.12)
+                                        : Colors.red.withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    status == 'success'
+                                        ? '✓ Success'
+                                        : 'Failed',
+                                    style: TextStyle(
+                                      color: status == 'success'
+                                          ? Colors.green
+                                          : Colors.red,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 14),
+                            Divider(
+                                color: isDark
+                                    ? Colors.white10
+                                    : Colors.grey.shade100,
+                                height: 1),
+                            const SizedBox(height: 14),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('AMOUNT',
+                                        style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.grey[500],
+                                            letterSpacing: 0.8)),
+                                    const SizedBox(height: 4),
+                                    Text('$amount BDT',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: planColor)),
+                                  ],
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text('PAYMENT METHOD',
+                                        style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.grey[500],
+                                            letterSpacing: 0.8)),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          paymentMethod == 'Stripe'
+                                              ? Icons.credit_card
+                                              : Icons.phone_android_rounded,
+                                          size: 14,
+                                          color: paymentMethod == 'Stripe'
+                                              ? Colors.blue
+                                              : Colors.pink,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          paymentMethod,
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: textColor),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+    );
+  }
 }
 
 class ProfilePhotoScreen extends StatelessWidget {
   const ProfilePhotoScreen({super.key});
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('Profile Photo'),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-        onPressed: () => Get.back(),
-      ),
-    ),
-    body: const GlassBackground(child: Center(child: Text('Profile Photo'))),
-  );
+        appBar: AppBar(
+          title: const Text('Profile Photo'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+            onPressed: () => Get.back(),
+          ),
+        ),
+        body:
+            const GlassBackground(child: Center(child: Text('Profile Photo'))),
+      );
 }

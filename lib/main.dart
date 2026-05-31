@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:device_preview/device_preview.dart';
@@ -26,21 +25,21 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
+
   // Initialize Hive
   await Hive.initFlutter();
-  
+
   // Register Adapters
   Hive.registerAdapter(ProjectAdapter());
   Hive.registerAdapter(MilestoneAdapter());
   Hive.registerAdapter(AppNotificationAdapter());
   Hive.registerAdapter(NoteAdapter());
-  
+
   // Open Boxes
   await Hive.openBox<Project>('projects');
   await Hive.openBox<AppNotification>('notifications');
   await Hive.openBox<Note>('notes');
-  
+
   // Initialize Notifications
   await NotificationService.init();
 
@@ -54,7 +53,8 @@ void main() async {
 
   runApp(
     DevicePreview(
-      enabled: !kReleaseMode,
+      // enabled: !kReleaseMode,
+      enabled: false,
       builder: (context) => const FreelanceFlowApp(),
     ),
   );
@@ -116,7 +116,8 @@ class FreelanceFlowApp extends StatelessWidget {
         cardTheme: CardThemeData(
           color: const Color(0xFF1E293B),
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
       ),
       themeMode: ThemeMode.system,

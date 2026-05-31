@@ -40,20 +40,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.only(left: 16.0),
-          child: Hero(
-            tag: 'logo',
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Image.asset(
-                'assets/icon/app_icon.png',
-                errorBuilder: (context, error, stackTrace) => Icon(
-                  Icons.show_chart,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Image.asset(
+              'assets/icon/app_icon.png',
+              errorBuilder: (context, error, stackTrace) => Icon(
+                Icons.show_chart,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
           ),
@@ -65,10 +62,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
               'Welcome Back,',
               style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             ),
-            const Text(
-              'Hossain Ahammed',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+            Obx(() => Text(
+              _userController.name.value.isNotEmpty
+                  ? _userController.name.value
+                  : 'User Profile',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            )),
           ],
         ),
         actions: [
@@ -97,13 +96,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
             onTap: () => Get.to(() => const ProfileScreen()),
             child: Padding(
               padding: const EdgeInsets.only(right: 16.0),
-              child: CircleAvatar(
-                radius: 22,
-                backgroundColor: Colors.grey[200],
-                backgroundImage: const AssetImage(
-                  'assets/images/user_profile.png',
-                ),
-              ),
+              child: Obx(() {
+                final imageUrl = _userController.profileImageUrl.value;
+                return CircleAvatar(
+                  radius: 22,
+                  backgroundColor: Colors.grey[200],
+                  backgroundImage: imageUrl.isNotEmpty
+                      ? _userController.getProfileImageProvider(imageUrl)
+                      : const AssetImage('assets/images/user_profile.png'),
+                );
+              }),
             ),
           ),
         ],

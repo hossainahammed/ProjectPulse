@@ -53,6 +53,11 @@ class NotificationController extends GetxController {
     notifications.refresh();
   }
 
+  Future<void> deleteOne(AppNotification notification) async {
+    await notification.delete(); // Hive HiveObject delete
+    notifications.remove(notification);
+  }
+
   Future<void> clearAll() async {
     await _notificationBox.clear();
     notifications.clear();

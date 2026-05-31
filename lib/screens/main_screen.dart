@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dashboard_screen.dart';
 import 'projects_screen.dart';
-import 'calculator_screen.dart';
+import 'job_post_list_screen.dart';
 import 'profile_screen.dart';
 import '../widgets/glass_background.dart';
 
@@ -16,10 +16,10 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = [
+  List<Widget> get _pages => [
     const DashboardScreen(),
     const ProjectsScreen(),
-    const CalculatorScreen(),
+    const JobPostListScreen(),
     const ProfileScreen(showBackButton: false),
   ];
 
@@ -58,7 +58,7 @@ class _MainScreenState extends State<MainScreen> {
             children: [
               _buildNavItem(0, Icons.home_rounded, 'Home'),
               _buildNavItem(1, Icons.assignment_rounded, 'Projects'),
-              _buildNavItem(2, Icons.calculate_rounded, 'Calc'),
+              _buildNavItem(2, Icons.work_rounded, 'Job'),
               _buildNavItem(3, Icons.person_rounded, 'Profile'),
             ],
           ),

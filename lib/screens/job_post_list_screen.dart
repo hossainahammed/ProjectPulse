@@ -6,6 +6,7 @@ import '../controllers/user_controller.dart';
 import '../models/job_post_model.dart';
 import 'job_post_details_screen.dart';
 import 'subscription_screen.dart';
+import 'admin_panel_screen.dart';
 
 class JobPostListScreen extends StatelessWidget {
   const JobPostListScreen({super.key});
@@ -43,6 +44,16 @@ class JobPostListScreen extends StatelessWidget {
             return _buildJobCard(context, job, isPremium, isDark);
           },
         );
+      }),
+      floatingActionButton: Obx(() {
+        if (userController.isAdmin.value) {
+          return FloatingActionButton(
+            backgroundColor: const Color(0xFFD946EF),
+            onPressed: () => Get.to(() => const AdminPanelScreen()),
+            child: const Icon(Icons.add_rounded, color: Colors.white),
+          );
+        }
+        return const SizedBox.shrink();
       }),
     );
   }
