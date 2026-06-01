@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class UserController extends GetxController {
+class UserController extends GetxController with WidgetsBindingObserver {
   final RxBool isPremium = false.obs;
   final RxBool isAdmin = false.obs;
   // Observable theme flag — toggled when user switches theme so Obx rebuilds
@@ -33,6 +33,10 @@ class UserController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    WidgetsBinding.instance.addObserver(this);
+    // Initialize theme based on system
+    isDarkMode.value = WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark;
+    
     // Fetch pricing config from Firestore (no auth required)
     fetchPricing();
     // If a user is already logged in when this controller starts, seed immediately
@@ -48,6 +52,19 @@ class UserController extends GetxController {
     if (email.value.isEmpty) email.value = user.email ?? '';
     if (name.value.isEmpty) name.value = user.displayName ?? '';
     if (profileImageUrl.value.isEmpty) profileImageUrl.value = user.photoURL ?? '';
+  }
+
+  @override
+  void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.onClose();
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    super.didChangePlatformBrightness();
+    isDarkMode.value = WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark;
+    Get.changeThemeMode(ThemeMode.system);
   }
 
   void togglePremium() {

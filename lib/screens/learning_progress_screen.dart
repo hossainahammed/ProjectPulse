@@ -84,7 +84,7 @@ class LearningProgressScreen extends StatelessWidget {
                 const SizedBox(height: 28),
 
                 // ── Stats Row ────────────────────────────────────
-                _buildStatsRow(statsController, isDark, accentColor, textPrimary, textSub),
+               _buildStatsRow(statsController, isDark, accentColor, textPrimary, textSub),
                 const SizedBox(height: 24),
 
                 // ── Insight Card ─────────────────────────────────
