@@ -20,7 +20,8 @@ class JobPostListScreen extends StatelessWidget {
 
     return Obx(() {
       final isDark = userController.isDarkMode.value;
-      final isPremium = userController.isPremium.value;
+      // Temporarily forced to true to show all jobs
+      final isPremium = true;
 
       return Scaffold(
         backgroundColor: isDark ? const Color(0xFF020617) : const Color(0xFFF8FAFC),

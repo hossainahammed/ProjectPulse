@@ -62,16 +62,18 @@ class ProfileScreen extends StatelessWidget {
                       'Calculator',
                       () => Get.to(() => const CalculatorScreen()),
                     ),
-                    _MenuItem(
-                      Icons.credit_card_outlined,
-                      'Payment History',
-                      () => Get.to(() => const PaymentHistoryScreen()),
-                    ),
-                    _MenuItem(
-                      Icons.workspace_premium_outlined,
-                      'Subscription',
-                      () => Get.to(() => const SubscriptionScreen()),
-                    ),
+                    // Temporarily hidden
+                    // _MenuItem(
+                    //   Icons.credit_card_outlined,
+                    //   'Payment History',
+                    //   () => Get.to(() => const PaymentHistoryScreen()),
+                    // ),
+                    // Temporarily hidden
+                    // _MenuItem(
+                    //   Icons.workspace_premium_outlined,
+                    //   'Subscription',
+                    //   () => Get.to(() => const SubscriptionScreen()),
+                    // ),
                     _MenuItem(
                       Icons.trending_up_rounded,
                       'Learning Progress',
@@ -256,31 +258,13 @@ class ProfileScreen extends StatelessWidget {
       final String upgradeLabel;
       final bool isYearlyUpgrade;
 
-      switch (plan) {
-        case 'Yearly':
-          planLabel = 'Yearly Plan';
-          planIcon = Icons.workspace_premium_rounded;
-          planColor = const Color(0xFF8B5CF6);
-          showUpgrade = false;
-          upgradeLabel = '';
-          isYearlyUpgrade = false;
-          break;
-        case 'Monthly':
-          planLabel = 'Monthly Plan';
-          planIcon = Icons.star_rounded;
-          planColor = const Color(0xFFD946EF);
-          showUpgrade = true;
-          upgradeLabel = 'Upgrade';
-          isYearlyUpgrade = true; // upgrade to Yearly
-          break;
-        default: // 'Free'
-          planLabel = 'Free Plan';
-          planIcon = Icons.star_border_rounded;
-          planColor = const Color(0xFF6366F1);
-          showUpgrade = true;
-          upgradeLabel = 'Upgrade';
-          isYearlyUpgrade = false; // upgrade to Monthly
-      }
+      // Temporarily hardcoding Basic Plan and Free
+      planLabel = 'Basic Plan';
+      planIcon = Icons.star_border_rounded;
+      planColor = const Color(0xFF6366F1);
+      showUpgrade = true;
+      upgradeLabel = 'Free';
+      isYearlyUpgrade = false;
 
       final bool isYearly = plan == 'Yearly';
       final gradientColors = isYearly
