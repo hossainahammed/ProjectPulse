@@ -436,7 +436,7 @@ class ProfileScreen extends StatelessWidget {
             Get.snackbar(
               'Success 🎉',
               'Profile image updated successfully.',
-              snackPosition: SnackPosition.BOTTOM,
+              snackPosition: SnackPosition.TOP,
               backgroundColor: Colors.green[600],
               colorText: Colors.white,
             );
@@ -444,7 +444,7 @@ class ProfileScreen extends StatelessWidget {
             Get.snackbar(
               'Error ❌',
               'Failed to upload profile image.',
-              snackPosition: SnackPosition.BOTTOM,
+              snackPosition: SnackPosition.TOP,
               backgroundColor: Colors.red[600],
               colorText: Colors.white,
             );
@@ -919,7 +919,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
           Get.snackbar(
             'Failed ❌',
             'Could not update profile data.',
-            snackPosition: SnackPosition.BOTTOM,
+            snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.red[600],
             colorText: Colors.white,
           );
@@ -929,7 +929,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
         Get.snackbar(
           'Upload Failed ❌',
           'Could not upload profile picture.',
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red[600],
           colorText: Colors.white,
         );
@@ -1622,7 +1622,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
         Get.snackbar(
           'Error ❌',
           'Failed to send message: $e',
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red[600],
           colorText: Colors.white,
         );

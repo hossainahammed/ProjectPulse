@@ -316,7 +316,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
     if (_formKey.currentState!.validate()) {
       if (_milestones.isEmpty) {
         Get.snackbar('Error', 'Please add at least one milestone',
-            snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
+            snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
         return;
       }
 

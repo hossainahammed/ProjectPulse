@@ -126,19 +126,75 @@ class _DashboardScreenState extends State<DashboardScreen> {
               slivers: [
                 SliverToBoxAdapter(
                   child: Obx(() {
-                    final _ = controller.projects.toList();
-                    _userController.isDarkMode.value;
+                    final data = statsController.getCurrentMonthProjectsData();
+                    final hasProgress = !data.every((e) => e['value'] == 0.0);
+                    final isDark = _userController.isDarkMode.value;
+
                     return Center(
                       child: SizedBox(
                         width: res.width * 0.9,
                         child: Padding(
                           padding: EdgeInsets.symmetric(vertical: res.spaceLG),
-                          child: ProgressChartWidget(
-                            data: statsController.getCurrentMonthProjectsData(),
-                            title: 'Current Month Earnings',
-                            showArrow: false,
-                            aspectRatio: isWide ? 3.0 : 2.5,
-                          ),
+                          child: hasProgress
+                              ? ProgressChartWidget(
+                                  data: data,
+                                  title: 'Current Month Earnings',
+                                  showArrow: false,
+                                  aspectRatio: isWide ? 3.0 : 2.5,
+                                )
+                              : Container(
+                                  padding: const EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).cardColor,
+                                    borderRadius: BorderRadius.circular(24),
+                                    border: Border.all(
+                                      color: isDark ? Colors.white10 : Colors.grey.shade200,
+                                      width: 1,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.03),
+                                        blurRadius: 15,
+                                        offset: const Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Current Month Earnings',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: isDark ? Colors.white70 : Colors.black87,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 30),
+                                      Center(
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.assignment_late_outlined,
+                                              size: res.size(64),
+                                              color: Colors.grey,
+                                            ),
+                                            SizedBox(height: res.spaceLG),
+                                            Text(
+                                              'No progress yet.',
+                                              style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: res.fontMD,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 20),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                         ),
                       ),
                     );

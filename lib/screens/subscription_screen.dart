@@ -677,7 +677,7 @@ class PaymentSummaryScreen extends StatelessWidget {
         Get.snackbar(
           'Payment Error ❌',
           'Failed to record subscription status. Please contact support.',
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red[600],
           colorText: Colors.white,
         );
@@ -686,7 +686,7 @@ class PaymentSummaryScreen extends StatelessWidget {
       Get.snackbar(
         'Cancelled ⚠️',
         'Payment process was cancelled or failed.',
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.amber[700],
         colorText: Colors.white,
       );

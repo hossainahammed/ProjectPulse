@@ -97,7 +97,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
         Get.snackbar(
           'Success 🎉',
           'Job post created successfully!',
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.green[600],
           colorText: Colors.white,
         );
@@ -115,7 +115,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
       Get.snackbar(
         'Pricing Updated 💰',
         'Monthly: ${monthly.toStringAsFixed(0)} BDT | Yearly: ${yearly.toStringAsFixed(0)} BDT',
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.green[600],
         colorText: Colors.white,
       );
@@ -123,7 +123,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
       Get.snackbar(
         'Error ❌',
         'Failed to update pricing. Please try again.',
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red[600],
         colorText: Colors.white,
       );

@@ -122,33 +122,38 @@ class JobPostListScreen extends StatelessWidget {
                   );
                 }
 
-                return res.isLargeScreen
-                    ? GridView.builder(
-                        padding: EdgeInsets.fromLTRB(
-                          res.horizontalPadding, 0, res.horizontalPadding, 100,
+                return RefreshIndicator(
+                  onRefresh: controller.fetchJobPosts,
+                  child: res.isLargeScreen
+                      ? GridView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: EdgeInsets.fromLTRB(
+                            res.horizontalPadding, 0, res.horizontalPadding, 100,
+                          ),
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: res.isDesktop ? 3 : 2,
+                            crossAxisSpacing: res.spaceXL,
+                            mainAxisSpacing: res.spaceMD,
+                            mainAxisExtent: isPremium ? res.size(280) : res.size(180),
+                          ),
+                          itemCount: controller.jobPosts.length,
+                          itemBuilder: (context, index) {
+                            final job = controller.jobPosts[index];
+                            return _buildJobCard(context, job, isPremium, isDark);
+                          },
+                        )
+                      : ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: EdgeInsets.fromLTRB(
+                            res.horizontalPadding, 0, res.horizontalPadding, 100,
+                          ),
+                          itemCount: controller.jobPosts.length,
+                          itemBuilder: (context, index) {
+                            final job = controller.jobPosts[index];
+                            return _buildJobCard(context, job, isPremium, isDark);
+                          },
                         ),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: res.isDesktop ? 3 : 2,
-                          crossAxisSpacing: res.spaceXL,
-                          mainAxisSpacing: res.spaceMD,
-                          mainAxisExtent: isPremium ? res.size(280) : res.size(180),
-                        ),
-                        itemCount: controller.jobPosts.length,
-                        itemBuilder: (context, index) {
-                          final job = controller.jobPosts[index];
-                          return _buildJobCard(context, job, isPremium, isDark);
-                        },
-                      )
-                    : ListView.builder(
-                        padding: EdgeInsets.fromLTRB(
-                          res.horizontalPadding, 0, res.horizontalPadding, 100,
-                        ),
-                        itemCount: controller.jobPosts.length,
-                        itemBuilder: (context, index) {
-                          final job = controller.jobPosts[index];
-                          return _buildJobCard(context, job, isPremium, isDark);
-                        },
-                      );
+                );
               }),
             ),
           ],

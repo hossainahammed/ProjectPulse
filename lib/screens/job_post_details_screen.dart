@@ -288,7 +288,7 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
                                   Get.snackbar(
                                     'Error ❌',
                                     'Could not submit application. Please try again.',
-                                    snackPosition: SnackPosition.BOTTOM,
+                                    snackPosition: SnackPosition.TOP,
                                     backgroundColor: Colors.red[700],
                                     colorText: Colors.white,
                                   );

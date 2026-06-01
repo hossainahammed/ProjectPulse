@@ -14,6 +14,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final AuthController _authController = Get.find<AuthController>();
   final _formKey = GlobalKey<FormState>();
 
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
@@ -23,6 +24,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -36,6 +38,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       final primaryColor = Theme.of(context).colorScheme.primary;
 
       final success = await _authController.signUp(
+        _nameController.text.trim(),
         _emailController.text.trim(),
         _passwordController.text.trim(),
       );
@@ -210,6 +213,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                           const SizedBox(height: 20),
+                          // Username Input
+                          TextFormField(
+                            controller: _nameController,
+                            keyboardType: TextInputType.name,
+                            decoration: InputDecoration(
+                              labelText: 'Username',
+                              prefixIcon: const Icon(Icons.person_outline, size: 20),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Username is required';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
                           // Email Input
                           TextFormField(
                             controller: _emailController,

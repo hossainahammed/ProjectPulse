@@ -323,7 +323,7 @@ class ProjectDetailsScreen extends StatelessWidget {
     final Uri url = Uri.parse(urlString);
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       Get.snackbar('Error', 'Could not launch $urlString',
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red,
           colorText: Colors.white);
     }
@@ -524,7 +524,7 @@ class ProjectDetailsScreen extends StatelessWidget {
                         Get.snackbar(
                           'Validation Error',
                           'Milestone title cannot be empty.',
-                          snackPosition: SnackPosition.BOTTOM,
+                          snackPosition: SnackPosition.TOP,
                           backgroundColor: Colors.red[700],
                           colorText: Colors.white,
                         );
@@ -549,7 +549,7 @@ class ProjectDetailsScreen extends StatelessWidget {
                       Get.snackbar(
                         'Milestone Updated ✓',
                         '"$title" has been saved successfully.',
-                        snackPosition: SnackPosition.BOTTOM,
+                        snackPosition: SnackPosition.TOP,
                         backgroundColor: primaryColor,
                         colorText: Colors.white,
                         duration: const Duration(seconds: 2),

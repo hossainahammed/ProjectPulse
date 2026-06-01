@@ -46,7 +46,7 @@ class _NotesScreenState extends State<NotesScreen> {
               Get.snackbar(
                 'Saved',
                 'Your notes have been saved.',
-                snackPosition: SnackPosition.BOTTOM,
+                snackPosition: SnackPosition.TOP,
                 backgroundColor: const Color(0xFFD946EF).withValues(alpha: 0.1),
                 colorText: const Color(0xFFD946EF),
               );

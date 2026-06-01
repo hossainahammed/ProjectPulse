@@ -40,16 +40,17 @@ class AuthController extends GetxController {
   String get userEmail => firebaseUser.value?.email ?? '';
 
   // Sign Up with Email and Password
-  Future<bool> signUp(String email, String password) async {
+  Future<bool> signUp(String name, String email, String password) async {
     try {
       isLoading.value = true;
       final UserCredential userCredential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       
       // Ensure profile document is initialized in Firestore
       if (userCredential.user != null) {
+        await userCredential.user!.updateDisplayName(name);
         await Get.find<UserController>().ensureProfileExists(
           userCredential.user!.uid,
-          name: '',
+          name: name,
           email: userCredential.user!.email ?? '',
           profileImageUrl: '',
         );
@@ -188,7 +189,7 @@ class AuthController extends GetxController {
           Get.snackbar(
             'Email Verified! 🎉',
             'Your email has been verified successfully. Welcome to ProjectPulse!',
-            snackPosition: SnackPosition.BOTTOM,
+            snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.green[600],
             colorText: Colors.white,
           );

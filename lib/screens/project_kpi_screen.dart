@@ -236,7 +236,7 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
       Get.snackbar(
         'Validation Error',
         'Please enable at least one project component.',
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.redAccent,
         colorText: Colors.white,
       );
@@ -248,7 +248,7 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
       Get.snackbar(
         'Validation Error',
         'Total percentage must sum to exactly 100%. Currently it is ${_formatDouble(sum)}%.',
-        snackPosition: SnackPosition.BOTTOM,
+        snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.redAccent,
         colorText: Colors.white,
       );
