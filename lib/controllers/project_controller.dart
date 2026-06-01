@@ -149,4 +149,22 @@ class ProjectController extends GetxController {
     await project.save();
     projects.refresh();
   }
+
+  Future<void> editMilestone(
+    Project project,
+    int milestoneIndex, {
+    required String title,
+    required double amount,
+    required DateTime deadline,
+    List<String>? assignedPeople,
+  }) async {
+    final milestone = project.milestones[milestoneIndex];
+    milestone.title = title;
+    milestone.amount = amount;
+    milestone.deadline = deadline;
+    milestone.assignedPeople = assignedPeople;
+
+    await project.save();
+    projects.refresh();
+  }
 }

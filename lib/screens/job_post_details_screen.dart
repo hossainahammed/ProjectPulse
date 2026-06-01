@@ -21,9 +21,10 @@ class JobPostDetailsScreen extends StatefulWidget {
 class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? const Color(0xFF020617) : const Color(0xFFF8FAFC);
-    final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
+    return Obx(() {
+      final isDark = Get.find<UserController>().isDarkMode.value;
+      final bgColor = isDark ? const Color(0xFF020617) : const Color(0xFFF8FAFC);
+      final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -155,6 +156,7 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
         ),
       ),
     );
+    });
   }
 
   /// Show CV picker bottom sheet
