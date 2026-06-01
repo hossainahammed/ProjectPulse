@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'firebase_options.dart';
 import 'models/project_model.dart';
 import 'models/milestone_model.dart';
@@ -14,6 +19,7 @@ import 'controllers/user_controller.dart';
 import 'controllers/note_controller.dart';
 import 'controllers/project_stats_controller.dart';
 import 'services/notification_service.dart';
+import 'services/analytics_service.dart';
 
 import 'controllers/auth_controller.dart';
 import 'screens/root_auth_wrapper.dart';
@@ -25,6 +31,24 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // ── Firebase Crashlytics ────────────────────────────────────────────────
+  // Crashlytics is only supported on Android and iOS (not Web/Desktop)
+  if (!kIsWeb) {
+    final crashlytics = FirebaseCrashlytics.instance;
+
+    // Pass Flutter framework errors to Crashlytics
+    FlutterError.onError = crashlytics.recordFlutterFatalError;
+
+    // Enable/disable collection based on build mode
+    await crashlytics.setCrashlyticsCollectionEnabled(!kDebugMode);
+  }
+
+  // ── Firebase Analytics ─────────────────────────────────────────────────
+  // Analytics is supported on Android, iOS, and Web
+  if (kIsWeb || defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS) {
+    await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
+  }
 
   // Initialize Hive
   await Hive.initFlutter();
@@ -40,8 +64,10 @@ void main() async {
   await Hive.openBox<AppNotification>('notifications');
   await Hive.openBox<Note>('notes');
 
-  // Initialize Notifications
-  await NotificationService.init();
+  // Initialize Notifications (mobile only)
+  if (!kIsWeb) {
+    await NotificationService.init();
+  }
 
   // Inject Controllers
   Get.put(NotificationController());
@@ -51,12 +77,22 @@ void main() async {
   Get.put(ProjectStatsController());
   Get.put(AuthController());
 
-  runApp(
-    DevicePreview(
-      // enabled: !kReleaseMode,
-      enabled: false,
-      builder: (context) => const FreelanceFlowApp(),
+  // ── Run app inside error zone ──────────────────────────────────────────
+  // Catches async/non-Flutter errors and reports them to Crashlytics
+  runZonedGuarded(
+    () => runApp(
+      DevicePreview(
+        // enabled: !kReleaseMode,
+        enabled: false,
+        builder: (context) => const FreelanceFlowApp(),
+      ),
     ),
+    (error, stack) {
+      if (!kIsWeb) {
+        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      }
+      debugPrint('[Crashlytics] Uncaught async error: $error');
+    },
   );
 }
 
@@ -71,6 +107,13 @@ class FreelanceFlowApp extends StatelessWidget {
       builder: DevicePreview.appBuilder,
       title: 'ProjectPulse',
       debugShowCheckedModeBanner: false,
+      // ── Analytics Screen Tracking ──────────────────────────────────────
+      navigatorObservers: [
+        if (!kIsWeb ||
+            defaultTargetPlatform == TargetPlatform.android ||
+            defaultTargetPlatform == TargetPlatform.iOS)
+          AnalyticsService.instance.observer,
+      ],
       theme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.light,
@@ -101,7 +144,7 @@ class FreelanceFlowApp extends StatelessWidget {
         useMaterial3: true,
         brightness: Brightness.dark,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFD946EF), // Fuchsia/Pink accent from image
+          seedColor: const Color(0xFFD946EF),
           brightness: Brightness.dark,
           primary: const Color(0xFFD946EF),
           secondary: const Color(0xFF8B5CF6),
