@@ -1,30 +1,61 @@
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/project_model.dart';
 import '../services/notification_service.dart';
 import 'notification_controller.dart';
+import 'package:uuid/uuid.dart';
 
 class ProjectController extends GetxController {
-  late Box<Project> _projectBox;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   final RxList<Project> projects = <Project>[].obs;
   final NotificationController _notificationController = Get.find<NotificationController>();
 
   @override
   void onInit() {
     super.onInit();
-    _projectBox = Hive.box<Project>('projects');
-    loadProjects();
+    _auth.authStateChanges().listen((user) {
+      if (user != null) {
+        _listenToProjects(user.uid);
+      } else {
+        projects.clear();
+      }
+    });
   }
 
-  void loadProjects() {
-    projects.assignAll(_projectBox.values.toList());
+  void _listenToProjects(String uid) {
+    _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('projects')
+        .snapshots()
+        .listen((snapshot) {
+      final fetchedProjects = snapshot.docs.map((doc) {
+        return Project.fromJson(doc.data(), doc.id);
+      }).toList();
+      projects.assignAll(fetchedProjects);
+    }, onError: (error) {
+      print('Error listening to projects: $error');
+    });
   }
 
   Future<void> addProject(Project project) async {
-    await _projectBox.add(project);
-    projects.add(project);
-    projects.refresh();
-    
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    if (project.id.isEmpty) {
+      project.id = const Uuid().v4();
+    }
+
+    await _firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('projects')
+        .doc(project.id)
+        .set(project.toJson());
+
     // Add Notification
     await _notificationController.addNotification(
       title: 'New Project Created',
@@ -53,21 +84,16 @@ class ProjectController extends GetxController {
   }
 
   Future<void> updateProject(Project project) async {
-    if (project.key != null) {
-      await _projectBox.put(project.key, project);
-    } else {
-      final key = _projectBox.keys.firstWhere(
-        (k) => _projectBox.get(k)?.id == project.id,
-        orElse: () => null,
-      );
-      if (key != null) {
-        await _projectBox.put(key, project);
-      } else {
-        await _projectBox.add(project);
-      }
-    }
-    loadProjects();
-    
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    await _firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('projects')
+        .doc(project.id)
+        .update(project.toJson());
+
     // Reschedule notification
     NotificationService.scheduleAlert(
       id: project.id.hashCode,
@@ -78,10 +104,17 @@ class ProjectController extends GetxController {
   }
 
   Future<void> deleteProject(Project project) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
     final id = project.id;
-    await project.delete();
-    projects.removeWhere((p) => p.id == id);
-    projects.refresh();
+    await _firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('projects')
+        .doc(id)
+        .delete();
+
     NotificationService.cancelNotification(id.hashCode);
   }
 
@@ -116,15 +149,18 @@ class ProjectController extends GetxController {
   }
 
   Future<void> toggleMilestone(Project project, int milestoneIndex) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
     final milestone = project.milestones[milestoneIndex];
     milestone.isCompleted = !milestone.isCompleted;
-    
+
     if (milestone.isCompleted) {
       milestone.deliveryDate = DateTime.now();
     } else {
       milestone.deliveryDate = null;
     }
-    
+
     // Check if all milestones are completed
     bool allCompleted = project.milestones.every((m) => m.isCompleted);
     if (allCompleted) {
@@ -146,8 +182,12 @@ class ProjectController extends GetxController {
       );
     }
 
-    await project.save();
-    projects.refresh();
+    await _firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('projects')
+        .doc(project.id)
+        .update(project.toJson());
   }
 
   Future<void> editMilestone(
@@ -158,13 +198,20 @@ class ProjectController extends GetxController {
     required DateTime deadline,
     List<String>? assignedPeople,
   }) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
     final milestone = project.milestones[milestoneIndex];
     milestone.title = title;
     milestone.amount = amount;
     milestone.deadline = deadline;
     milestone.assignedPeople = assignedPeople;
 
-    await project.save();
-    projects.refresh();
+    await _firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('projects')
+        .doc(project.id)
+        .update(project.toJson());
   }
 }

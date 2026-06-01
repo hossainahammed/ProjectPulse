@@ -1,27 +1,59 @@
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/note_model.dart';
 
 class NoteController extends GetxController {
-  late Box<Note> _noteBox;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   final RxString noteContent = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
-    _noteBox = Hive.box<Note>('notes');
-    if (_noteBox.isNotEmpty) {
-      noteContent.value = _noteBox.getAt(0)?.content ?? '';
-    }
+    _auth.authStateChanges().listen((user) {
+      if (user != null) {
+        _listenToNotes(user.uid);
+      } else {
+        noteContent.value = '';
+      }
+    });
   }
 
-  void updateNote(String content) {
+  void _listenToNotes(String uid) {
+    _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('notes')
+        .doc('main_note')
+        .snapshots()
+        .listen((snapshot) {
+      if (snapshot.exists && snapshot.data() != null) {
+        final note = Note.fromJson(snapshot.data()!, snapshot.id);
+        noteContent.value = note.content;
+      }
+    }, onError: (error) {
+      print('Error listening to notes: $error');
+    });
+  }
+
+  Future<void> updateNote(String content) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
     noteContent.value = content;
-    final note = Note(content: content, updatedAt: DateTime.now());
-    if (_noteBox.isEmpty) {
-      _noteBox.add(note);
-    } else {
-      _noteBox.putAt(0, note);
-    }
+    final note = Note(
+      id: 'main_note',
+      content: content,
+      updatedAt: DateTime.now(),
+    );
+
+    await _firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('notes')
+        .doc('main_note')
+        .set(note.toJson());
   }
 }

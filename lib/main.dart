@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -50,19 +50,10 @@ void main() async {
     await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
   }
 
-  // Initialize Hive
-  await Hive.initFlutter();
-
-  // Register Adapters
-  Hive.registerAdapter(ProjectAdapter());
-  Hive.registerAdapter(MilestoneAdapter());
-  Hive.registerAdapter(AppNotificationAdapter());
-  Hive.registerAdapter(NoteAdapter());
-
-  // Open Boxes
-  await Hive.openBox<Project>('projects');
-  await Hive.openBox<AppNotification>('notifications');
-  await Hive.openBox<Note>('notes');
+  // Enable Firestore offline persistence
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true,
+  );
 
   // Initialize Notifications (mobile only)
   if (!kIsWeb) {

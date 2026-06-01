@@ -1,14 +1,28 @@
-import 'package:hive/hive.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-part 'note_model.g.dart';
-
-@HiveType(typeId: 3)
-class Note extends HiveObject {
-  @HiveField(0)
+class Note {
+  String id;
   String content;
-
-  @HiveField(1)
   DateTime updatedAt;
 
-  Note({required this.content, required this.updatedAt});
+  Note({
+    required this.id,
+    required this.content,
+    required this.updatedAt,
+  });
+
+  factory Note.fromJson(Map<String, dynamic> json, String documentId) {
+    return Note(
+      id: documentId,
+      content: json['content'] as String,
+      updatedAt: (json['updatedAt'] as Timestamp).toDate(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'content': content,
+      'updatedAt': Timestamp.fromDate(updatedAt),
+    };
+  }
 }

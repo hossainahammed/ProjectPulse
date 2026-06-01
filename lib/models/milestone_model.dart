@@ -1,25 +1,11 @@
-import 'package:hive/hive.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-part 'milestone_model.g.dart';
-
-@HiveType(typeId: 1)
-class Milestone extends HiveObject {
-  @HiveField(0)
+class Milestone {
   String title;
-
-  @HiveField(1)
   double amount;
-
-  @HiveField(2)
   bool isCompleted;
-
-  @HiveField(3)
   DateTime deadline;
-
-  @HiveField(4)
   DateTime? deliveryDate;
-
-  @HiveField(5)
   List<String>? assignedPeople;
 
   Milestone({
@@ -30,4 +16,30 @@ class Milestone extends HiveObject {
     this.deliveryDate,
     this.assignedPeople,
   });
+
+  factory Milestone.fromJson(Map<String, dynamic> json) {
+    return Milestone(
+      title: json['title'] as String,
+      amount: (json['amount'] as num).toDouble(),
+      isCompleted: json['isCompleted'] as bool? ?? false,
+      deadline: (json['deadline'] as Timestamp).toDate(),
+      deliveryDate: json['deliveryDate'] != null 
+          ? (json['deliveryDate'] as Timestamp).toDate() 
+          : null,
+      assignedPeople: (json['assignedPeople'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'amount': amount,
+      'isCompleted': isCompleted,
+      'deadline': Timestamp.fromDate(deadline),
+      'deliveryDate': deliveryDate != null ? Timestamp.fromDate(deliveryDate!) : null,
+      'assignedPeople': assignedPeople,
+    };
+  }
 }
