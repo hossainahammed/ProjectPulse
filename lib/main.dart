@@ -46,7 +46,9 @@ void main() async {
 
   // ── Firebase Analytics ─────────────────────────────────────────────────
   // Analytics is supported on Android, iOS, and Web
-  if (kIsWeb || defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS) {
+  if (kIsWeb ||
+      defaultTargetPlatform == TargetPlatform.android ||
+      defaultTargetPlatform == TargetPlatform.iOS) {
     await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
   }
 
@@ -159,3 +161,4 @@ class FreelanceFlowApp extends StatelessWidget {
     );
   }
 }
+///////////RElease version 1
