@@ -120,7 +120,7 @@ class ProjectController extends GetxController {
 
   double get totalEarned {
     double total = 0;
-    for (var project in projects) {
+    for (var project in projects.toList()) {
       for (var milestone in project.milestones) {
         if (milestone.isCompleted) {
           total += milestone.amount;
@@ -132,7 +132,7 @@ class ProjectController extends GetxController {
 
   double get pendingAmount {
     double total = 0;
-    for (var project in projects) {
+    for (var project in projects.toList()) {
       for (var milestone in project.milestones) {
         if (!milestone.isCompleted) {
           total += milestone.amount;

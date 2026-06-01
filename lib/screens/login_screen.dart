@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
 import '../widgets/glass_background.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
 
@@ -23,6 +24,27 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
 
   @override
+  void initState() {
+    super.initState();
+    _loadRememberMe();
+  }
+
+  Future<void> _loadRememberMe() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString('remember_email');
+    final savedPassword = prefs.getString('remember_password');
+    final rememberMe = prefs.getBool('remember_me') ?? false;
+
+    if (rememberMe && savedEmail != null && savedPassword != null) {
+      setState(() {
+        _emailController.text = savedEmail;
+        _passwordController.text = savedPassword;
+        _rememberMe = true;
+      });
+    }
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
@@ -36,6 +58,18 @@ class _LoginScreenState extends State<LoginScreen> {
         _passwordController.text.trim(),
       );
       if (success) {
+        // Handle Remember Me logic
+        final prefs = await SharedPreferences.getInstance();
+        if (_rememberMe) {
+          await prefs.setString('remember_email', _emailController.text.trim());
+          await prefs.setString('remember_password', _passwordController.text.trim());
+          await prefs.setBool('remember_me', true);
+        } else {
+          await prefs.remove('remember_email');
+          await prefs.remove('remember_password');
+          await prefs.setBool('remember_me', false);
+        }
+
         Get.snackbar(
           'Welcome Back! 👋',
           'Successfully logged in to ProjectPulse.',

@@ -15,7 +15,7 @@ class ProjectStatsController extends GetxController {
       final monthName = DateFormat('MMM').format(month);
       double totalEarnings = 0;
 
-      for (var project in _projectController.projects) {
+      for (var project in _projectController.projects.toList()) {
         // Earnings from completed milestones in this month
         for (var milestone in project.milestones) {
           if (milestone.isCompleted && 
@@ -45,7 +45,7 @@ class ProjectStatsController extends GetxController {
       final monthName = DateFormat('MMM').format(month);
       double monthlyEarnings = 0;
 
-      for (var project in _projectController.projects) {
+      for (var project in _projectController.projects.toList()) {
         for (var milestone in project.milestones) {
           if (milestone.isCompleted && 
               milestone.deliveryDate != null &&
@@ -69,7 +69,7 @@ class ProjectStatsController extends GetxController {
     final now = DateTime.now();
     final List<Map<String, dynamic>> data = [];
 
-    for (var project in _projectController.projects) {
+    for (var project in _projectController.projects.toList()) {
       double projectEarnings = 0;
       bool hasCompletedInCurrentMonth = false;
 
