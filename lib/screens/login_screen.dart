@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Get.snackbar(
           'Welcome Back! 👋',
           'Successfully logged in to ProjectPulse.',
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.green[600],
           colorText: Colors.white,
         );
@@ -286,7 +286,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Image.asset(
-                                'assets/images/google.png',
+                                'assets/icon/google.png',
                                 width: 20,
                                 height: 20,
                                 errorBuilder: (context, error, stackTrace) => const Icon(

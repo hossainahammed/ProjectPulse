@@ -12,7 +12,20 @@
           "package_name": "com.example.freelance_flow"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "57932149579-rtiaj1ivqv97o892uk30ia05otta5fce.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.freelance_flow",
+            "certificate_hash": "40d5126c7389fc1c6f80ccc39871e4f14a56fcac"
+          }
+        },
+        {
+          "client_id": "57932149579-1ogiq4c45gjfe845vjvtbdbsr5tdkpss.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDr3tp7NRW3GweYalAxPauyRApFstbEjIU"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "57932149579-1ogiq4c45gjfe845vjvtbdbsr5tdkpss.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "57932149579-8713vluj7dqpan13pvudevqr948p5649.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.freelanceFlow"
+              }
+            }
+          ]
         }
       }
     }

@@ -219,7 +219,8 @@ class ProfileScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Text(
-                    'PRO',
+                    'Basic',
+                    //'PRO',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 10,
@@ -335,9 +336,8 @@ class ProfileScreen extends StatelessWidget {
             ),
             if (showUpgrade)
               ElevatedButton(
-                onPressed: () => Get.to(
-                  () => SubscriptionDetailScreen(isYearly: isYearlyUpgrade),
-                ),
+                onPressed: (){},
+                //onPressed: () => Get.to(() => SubscriptionDetailScreen(isYearly: isYearlyUpgrade),),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: planColor,
                   foregroundColor: Colors.white,
