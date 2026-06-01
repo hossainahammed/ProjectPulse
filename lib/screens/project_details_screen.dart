@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../controllers/project_controller.dart';
 import '../models/project_model.dart';
 import '../models/project_kpi_config.dart';
+import '../widgets/responsive.dart';
 import 'project_kpi_screen.dart';
 
 class ProjectDetailsScreen extends StatelessWidget {
@@ -29,12 +30,17 @@ class ProjectDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isWide = MediaQuery.of(context).size.width > 600;
-    final padding = isWide ? MediaQuery.of(context).size.width * 0.1 : 16.0;
+    final res = context.res;
+    final padding = res.isLargeScreen
+        ? res.width * 0.10
+        : res.horizontalPadding;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(project.name),
+        title: Text(
+          project.name,
+          style: TextStyle(fontSize: res.fontLG, fontWeight: FontWeight.bold),
+        ),
         actions: [
           if (_isDeletable())
             IconButton(
@@ -44,22 +50,29 @@ class ProjectDetailsScreen extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: padding, vertical: 24),
+        padding: EdgeInsets.symmetric(
+          horizontal: padding,
+          vertical: res.space3XL,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildInfoCard(),
-            const SizedBox(height: 32),
+            SizedBox(height: res.space3XL),
             _buildLinkSection(),
-            const SizedBox(height: 32),
+            SizedBox(height: res.space3XL),
             _buildKPICard(context),
-            const SizedBox(height: 32),
-            const Text(
+            SizedBox(height: res.space3XL),
+            Text(
               'Milestones',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: res.font2XL,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: res.spaceLG),
             _buildMilestoneList(),
+            SizedBox(height: res.space4XL),
           ],
         ),
       ),

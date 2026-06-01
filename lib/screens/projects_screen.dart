@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/project_controller.dart';
 import '../controllers/user_controller.dart';
 import '../widgets/project_card.dart';
+import '../widgets/responsive.dart';
 
 class ProjectsScreen extends StatefulWidget {
   const ProjectsScreen({super.key});
@@ -19,6 +20,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final res = context.res;
+
     return Obx(() {
       final isDark = userController.isDarkMode.value;
       final bgColor = isDark
@@ -28,22 +31,31 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       return Scaffold(
         backgroundColor: bgColor,
         appBar: AppBar(
-          title: const Text(
+          title: Text(
             'My Projects',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: res.fontXL,
+            ),
           ),
-          centerTitle: true,
+          centerTitle: !res.isLargeScreen,
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
         body: Column(
           children: [
+            // Search bar
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+              padding: EdgeInsets.fromLTRB(
+                res.horizontalPadding,
+                res.spaceSM,
+                res.horizontalPadding,
+                res.spaceLG,
+              ),
               child: Container(
                 decoration: BoxDecoration(
                   color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(res.size(16)),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
@@ -59,22 +71,25 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                   controller: _searchController,
                   style: TextStyle(
                     color: isDark ? Colors.white : Colors.black87,
+                    fontSize: res.fontMD,
                   ),
                   decoration: InputDecoration(
                     hintText: 'Search projects...',
                     hintStyle: TextStyle(
                       color: isDark ? Colors.grey[500] : Colors.blueGrey[300],
-                      fontSize: 15,
+                      fontSize: res.fontMD,
                     ),
                     prefixIcon: Icon(
                       Icons.search_rounded,
                       color: Get.theme.colorScheme.primary,
+                      size: res.size(22),
                     ),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
                             icon: Icon(
                               Icons.cancel_rounded,
                               color: Colors.blueGrey[300],
+                              size: res.size(20),
                             ),
                             onPressed: () {
                               _searchController.clear();
@@ -83,9 +98,9 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                           )
                         : null,
                     border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 15,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: res.spaceXL,
+                      vertical: res.spaceMD,
                     ),
                   ),
                   onChanged: (value) =>
@@ -95,10 +110,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
             ),
             Expanded(
               child: Obx(() {
-                // Accessing projects list early to ensure Obx tracks changes
                 final allProjects = controller.projects.toList();
-                
-                // Filter and Sort by deadline priority
+
                 final filteredProjects = allProjects.where((project) {
                   return project.name.toLowerCase().contains(_searchQuery) ||
                       project.clientName.toLowerCase().contains(_searchQuery);
@@ -115,14 +128,15 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                       children: [
                         Icon(
                           Icons.search_off_rounded,
-                          size: 64,
+                          size: res.size(64),
                           color: isDark ? Colors.grey[700] : Colors.grey[300],
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: res.spaceLG),
                         Text(
                           'No projects found',
                           style: TextStyle(
                             color: isDark ? Colors.grey[500] : Colors.grey,
+                            fontSize: res.fontBase,
                           ),
                         ),
                       ],
@@ -130,22 +144,19 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                   );
                 }
 
-                final size = MediaQuery.of(context).size;
-                final isWide = size.width > 600;
-
-                if (isWide) {
+                if (res.isLargeScreen) {
+                  final crossAxisCount = res.isDesktop ? 3 : 2;
                   return GridView.builder(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 8,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: res.horizontalPadding,
+                      vertical: res.spaceSM,
                     ),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 20,
-                          mainAxisSpacing: 4,
-                          mainAxisExtent: 260,
-                        ),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: res.spaceXL,
+                      mainAxisSpacing: res.spaceXS,
+                      mainAxisExtent: res.size(260),
+                    ),
                     itemCount: filteredProjects.length,
                     itemBuilder: (context, index) {
                       return ProjectCard(
@@ -157,7 +168,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                 }
 
                 return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.symmetric(horizontal: res.horizontalPadding),
                   itemCount: filteredProjects.length,
                   itemBuilder: (context, index) {
                     return ProjectCard(

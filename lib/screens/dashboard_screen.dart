@@ -12,6 +12,7 @@ import '../widgets/add_project_dialog.dart';
 import '../controllers/project_stats_controller.dart';
 import '../widgets/progress_chart_widget.dart';
 import '../widgets/project_card.dart';
+import '../widgets/responsive.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -30,18 +31,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final isWide = size.width > 600;
+    final res = context.res;
+    final isWide = res.isLargeScreen;
 
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: isWide ? 100 : 80,
+        toolbarHeight: res.appBarHeight + (isWide ? 20 : 10),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: Padding(
-          padding: const EdgeInsets.only(left: 16.0),
+          padding: EdgeInsets.only(left: res.spaceLG),
           child: Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(res.spaceSM),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
@@ -60,13 +61,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             Text(
               'Welcome Back,',
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              style: TextStyle(
+                fontSize: res.fontSM,
+                color: Colors.grey[600],
+              ),
             ),
             Obx(() => Text(
               _userController.name.value.isNotEmpty
                   ? _userController.name.value
                   : 'User Profile',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: res.fontXL,
+                fontWeight: FontWeight.bold,
+              ),
             )),
           ],
         ),
@@ -80,9 +87,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               showBadge: unreadCount > 0,
               badgeContent: Text(
                 unreadCount.toString(),
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 8,
+                  fontSize: res.fontXS,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -95,11 +102,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
           GestureDetector(
             onTap: () => Get.to(() => const ProfileScreen()),
             child: Padding(
-              padding: const EdgeInsets.only(right: 16.0),
+              padding: EdgeInsets.only(right: res.spaceLG),
               child: Obx(() {
                 final imageUrl = _userController.profileImageUrl.value;
                 return CircleAvatar(
-                  radius: 22,
+                  radius: res.size(22),
                   backgroundColor: Colors.grey[200],
                   backgroundImage: imageUrl.isNotEmpty
                       ? _userController.getProfileImageProvider(imageUrl)
@@ -119,14 +126,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
               slivers: [
                 SliverToBoxAdapter(
                   child: Obx(() {
-                    // Observing both projects list and isDarkMode triggers rebuild on either change
                     final _ = controller.projects.toList();
-                    _userController.isDarkMode.value; // trigger rebuild on theme change
+                    _userController.isDarkMode.value;
                     return Center(
                       child: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.9,
+                        width: res.width * 0.9,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          padding: EdgeInsets.symmetric(vertical: res.spaceLG),
                           child: ProgressChartWidget(
                             data: statsController.getCurrentMonthProjectsData(),
                             title: 'Current Month Earnings',
@@ -139,73 +145,93 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   }),
                 ),
                 SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: res.spaceXL,
+                    vertical: res.spaceSM,
+                  ),
                   sliver: SliverToBoxAdapter(
-                    child: Text(
+                    child: Obx(() => Text(
                       'Your Projects',
                       style: TextStyle(
-                        fontSize: 22, 
+                        fontSize: res.font2XL,
                         fontWeight: FontWeight.bold,
-                        color: _userController.isDarkMode.value ? Colors.white : Colors.black87,
+                        color: _userController.isDarkMode.value
+                            ? Colors.white
+                            : Colors.black87,
                       ),
-                    ),
+                    )),
                   ),
                 ),
                 Obx(() {
                   final projects = controller.projects.toList();
                   final isDark = _userController.isDarkMode.value;
-                  
+
                   if (projects.isEmpty) {
-                    return const SliverFillRemaining(
+                    return SliverFillRemaining(
                       hasScrollBody: false,
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.assignment_late_outlined, size: 64, color: Colors.grey),
-                            SizedBox(height: 16),
+                            Icon(
+                              Icons.assignment_late_outlined,
+                              size: res.size(64),
+                              color: Colors.grey,
+                            ),
+                            SizedBox(height: res.spaceLG),
                             Text(
                               'No projects yet. Add one to get started!',
-                              style: TextStyle(color: Colors.grey),
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: res.fontMD,
+                              ),
                             ),
                           ],
                         ),
                       ),
                     );
                   }
-      
+
+                  final hPad = isWide ? res.width * 0.05 : res.width * 0.05;
+
                   if (isWide) {
                     return SliverPadding(
                       padding: EdgeInsets.symmetric(
-                        horizontal: MediaQuery.of(context).size.width * 0.05,
-                        vertical: 16,
+                        horizontal: hPad,
+                        vertical: res.spaceLG,
                       ),
                       sliver: SliverGrid(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 20,
-                          mainAxisSpacing: 16,
-                          mainAxisExtent: 260,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: res.isDesktop ? 3 : 2,
+                          crossAxisSpacing: res.spaceXL,
+                          mainAxisSpacing: res.spaceLG,
+                          mainAxisExtent: res.size(260),
                         ),
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
-                            return ProjectCard(project: projects[index], isDark: isDark);
+                            return ProjectCard(
+                              project: projects[index],
+                              isDark: isDark,
+                            );
                           },
                           childCount: projects.length,
                         ),
                       ),
                     );
                   }
-      
+
                   return SliverPadding(
                     padding: EdgeInsets.symmetric(
-                      horizontal: MediaQuery.of(context).size.width * 0.05,
-                      vertical: 16,
+                      horizontal: hPad,
+                      vertical: res.spaceLG,
                     ),
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
-                          return ProjectCard(project: projects[index], isDark: isDark);
+                          return ProjectCard(
+                            project: projects[index],
+                            isDark: isDark,
+                          );
                         },
                         childCount: projects.length,
                       ),
@@ -213,27 +239,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   );
                 }),
                 // Spacer for bottom navigation
-                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                SliverToBoxAdapter(child: SizedBox(height: res.size(100))),
               ],
             ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'dashboard_fab',
         onPressed: () => Get.dialog(const AddProjectDialog()),
-        label: const Text('New Project'),
+        label: Text(
+          'New Project',
+          style: TextStyle(fontSize: res.fontMD),
+        ),
         icon: const Icon(Icons.add),
       ),
     );
   }
 
   Widget _buildFinancialSummary(BuildContext context) {
-    final isWide = MediaQuery.of(context).size.width > 600;
+    final res = context.res;
+    final isWide = res.isLargeScreen;
     return Center(
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
-        margin: const EdgeInsets.symmetric(vertical: 12),
-        padding: EdgeInsets.all(isWide ? 32 : 20),
+        width: res.width * 0.9,
+        margin: EdgeInsets.symmetric(vertical: res.spaceMD),
+        padding: EdgeInsets.all(isWide ? res.space3XL : res.spaceXL),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -243,7 +274,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(res.size(24)),
           boxShadow: [
             BoxShadow(
               color: Get.theme.colorScheme.primary.withValues(alpha: 0.3),
@@ -289,29 +320,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
     Color textColor,
     IconData icon,
   ) {
-    final isWide = MediaQuery.of(context).size.width > 600;
+    final res = context.res;
+    final isWide = res.isLargeScreen;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: isWide ? 20 : 16, color: textColor),
-            const SizedBox(width: 8),
+            Icon(icon, size: isWide ? res.size(20) : res.size(16), color: textColor),
+            SizedBox(width: res.spaceSM),
             Text(
               label,
-              style: TextStyle(color: textColor, fontSize: isWide ? 16 : 14, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                color: textColor,
+                fontSize: isWide ? res.fontBase : res.fontMD,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),
-        const SizedBox(height: 6),
+        SizedBox(height: res.spaceXS + 2),
         FittedBox(
           fit: BoxFit.scaleDown,
           child: Text(
             NumberFormat.currency(symbol: '\$').format(amount),
             style: TextStyle(
               color: Colors.white,
-              fontSize: isWide ? 32 : 24,
+              fontSize: isWide ? res.font4XL : res.font2XL,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -320,4 +356,3 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 }
-

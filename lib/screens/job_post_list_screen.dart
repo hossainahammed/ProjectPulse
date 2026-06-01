@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../controllers/job_post_controller.dart';
 import '../controllers/user_controller.dart';
 import '../models/job_post_model.dart';
+import '../widgets/responsive.dart';
 import 'job_post_details_screen.dart';
 import 'subscription_screen.dart';
 import 'admin_panel_screen.dart';
@@ -15,6 +16,7 @@ class JobPostListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final JobPostController controller = Get.put(JobPostController());
     final UserController userController = Get.find<UserController>();
+    final res = context.res;
 
     return Obx(() {
       final isDark = userController.isDarkMode.value;
@@ -29,11 +31,11 @@ class JobPostListScreen extends StatelessWidget {
             'Job Board',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 22,
+              fontSize: res.fontXL,
               color: isDark ? Colors.white : const Color(0xFF1E293B),
             ),
           ),
-          centerTitle: false,
+          centerTitle: !res.isLargeScreen,
           actions: [
             // Premium badge for non-premium users
             if (!isPremium)
@@ -73,14 +75,16 @@ class JobPostListScreen extends StatelessWidget {
           children: [
             // Header description
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+              padding: EdgeInsets.fromLTRB(
+                res.horizontalPadding, res.spaceXS, res.horizontalPadding, res.spaceMD,
+              ),
               child: Text(
                 isPremium
                     ? 'Exclusive job opportunities for premium members'
                     : 'Subscribe to unlock full job details & apply',
                 style: TextStyle(
                   color: isDark ? Colors.grey[400] : Colors.grey[600],
-                  fontSize: 13,
+                  fontSize: res.fontSM,
                 ),
               ),
             ),
@@ -101,15 +105,15 @@ class JobPostListScreen extends StatelessWidget {
                       children: [
                         Icon(
                           Icons.work_off_outlined,
-                          size: 64,
+                          size: res.size(64),
                           color: isDark ? Colors.grey[600] : Colors.grey[400],
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: res.spaceLG),
                         Text(
                           'No job posts available.',
                           style: TextStyle(
                             color: isDark ? Colors.grey[400] : Colors.grey[600],
-                            fontSize: 16,
+                            fontSize: res.fontBase,
                           ),
                         ),
                       ],
@@ -117,14 +121,33 @@ class JobPostListScreen extends StatelessWidget {
                   );
                 }
 
-                return ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
-                  itemCount: controller.jobPosts.length,
-                  itemBuilder: (context, index) {
-                    final job = controller.jobPosts[index];
-                    return _buildJobCard(context, job, isPremium, isDark);
-                  },
-                );
+                return res.isLargeScreen
+                    ? GridView.builder(
+                        padding: EdgeInsets.fromLTRB(
+                          res.horizontalPadding, 0, res.horizontalPadding, 100,
+                        ),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: res.isDesktop ? 3 : 2,
+                          crossAxisSpacing: res.spaceXL,
+                          mainAxisSpacing: res.spaceMD,
+                          mainAxisExtent: isPremium ? res.size(280) : res.size(180),
+                        ),
+                        itemCount: controller.jobPosts.length,
+                        itemBuilder: (context, index) {
+                          final job = controller.jobPosts[index];
+                          return _buildJobCard(context, job, isPremium, isDark);
+                        },
+                      )
+                    : ListView.builder(
+                        padding: EdgeInsets.fromLTRB(
+                          res.horizontalPadding, 0, res.horizontalPadding, 100,
+                        ),
+                        itemCount: controller.jobPosts.length,
+                        itemBuilder: (context, index) {
+                          final job = controller.jobPosts[index];
+                          return _buildJobCard(context, job, isPremium, isDark);
+                        },
+                      );
               }),
             ),
           ],
@@ -132,6 +155,7 @@ class JobPostListScreen extends StatelessWidget {
         floatingActionButton: Obx(() {
           if (userController.isAdmin.value) {
             return FloatingActionButton.extended(
+              heroTag: 'job_list_fab',
               backgroundColor: const Color(0xFFD946EF),
               onPressed: () => Get.to(() => const AdminPanelScreen()),
               icon: const Icon(Icons.add_rounded, color: Colors.white),
