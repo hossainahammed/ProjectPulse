@@ -60,7 +60,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Welcome Back,',
+              () {
+                final h = DateTime.now().hour;
+                if (h < 12) return 'Good Morning,';
+                if (h < 17) return 'Good Afternoon,';
+                return 'Good Evening,';
+              }(),
               style: TextStyle(
                 fontSize: res.fontSM,
                 color: Colors.grey[600],

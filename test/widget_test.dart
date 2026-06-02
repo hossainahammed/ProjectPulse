@@ -32,7 +32,7 @@ void main() {
     Get.put(NotificationController());
     Get.put(ProjectController());
     // Use mock so no Firebase calls are made during testing
-    Get.put<UserController>(MockUserController());
+   // Get.put<UserController>(MockUserController());
     Get.put(NoteController());
     Get.put(ProjectStatsController());
     Get.put<AuthController>(MockAuthController());
@@ -53,87 +53,87 @@ void main() {
 // Mock controllers — replicate the public API without touching Firebase
 // ---------------------------------------------------------------------------
 
-class MockUserController extends GetxController implements UserController {
-  @override
-  final RxBool isPremium = false.obs;
-
-  @override
-  final RxBool isAdmin = false.obs;
-
-  @override
-  final RxBool isDarkMode = false.obs;
-
-  @override
-  final RxString name = ''.obs;
-
-  @override
-  final RxString email = ''.obs;
-
-  @override
-  final RxString dob = ''.obs;
-
-  @override
-  final RxString location = ''.obs;
-
-  @override
-  final RxString profileImageUrl = ''.obs;
-
-  @override
-  final RxBool isLoadingProfile = false.obs;
-
-  @override
-  void togglePremium() {}
-
-  @override
-  void setDarkMode(bool value) {
-    isDarkMode.value = value;
-    Get.changeThemeMode(value ? ThemeMode.dark : ThemeMode.light);
-  }
-
-  @override
-  Future<void> fetchUserProfile(String uid) async {}
-
-  @override
-  Future<void> ensureProfileExists(
-    String uid, {
-    required String name,
-    required String email,
-    required String profileImageUrl,
-  }) async {}
-
-  @override
-  Future<bool> updateUserProfile({
-    required String name,
-    required String dob,
-    required String location,
-  }) async =>
-      true;
-
-  @override
-  Future<bool> uploadProfileImage(File imageFile) async => true;
-
-  @override
-  ImageProvider getProfileImageProvider(String imageUrl) {
-    return const AssetImage('assets/images/user_profile.png');
-  }
-
-  @override
-  void clearProfile() {
-    name.value = '';
-    email.value = '';
-    dob.value = '';
-    location.value = '';
-    profileImageUrl.value = '';
-  }
-
-  @override
-  Future<bool> recordSubscription({
-    required String planType,
-    required double amount,
-    required String paymentMethod,
-  }) async =>
-      true;
-}
+// class MockUserController extends GetxController implements UserController {
+//   @override
+//   final RxBool isPremium = false.obs;
+//
+//   @override
+//   final RxBool isAdmin = false.obs;
+//
+//   @override
+//   final RxBool isDarkMode = false.obs;
+//
+//   @override
+//   final RxString name = ''.obs;
+//
+//   @override
+//   final RxString email = ''.obs;
+//
+//   @override
+//   final RxString dob = ''.obs;
+//
+//   @override
+//   final RxString location = ''.obs;
+//
+//   @override
+//   final RxString profileImageUrl = ''.obs;
+//
+//   @override
+//   final RxBool isLoadingProfile = false.obs;
+//
+//   @override
+//   void togglePremium() {}
+//
+//   @override
+//   void setDarkMode(bool value) {
+//     isDarkMode.value = value;
+//     Get.changeThemeMode(value ? ThemeMode.dark : ThemeMode.light);
+//   }
+//
+//   @override
+//   Future<void> fetchUserProfile(String uid) async {}
+//
+//   @override
+//   Future<void> ensureProfileExists(
+//     String uid, {
+//     required String name,
+//     required String email,
+//     required String profileImageUrl,
+//   }) async {}
+//
+//   @override
+//   Future<bool> updateUserProfile({
+//     required String name,
+//     required String dob,
+//     required String location,
+//   }) async =>
+//       true;
+//
+//   @override
+//   Future<bool> uploadProfileImage(File imageFile) async => true;
+//
+//   @override
+//   ImageProvider getProfileImageProvider(String imageUrl) {
+//     return const AssetImage('assets/images/user_profile.png');
+//   }
+//
+//   @override
+//   void clearProfile() {
+//     name.value = '';
+//     email.value = '';
+//     dob.value = '';
+//     location.value = '';
+//     profileImageUrl.value = '';
+//   }
+//
+//   @override
+//   Future<bool> recordSubscription({
+//     required String planType,
+//     required double amount,
+//     required String paymentMethod,
+//   }) async =>
+//       true;
+// }
 
 class MockAuthController extends GetxController implements AuthController {
   @override
