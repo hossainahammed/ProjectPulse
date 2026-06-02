@@ -28,6 +28,25 @@ class ProfileScreen extends StatelessWidget {
     final padding = isWide ? MediaQuery.of(context).size.width * 0.1 : 24.0;
 
     return Scaffold(
+      //backgroundColor: bgColor,
+      appBar: AppBar(
+        title: const Text(
+          'Profile',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: showBackButton
+            ? IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+          onPressed: () => Get.back(),
+        )
+            : null,
+      ),
       body: GlassBackground(
         child: SafeArea(
           child: SingleChildScrollView(
@@ -36,7 +55,7 @@ class ProfileScreen extends StatelessWidget {
               final UserController userController = Get.find<UserController>();
               return Column(
                 children: [
-                  _buildHeader(context),
+                //  _buildHeader(context),
                   const SizedBox(height: 32),
                   _buildProfileCard(context),
                   const SizedBox(height: 20),
@@ -122,27 +141,27 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            if (showBackButton)
-              IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                onPressed: () => Get.back(),
-              ),
-            const Text(
-              'Profile',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        //IconButton(onPressed: () {}, icon: const Icon(Icons.settings_outlined)),
-      ],
-    );
-  }
+  // Widget _buildHeader(BuildContext context) {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //     children: [
+  //       Row(
+  //         children: [
+  //           if (showBackButton)
+  //             IconButton(
+  //               icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+  //               onPressed: () => Get.back(),
+  //             ),
+  //           const Text(
+  //             'Profile',
+  //             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+  //           ),
+  //         ],
+  //       ),
+  //       //IconButton(onPressed: () {}, icon: const Icon(Icons.settings_outlined)),
+  //     ],
+  //   );
+  // }
 
   Widget _buildProfileCard(BuildContext context) {
     final UserController userController = Get.find<UserController>();
