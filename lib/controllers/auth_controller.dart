@@ -79,7 +79,8 @@ class AuthController extends GetxController {
       return false;
     } catch (e) {
       isLoading.value = false;
-      _showErrorDialog('Error', e.toString());
+      //_showErrorDialog('Error', e.toString());
+      _showErrorDialog('Error', _getReadableError(e));
       return false;
     }
   }
@@ -123,7 +124,8 @@ class AuthController extends GetxController {
       return false;
     } catch (e) {
       isLoading.value = false;
-      _showErrorDialog('Error', e.toString());
+      //_showErrorDialog('Error', e.toString());
+      _showErrorDialog('Error', _getReadableError(e));
       return false;
     }
   }
@@ -166,13 +168,41 @@ class AuthController extends GetxController {
       return true;
     } on FirebaseAuthException catch (e) {
       isLoading.value = false;
-      _showErrorDialog('Google Sign-In Failed', e.message ?? 'An authentication error occurred.');
+
+      String message = 'Google sign-in failed.';
+
+      if (e.code == 'network-request-failed') {
+        message = 'Please check your internet connection.';
+      } else if (e.code == 'account-exists-with-different-credential') {
+        message =
+        'An account already exists with another sign-in method.';
+      } else if (e.code == 'invalid-credential') {
+        message = 'Invalid Google credentials.';
+      } else if (e.code == 'too-many-requests') {
+        message = 'Too many attempts. Please try again later.';
+      } else if (e.code == 'user-disabled') {
+        message = 'This account has been disabled.';
+      }
+
+      _showErrorDialog('Google Sign-In Failed', message);
       return false;
+
     } catch (e) {
       isLoading.value = false;
-      _showErrorDialog('Error', e.toString());
+
+      _showErrorDialog('Error', _getReadableError(e));
       return false;
     }
+    // } on FirebaseAuthException catch (e) {
+    //   isLoading.value = false;
+    //   _showErrorDialog('Google Sign-In Failed', e.message ?? 'An authentication error occurred.');
+    //   return false;
+    // } catch (e) {
+    //   isLoading.value = false;
+    //  // _showErrorDialog('Error', e.toString());
+    //   _showErrorDialog('Error', _getReadableError(e));
+    //   return false;
+    // }
   }
 
   // Check if email has been verified
@@ -230,7 +260,8 @@ class AuthController extends GetxController {
       return false;
     } catch (e) {
       isLoading.value = false;
-      _showErrorDialog('Error', e.toString());
+     // _showErrorDialog('Error', e.toString());
+      _showErrorDialog('Error', _getReadableError(e));
       return false;
     }
   }
@@ -254,7 +285,8 @@ class AuthController extends GetxController {
       return false;
     } catch (e) {
       isLoading.value = false;
-      _showErrorDialog('Error', e.toString());
+     // _showErrorDialog('Error', e.toString());
+      _showErrorDialog('Error', _getReadableError(e));
       return false;
     }
   }
@@ -428,5 +460,39 @@ class AuthController extends GetxController {
         ),
       ),
     );
+  }
+  String _getReadableError(dynamic error) {
+    final errorString = error.toString().toLowerCase();
+
+    // Network errors
+    if (errorString.contains('network_error') ||
+        errorString.contains('network error') ||
+        errorString.contains('apiexception: 7')) {
+      return 'No internet connection. Please check your network and try again.';
+    }
+
+    // Google Sign-In cancelled
+    if (errorString.contains('sign_in_canceled') ||
+        errorString.contains('sign in canceled')) {
+      return 'Google sign-in was cancelled.';
+    }
+
+    // Firebase invalid credential
+    if (errorString.contains('invalid-credential')) {
+      return 'Authentication failed. Please try again.';
+    }
+
+    // Too many requests
+    if (errorString.contains('too-many-requests')) {
+      return 'Too many attempts. Please try again later.';
+    }
+
+    // User disabled
+    if (errorString.contains('user-disabled')) {
+      return 'This account has been disabled.';
+    }
+
+    // Default fallback
+    return 'Something went wrong. Please try again.';
   }
 }

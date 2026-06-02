@@ -60,8 +60,8 @@ class ProjectKpiConfig {
     return ProjectKpiConfig(
       totalValue: totalBudget,
       components: [
-        KpiComponentConfig(key: 'web_frontend', label: 'Web Frontend (Dashboard)', enabled: true, percentage: 30.0),
-        KpiComponentConfig(key: 'app_frontend', label: 'App Frontend', enabled: true, percentage: 15.0),
+        KpiComponentConfig(key: 'web_frontend', label: 'Web Frontend (Dashboard)', enabled: true, percentage: 17.0),
+        KpiComponentConfig(key: 'app_frontend', label: 'App Frontend', enabled: true, percentage: 28.0),
         KpiComponentConfig(key: 'figma', label: 'Figma Milestone', enabled: true, percentage: 25.0),
         KpiComponentConfig(key: 'backend', label: 'Backend', enabled: true, percentage: 30.0),
       ],
