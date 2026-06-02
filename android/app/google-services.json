@@ -7,18 +7,18 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:57932149579:android:18c099a5d473a5a37b6ece",
+        "mobilesdk_app_id": "1:57932149579:android:466b775ca8d54dee7b6ece",
         "android_client_info": {
-          "package_name": "com.example.freelance_flow"
+          "package_name": "com.hossain.project_pulse"
         }
       },
       "oauth_client": [
         {
-          "client_id": "57932149579-rtiaj1ivqv97o892uk30ia05otta5fce.apps.googleusercontent.com",
+          "client_id": "57932149579-f4oil09c78udvvenrqhqj1m2ds1pc6oc.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.freelance_flow",
-            "certificate_hash": "40d5126c7389fc1c6f80ccc39871e4f14a56fcac"
+            "package_name": "com.hossain.project_pulse",
+            "certificate_hash": "d52abf136f62155f93b79ad0176e32e4cb835cb3"
           }
         },
         {
