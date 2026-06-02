@@ -127,7 +127,7 @@ class ProjectDetailsScreen extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+            Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 10)),
             Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
           ],
         ),
@@ -362,221 +362,226 @@ class ProjectDetailsScreen extends StatelessWidget {
 
     Get.bottomSheet(
       StatefulBuilder(builder: (ctx, setSheetState) {
-        return Container(
-          padding: EdgeInsets.only(
-            left: 24,
-            right: 24,
-            top: 16,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 32,
-          ),
-          decoration: BoxDecoration(
-            color: cardBg,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-            border: Border.all(color: borderColor),
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Handle bar
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(bottom: 20),
-                    decoration: BoxDecoration(
-                      color: isDark ? Colors.white24 : Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                // Header
-                Row(
+        return Wrap(
+          children: [
+            Container(
+              padding: EdgeInsets.only(
+                left: 24,
+                right: 24,
+                top: 16,
+                bottom: MediaQuery.of(ctx).viewInsets.bottom + 32,
+              ),
+              decoration: BoxDecoration(
+                color: cardBg,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                border: Border.all(color: borderColor),
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: primaryColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
+                    // Handle bar
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        margin: const EdgeInsets.only(bottom: 20),
+                        decoration: BoxDecoration(
+                          color: isDark ? Colors.white24 : Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
-                      child: Icon(Icons.edit_outlined, color: primaryColor, size: 20),
                     ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Edit Milestone',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: textColor,
+                    // Header
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: primaryColor.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(Icons.edit_outlined, color: primaryColor, size: 20),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Edit Milestone',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: textColor,
+                                ),
+                              ),
+                              Text(
+                                'Update milestone details',
+                                style: TextStyle(color: Colors.grey[500], fontSize: 13),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Title
+                    _buildSheetTextField(
+                      ctrl: titleCtrl,
+                      label: 'Milestone Title',
+                      icon: Icons.flag_outlined,
+                      isDark: isDark,
+                      inputFill: inputFill,
+                      textColor: textColor,
+                      borderColor: borderColor,
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Amount
+                    _buildSheetTextField(
+                      ctrl: amountCtrl,
+                      label: 'Amount (\$)',
+                      icon: Icons.payments_outlined,
+                      isDark: isDark,
+                      inputFill: inputFill,
+                      textColor: textColor,
+                      borderColor: borderColor,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Deadline picker
+                    GestureDetector(
+                      onTap: () async {
+                        final DateTime? picked = await showDatePicker(
+                          context: ctx,
+                          initialDate: selectedDeadline,
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2101),
+                          builder: (context, child) => Theme(
+                            data: isDark
+                                ? ThemeData.dark().copyWith(
+                                    colorScheme: const ColorScheme.dark(
+                                      primary: Color(0xFFD946EF),
+                                    ),
+                                  )
+                                : ThemeData.light().copyWith(
+                                    colorScheme: const ColorScheme.light(
+                                      primary: Color(0xFF4F46E5),
+                                    ),
+                                  ),
+                            child: child!,
+                          ),
+                        );
+                        if (picked != null) {
+                          setSheetState(() => selectedDeadline = picked);
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        decoration: BoxDecoration(
+                          color: inputFill,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: borderColor),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.calendar_today_outlined, size: 18, color: Colors.grey[500]),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'Deadline: ${DateFormat('MMM dd, yyyy').format(selectedDeadline)}',
+                                style: TextStyle(fontSize: 14, color: textColor),
+                              ),
                             ),
-                          ),
-                          Text(
-                            'Update milestone details',
-                            style: TextStyle(color: Colors.grey[500], fontSize: 13),
-                          ),
-                        ],
+                            Icon(Icons.edit_calendar_outlined, size: 16, color: Colors.grey[400]),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Assigned People
+                    _buildSheetTextField(
+                      ctrl: assignCtrl,
+                      label: 'Assigned People (comma separated)',
+                      icon: Icons.people_outline,
+                      isDark: isDark,
+                      inputFill: inputFill,
+                      textColor: textColor,
+                      borderColor: borderColor,
+                    ),
+                    const SizedBox(height: 28),
+
+                    // Save button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () async {
+                          final title = titleCtrl.text.trim();
+                          if (title.isEmpty) {
+                            Get.snackbar(
+                              'Validation Error',
+                              'Milestone title cannot be empty.',
+                              snackPosition: SnackPosition.TOP,
+                              backgroundColor: Colors.red[700],
+                              colorText: Colors.white,
+                            );
+                            return;
+                          }
+                          final amount = double.tryParse(amountCtrl.text.trim()) ?? milestone.amount;
+                          final people = assignCtrl.text
+                              .split(',')
+                              .map((e) => e.trim())
+                              .where((e) => e.isNotEmpty)
+                              .toList();
+
+                          Get.back(); // close sheet
+                          await controller.editMilestone(
+                            proj,
+                            index,
+                            title: title,
+                            amount: amount,
+                            deadline: selectedDeadline,
+                            assignedPeople: people.isEmpty ? null : people,
+                          );
+                          Get.snackbar(
+                            'Milestone Updated ✓',
+                            '"$title" has been saved successfully.',
+                            snackPosition: SnackPosition.TOP,
+                            backgroundColor: primaryColor,
+                            colorText: Colors.white,
+                            duration: const Duration(seconds: 2),
+                          );
+                        },
+                        icon: const Icon(Icons.save_rounded, size: 18),
+                        label: const Text(
+                          'Save Changes',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColor,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          elevation: isDark ? 0 : 4,
+                          shadowColor: primaryColor.withValues(alpha: 0.4),
+                          side: isDark ? BorderSide(color: primaryColor, width: 1.5) : BorderSide.none,
+                        ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
-
-                // Title
-                _buildSheetTextField(
-                  ctrl: titleCtrl,
-                  label: 'Milestone Title',
-                  icon: Icons.flag_outlined,
-                  isDark: isDark,
-                  inputFill: inputFill,
-                  textColor: textColor,
-                  borderColor: borderColor,
-                ),
-                const SizedBox(height: 14),
-
-                // Amount
-                _buildSheetTextField(
-                  ctrl: amountCtrl,
-                  label: 'Amount (\$)',
-                  icon: Icons.payments_outlined,
-                  isDark: isDark,
-                  inputFill: inputFill,
-                  textColor: textColor,
-                  borderColor: borderColor,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                ),
-                const SizedBox(height: 14),
-
-                // Deadline picker
-                GestureDetector(
-                  onTap: () async {
-                    final DateTime? picked = await showDatePicker(
-                      context: ctx,
-                      initialDate: selectedDeadline,
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime(2101),
-                      builder: (context, child) => Theme(
-                        data: isDark
-                            ? ThemeData.dark().copyWith(
-                                colorScheme: const ColorScheme.dark(
-                                  primary: Color(0xFFD946EF),
-                                ),
-                              )
-                            : ThemeData.light().copyWith(
-                                colorScheme: const ColorScheme.light(
-                                  primary: Color(0xFF4F46E5),
-                                ),
-                              ),
-                        child: child!,
-                      ),
-                    );
-                    if (picked != null) {
-                      setSheetState(() => selectedDeadline = picked);
-                    }
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                    decoration: BoxDecoration(
-                      color: inputFill,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: borderColor),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.calendar_today_outlined, size: 18, color: Colors.grey[500]),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            'Deadline: ${DateFormat('MMM dd, yyyy').format(selectedDeadline)}',
-                            style: TextStyle(fontSize: 14, color: textColor),
-                          ),
-                        ),
-                        Icon(Icons.edit_calendar_outlined, size: 16, color: Colors.grey[400]),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 14),
-
-                // Assigned People
-                _buildSheetTextField(
-                  ctrl: assignCtrl,
-                  label: 'Assigned People (comma separated)',
-                  icon: Icons.people_outline,
-                  isDark: isDark,
-                  inputFill: inputFill,
-                  textColor: textColor,
-                  borderColor: borderColor,
-                ),
-                const SizedBox(height: 28),
-
-                // Save button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () async {
-                      final title = titleCtrl.text.trim();
-                      if (title.isEmpty) {
-                        Get.snackbar(
-                          'Validation Error',
-                          'Milestone title cannot be empty.',
-                          snackPosition: SnackPosition.TOP,
-                          backgroundColor: Colors.red[700],
-                          colorText: Colors.white,
-                        );
-                        return;
-                      }
-                      final amount = double.tryParse(amountCtrl.text.trim()) ?? milestone.amount;
-                      final people = assignCtrl.text
-                          .split(',')
-                          .map((e) => e.trim())
-                          .where((e) => e.isNotEmpty)
-                          .toList();
-
-                      Get.back(); // close sheet
-                      await controller.editMilestone(
-                        proj,
-                        index,
-                        title: title,
-                        amount: amount,
-                        deadline: selectedDeadline,
-                        assignedPeople: people.isEmpty ? null : people,
-                      );
-                      Get.snackbar(
-                        'Milestone Updated ✓',
-                        '"$title" has been saved successfully.',
-                        snackPosition: SnackPosition.TOP,
-                        backgroundColor: primaryColor,
-                        colorText: Colors.white,
-                        duration: const Duration(seconds: 2),
-                      );
-                    },
-                    icon: const Icon(Icons.save_rounded, size: 18),
-                    label: const Text(
-                      'Save Changes',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                      elevation: isDark ? 0 : 4,
-                      shadowColor: primaryColor.withValues(alpha: 0.4),
-                      side: isDark ? BorderSide(color: primaryColor, width: 1.5) : BorderSide.none,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         );
       }),
       isScrollControlled: true,
+     // isScrollControlled: false,
       backgroundColor: Colors.transparent,
     );
   }
