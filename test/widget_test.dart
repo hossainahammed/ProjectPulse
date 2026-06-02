@@ -149,7 +149,7 @@ class MockAuthController extends GetxController implements AuthController {
   Future<bool> signIn(String email, String password) async => true;
 
   @override
-  Future<bool> signUp(String email, String password) async => true;
+  Future<bool> signUp(String name, String email, String password) async => true;
 
   @override
   Future<bool> resetPassword(String email) async => true;

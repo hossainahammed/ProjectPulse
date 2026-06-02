@@ -28,25 +28,6 @@ class ProfileScreen extends StatelessWidget {
     final padding = isWide ? MediaQuery.of(context).size.width * 0.1 : 24.0;
 
     return Scaffold(
-      //backgroundColor: bgColor,
-      appBar: AppBar(
-        title: const Text(
-          'Profile',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: showBackButton
-            ? IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-          onPressed: () => Get.back(),
-        )
-            : null,
-      ),
       body: GlassBackground(
         child: SafeArea(
           child: SingleChildScrollView(
@@ -55,7 +36,7 @@ class ProfileScreen extends StatelessWidget {
               final UserController userController = Get.find<UserController>();
               return Column(
                 children: [
-                //  _buildHeader(context),
+                  _buildHeader(context),
                   const SizedBox(height: 32),
                   _buildProfileCard(context),
                   const SizedBox(height: 20),
@@ -132,6 +113,16 @@ class ProfileScreen extends StatelessWidget {
                   ]),
                   const SizedBox(height: 32),
                   _buildLogoutButton(),
+                  const SizedBox(height: 48),
+                  Text(
+                    '© ${DateTime.now().year}  All rights reserved-Hossain Ahammed.',
+                    style: TextStyle(
+                      color: Colors.grey[500],
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
                 ],
               );
             }),
@@ -141,27 +132,25 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // Widget _buildHeader(BuildContext context) {
-  //   return Row(
-  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //     children: [
-  //       Row(
-  //         children: [
-  //           if (showBackButton)
-  //             IconButton(
-  //               icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-  //               onPressed: () => Get.back(),
-  //             ),
-  //           const Text(
-  //             'Profile',
-  //             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-  //           ),
-  //         ],
-  //       ),
-  //       //IconButton(onPressed: () {}, icon: const Icon(Icons.settings_outlined)),
-  //     ],
-  //   );
-  // }
+  Widget _buildHeader(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        if (showBackButton)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+              onPressed: () => Get.back(),
+            ),
+          ),
+        const Text(
+          'Profile',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
 
   Widget _buildProfileCard(BuildContext context) {
     final UserController userController = Get.find<UserController>();
@@ -356,7 +345,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             if (showUpgrade)
               ElevatedButton(
-                onPressed: (){},
+                onPressed: () {},
                 //onPressed: () => Get.to(() => SubscriptionDetailScreen(isYearly: isYearlyUpgrade),),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: planColor,
@@ -1681,7 +1670,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                 _buildFormTextField(
                   'Phone',
                   _phoneController,
-                      (v) {
+                  (v) {
                     if (v == null || v.trim().isEmpty) {
                       return 'Phone is required';
                     }
@@ -1734,7 +1723,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
     FormFieldValidator<String> validator, {
     int maxLines = 1,
     TextInputType? keyboardType,
-        List<TextInputFormatter>? inputFormatters,
+    List<TextInputFormatter>? inputFormatters,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
