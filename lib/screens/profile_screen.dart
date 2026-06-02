@@ -16,6 +16,7 @@ import '../controllers/user_controller.dart';
 import 'learning_progress_screen.dart';
 import 'calculator_screen.dart';
 import 'admin_panel_screen.dart';
+import 'package:flutter/services.dart';
 
 class ProfileScreen extends StatelessWidget {
   final bool showBackButton;
@@ -1659,12 +1660,35 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                   return null;
                 }, keyboardType: TextInputType.emailAddress),
                 _buildFormTextField(
-                    'Phone',
-                    _phoneController,
-                    (v) => v == null || v.trim().isEmpty
-                        ? 'Phone is required'
-                        : null,
-                    keyboardType: TextInputType.phone),
+                  'Phone',
+                  _phoneController,
+                      (v) {
+                    if (v == null || v.trim().isEmpty) {
+                      return 'Phone is required';
+                    }
+
+                    if (!GetUtils.isNumericOnly(v.trim())) {
+                      return 'Only numbers allowed';
+                    }
+
+                    if (v.trim().length < 11) {
+                      return 'Enter valid phone number';
+                    }
+
+                    return null;
+                  },
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                ),
+                // _buildFormTextField(
+                //     'Phone',
+                //     _phoneController,
+                //     (v) => v == null || v.trim().isEmpty
+                //         ? 'Phone is required'
+                //         : null,
+                //     keyboardType: TextInputType.number),
                 _buildFormTextField(
                     'How can we help?',
                     _messageController,
@@ -1691,6 +1715,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
     FormFieldValidator<String> validator, {
     int maxLines = 1,
     TextInputType? keyboardType,
+        List<TextInputFormatter>? inputFormatters,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -1704,6 +1729,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
         validator: validator,
         maxLines: maxLines,
         keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
         decoration: InputDecoration(
           hintText: hint,
           contentPadding: const EdgeInsets.symmetric(
