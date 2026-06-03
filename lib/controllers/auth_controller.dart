@@ -108,26 +108,50 @@ class AuthController extends GetxController {
       return true;
     } on FirebaseAuthException catch (e) {
       isLoading.value = false;
-      String errorMsg = e.message ?? 'Invalid email or password.';
+
+      String errorMsg = 'Login failed. Please try again.';
+
       if (e.code == 'user-not-found') {
-        errorMsg = 'No user found for this email.';
+        errorMsg = 'No account found with this email.';
       } else if (e.code == 'wrong-password') {
-        errorMsg = 'Incorrect password provided.';
+        errorMsg = 'Incorrect password.';
       } else if (e.code == 'invalid-email') {
-        errorMsg = 'The email address is not valid.';
+        errorMsg = 'Please enter a valid email address.';
       } else if (e.code == 'user-disabled') {
-        errorMsg = 'This user account has been disabled.';
-      } else if (e.code == 'operation-not-allowed') {
-        errorMsg = 'Email/Password sign-in is disabled in your Firebase console. Please go to your Firebase Console -> Authentication -> Sign-in method, and enable "Email/Password".';
+        errorMsg = 'This account has been disabled.';
+      } else if (e.code == 'network-request-failed') {
+        errorMsg = 'No internet connection. Please check your network.';
+      } else if (e.code == 'too-many-requests') {
+        errorMsg = 'Too many login attempts. Try again later.';
+      } else if (e.code == 'invalid-credential') {
+        errorMsg = 'Email or password is incorrect.';
       }
+
       _showErrorDialog('Login Failed', errorMsg);
       return false;
-    } catch (e) {
-      isLoading.value = false;
-      //_showErrorDialog('Error', e.toString());
-      _showErrorDialog('Error', _getReadableError(e));
-      return false;
     }
+    // } on FirebaseAuthException catch (e) {
+    //   isLoading.value = false;
+    //   String errorMsg = e.message ?? 'Invalid email or password.';
+    //   if (e.code == 'user-not-found') {
+    //     errorMsg = 'No user found for this email.';
+    //   } else if (e.code == 'wrong-password') {
+    //     errorMsg = 'Incorrect password provided.';
+    //   } else if (e.code == 'invalid-email') {
+    //     errorMsg = 'The email address is not valid.';
+    //   } else if (e.code == 'user-disabled') {
+    //     errorMsg = 'This user account has been disabled.';
+    //   } else if (e.code == 'operation-not-allowed') {
+    //     errorMsg = 'Email/Password sign-in is disabled in your Firebase console. Please go to your Firebase Console -> Authentication -> Sign-in method, and enable "Email/Password".';
+    //   }
+    //   _showErrorDialog('Login Failed', errorMsg);
+    //   return false;
+    // } catch (e) {
+    //   isLoading.value = false;
+    //   //_showErrorDialog('Error', e.toString());
+    //   _showErrorDialog('Error', _getReadableError(e));
+    //   return false;
+    // }
   }
 
   // Google Sign-In Flow
