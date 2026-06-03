@@ -44,7 +44,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     // Pre-fill pricing fields from current observable values
     final userCtrl = Get.find<UserController>();
     _monthlyPriceController.text = userCtrl.monthlyPrice.value.toStringAsFixed(0);
@@ -155,10 +155,13 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
           unselectedLabelColor: isDark ? Colors.grey[500] : const Color(0xFF64748B),
           indicatorColor: const Color(0xFFD946EF),
           indicatorWeight: 3,
+          isScrollable: true,
+          tabAlignment: TabAlignment.start,
           tabs: const [
             Tab(icon: Icon(Icons.post_add_rounded), text: 'Post a Job'),
             Tab(icon: Icon(Icons.history_edu_rounded), text: 'Subscriptions'),
             Tab(icon: Icon(Icons.price_change_rounded), text: 'Pricing'),
+            Tab(icon: Icon(Icons.message_rounded), text: 'Messages'),
           ],
         ),
       ),
@@ -169,6 +172,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
             _buildPostJobTab(isDark, textColor),
             _buildHistoryTab(isDark, textColor),
             _buildPricingTab(isDark, textColor),
+            _buildMessagesTab(isDark, textColor),
           ],
         ),
       ),
@@ -644,6 +648,124 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
                     style: TextStyle(
                       fontSize: 11,
                       color: Colors.grey[500],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildMessagesTab(bool isDark, Color textColor) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('contact_messages')
+          .orderBy('timestamp', descending: true)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return Center(child: Text('Error loading messages: ${snapshot.error}'));
+        }
+
+        final docs = snapshot.data?.docs ?? [];
+        if (docs.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.mark_email_read_rounded, size: 64, color: Colors.grey[400]),
+                const SizedBox(height: 16),
+                Text(
+                  'No messages yet.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: isDark ? Colors.grey[400] : const Color(0xFF64748B),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(24),
+          itemCount: docs.length,
+          itemBuilder: (context, index) {
+            final data = docs[index].data() as Map<String, dynamic>;
+            final name = data['name'] as String? ?? 'Unknown';
+            final email = data['email'] as String? ?? 'N/A';
+            final phone = data['phone'] as String? ?? 'N/A';
+            final message = data['message'] as String? ?? '';
+            final Timestamp? t = data['timestamp'] as Timestamp?;
+            final dateStr = t != null
+                ? DateFormat('MMM dd, yyyy - hh:mm a').format(t.toDate())
+                : 'Unknown Date';
+
+            return Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: isDark ? Colors.white10 : Colors.grey.shade200,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          name,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        dateStr,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey[500],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    '$email • $phone',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: isDark ? Colors.grey[400] : const Color(0xFF64748B),
+                    ),
+                  ),
+                  const Divider(height: 24, color: Colors.white10),
+                  Text(
+                    message,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: textColor,
+                      height: 1.4,
                     ),
                   ),
                 ],
