@@ -8,7 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../widgets/glass_background.dart';
 import '../controllers/auth_controller.dart';
-import 'subscription_screen.dart';
+// import 'subscription_screen.dart';
 import 'notes_screen.dart';
 import 'notification_screen.dart';
 import '../controllers/notification_controller.dart';
@@ -266,7 +266,7 @@ class ProfileScreen extends StatelessWidget {
       final Color planColor;
       final bool showUpgrade;
       final String upgradeLabel;
-      final bool isYearlyUpgrade;
+     // final bool isYearlyUpgrade;
 
       // Temporarily hardcoding Basic Plan and Free
       planLabel = 'Basic Plan';
@@ -274,7 +274,7 @@ class ProfileScreen extends StatelessWidget {
       planColor = const Color(0xFF6366F1);
       showUpgrade = true;
       upgradeLabel = 'Free';
-      isYearlyUpgrade = false;
+     // isYearlyUpgrade = false;
 
       final bool isYearly = plan == 'Yearly';
       final gradientColors = isYearly
@@ -360,23 +360,23 @@ class ProfileScreen extends StatelessWidget {
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 13)),
               ),
-            if (!showUpgrade)
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: planColor.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  'Active ✓',
-                  style: TextStyle(
-                    color: planColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                  ),
-                ),
-              ),
+            // if (!showUpgrade)
+            //   Container(
+            //     padding:
+            //         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            //     decoration: BoxDecoration(
+            //       color: planColor.withValues(alpha: 0.15),
+            //       borderRadius: BorderRadius.circular(10),
+            //     ),
+            //     child: Text(
+            //       'Active ✓',
+            //       style: TextStyle(
+            //         color: planColor,
+            //         fontWeight: FontWeight.bold,
+            //         fontSize: 13,
+            //       ),
+            //     ),
+            //   ),
           ],
         ),
       );
@@ -1402,8 +1402,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   });
                 }, (v) {
                   if (v == null || v.isEmpty) return 'New Password is required';
-                  if (v.length < 6)
+                  if (v.length < 6) {
                     return 'Password must be at least 6 characters';
+                  }
                   return null;
                 }),
                 _buildPasswordField('Confirm Password',
@@ -1413,8 +1414,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   });
                 }, (v) {
                   if (v == null || v.isEmpty) return 'Confirm your password';
-                  if (v != _newPasswordController.text)
+                  if (v != _newPasswordController.text) {
                     return 'Passwords do not match';
+                  }
                   return null;
                 }),
                 const SizedBox(height: 40),
