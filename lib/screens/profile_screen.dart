@@ -266,7 +266,7 @@ class ProfileScreen extends StatelessWidget {
       final Color planColor;
       final bool showUpgrade;
       final String upgradeLabel;
-     // final bool isYearlyUpgrade;
+      // final bool isYearlyUpgrade;
 
       // Temporarily hardcoding Basic Plan and Free
       planLabel = 'Basic Plan';
@@ -274,7 +274,7 @@ class ProfileScreen extends StatelessWidget {
       planColor = const Color(0xFF6366F1);
       showUpgrade = true;
       upgradeLabel = 'Free';
-     // isYearlyUpgrade = false;
+      // isYearlyUpgrade = false;
 
       final bool isYearly = plan == 'Yearly';
       final gradientColors = isYearly

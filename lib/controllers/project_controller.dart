@@ -37,7 +37,7 @@ class ProjectController extends GetxController {
       }).toList();
       projects.assignAll(fetchedProjects);
     }, onError: (error) {
-      print('Error listening to projects: $error');
+      Get.log('Error listening to projects: $error');
     });
   }
 

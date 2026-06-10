@@ -34,7 +34,7 @@ class NoteController extends GetxController {
         noteContent.value = note.content;
       }
     }, onError: (error) {
-      print('Error listening to notes: $error');
+      Get.log('Error listening to notes: $error');
     });
   }
 

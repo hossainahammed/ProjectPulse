@@ -21,10 +21,12 @@ class JobPostListScreen extends StatelessWidget {
     return Obx(() {
       final isDark = userController.isDarkMode.value;
       // Temporarily forced to true to show all jobs
-      final isPremium = true;
+      //final isPremium = true;
+      const isPremium = true;
 
       return Scaffold(
-        backgroundColor: isDark ? const Color(0xFF020617) : const Color(0xFFF8FAFC),
+        backgroundColor:
+            isDark ? const Color(0xFF020617) : const Color(0xFFF8FAFC),
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -37,39 +39,39 @@ class JobPostListScreen extends StatelessWidget {
             ),
           ),
           centerTitle: !res.isLargeScreen,
-          actions: [
-            // Premium badge for non-premium users
-            if (!isPremium)
-              Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: GestureDetector(
-                  onTap: () => Get.to(() => const SubscriptionScreen()),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFD946EF), Color(0xFF8B5CF6)],
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Row(
-                      children: [
-                        Icon(Icons.workspace_premium, size: 14, color: Colors.white),
-                        SizedBox(width: 4),
-                        Text(
-                          'Go Premium',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-          ],
+          //actions: [
+          // Premium badge for non-premium users
+          // if (!isPremium)
+          //   Padding(
+          //     padding: const EdgeInsets.only(right: 8.0),
+          //     child: GestureDetector(
+          //       onTap: () => Get.to(() => const SubscriptionScreen()),
+          //       child: Container(
+          //         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          //         decoration: BoxDecoration(
+          //           gradient: const LinearGradient(
+          //             colors: [Color(0xFFD946EF), Color(0xFF8B5CF6)],
+          //           ),
+          //           borderRadius: BorderRadius.circular(20),
+          //         ),
+          //         child: const Row(
+          //           children: [
+          //             Icon(Icons.workspace_premium, size: 14, color: Colors.white),
+          //             SizedBox(width: 4),
+          //             Text(
+          //               'Go Premium',
+          //               style: TextStyle(
+          //                 color: Colors.white,
+          //                 fontSize: 12,
+          //                 fontWeight: FontWeight.bold,
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ],
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,12 +79,15 @@ class JobPostListScreen extends StatelessWidget {
             // Header description
             Padding(
               padding: EdgeInsets.fromLTRB(
-                res.horizontalPadding, res.spaceXS, res.horizontalPadding, res.spaceMD,
+                res.horizontalPadding,
+                res.spaceXS,
+                res.horizontalPadding,
+                res.spaceMD,
               ),
-              child: Text(
-                isPremium
-                    ? 'Exclusive job opportunities for premium members'
-                    : 'Subscribe to unlock full job details & apply',
+              child: Text("Exclusive job opportunities for premium members",
+                // isPremium
+                //     ? 'Exclusive job opportunities for premium members'
+                //     : 'Subscribe to unlock full job details & apply',
                 style: TextStyle(
                   color: isDark ? Colors.grey[400] : Colors.grey[600],
                   fontSize: res.fontSM,
@@ -94,7 +99,9 @@ class JobPostListScreen extends StatelessWidget {
                 if (controller.isLoading.value) {
                   return Center(
                     child: CircularProgressIndicator(
-                      color: isDark ? const Color(0xFFD946EF) : const Color(0xFF4F46E5),
+                      color: isDark
+                          ? const Color(0xFFD946EF)
+                          : const Color(0xFF4F46E5),
                     ),
                   );
                 }
@@ -128,29 +135,39 @@ class JobPostListScreen extends StatelessWidget {
                       ? GridView.builder(
                           physics: const AlwaysScrollableScrollPhysics(),
                           padding: EdgeInsets.fromLTRB(
-                            res.horizontalPadding, 0, res.horizontalPadding, 100,
+                            res.horizontalPadding,
+                            0,
+                            res.horizontalPadding,
+                            100,
                           ),
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: res.isDesktop ? 3 : 2,
                             crossAxisSpacing: res.spaceXL,
                             mainAxisSpacing: res.spaceMD,
-                            mainAxisExtent: isPremium ? res.size(280) : res.size(180),
+                            mainAxisExtent:res.size(280),
+                                // isPremium ? res.size(280) : res.size(180),
                           ),
                           itemCount: controller.jobPosts.length,
                           itemBuilder: (context, index) {
                             final job = controller.jobPosts[index];
-                            return _buildJobCard(context, job, isPremium, isDark);
+                            return _buildJobCard(
+                                context, job, isPremium, isDark);
                           },
                         )
                       : ListView.builder(
                           physics: const AlwaysScrollableScrollPhysics(),
                           padding: EdgeInsets.fromLTRB(
-                            res.horizontalPadding, 0, res.horizontalPadding, 100,
+                            res.horizontalPadding,
+                            0,
+                            res.horizontalPadding,
+                            100,
                           ),
                           itemCount: controller.jobPosts.length,
                           itemBuilder: (context, index) {
                             final job = controller.jobPosts[index];
-                            return _buildJobCard(context, job, isPremium, isDark);
+                            return _buildJobCard(
+                                context, job, isPremium, isDark);
                           },
                         ),
                 );
@@ -167,7 +184,8 @@ class JobPostListScreen extends StatelessWidget {
               icon: const Icon(Icons.add_rounded, color: Colors.white),
               label: const Text(
                 'Post Job',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             );
           }
@@ -177,7 +195,8 @@ class JobPostListScreen extends StatelessWidget {
     });
   }
 
-  Widget _buildJobCard(BuildContext context, JobPost job, bool isPremium, bool isDark) {
+  Widget _buildJobCard(
+      BuildContext context, JobPost job, bool isPremium, bool isDark) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -214,7 +233,8 @@ class JobPostListScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFD946EF).withValues(alpha: isDark ? 0.2 : 0.08),
+                      color: const Color(0xFFD946EF)
+                          .withValues(alpha: isDark ? 0.2 : 0.08),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -233,14 +253,16 @@ class JobPostListScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : const Color(0xFF1E293B),
+                            color:
+                                isDark ? Colors.white : const Color(0xFF1E293B),
                           ),
                         ),
                         if (isPremium)
                           Text(
                             job.company,
                             style: TextStyle(
-                              color: isDark ? Colors.grey[400] : Colors.grey[600],
+                              color:
+                                  isDark ? Colors.grey[400] : Colors.grey[600],
                               fontSize: 13,
                             ),
                           ),
@@ -254,7 +276,8 @@ class JobPostListScreen extends StatelessWidget {
                         color: Colors.amber.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.lock_outline, size: 16, color: Colors.amber),
+                      child: const Icon(Icons.lock_outline,
+                          size: 16, color: Colors.amber),
                     ),
                 ],
               ),
@@ -263,7 +286,8 @@ class JobPostListScreen extends StatelessWidget {
                 // Location and Category row
                 Row(
                   children: [
-                    Icon(Icons.location_on_outlined, size: 14, color: Colors.grey[500]),
+                    Icon(Icons.location_on_outlined,
+                        size: 14, color: Colors.grey[500]),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
@@ -274,7 +298,8 @@ class JobPostListScreen extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
                         color: isDark
                             ? Colors.white.withValues(alpha: 0.08)
@@ -304,22 +329,27 @@ class JobPostListScreen extends StatelessWidget {
                   children: [
                     // Budget
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            const Color(0xFFD946EF).withValues(alpha: isDark ? 0.25 : 0.1),
-                            const Color(0xFF8B5CF6).withValues(alpha: isDark ? 0.15 : 0.05),
+                            const Color(0xFFD946EF)
+                                .withValues(alpha: isDark ? 0.25 : 0.1),
+                            const Color(0xFF8B5CF6)
+                                .withValues(alpha: isDark ? 0.15 : 0.05),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.payments_outlined, size: 14, color: Color(0xFFD946EF)),
+                          const Icon(Icons.payments_outlined,
+                              size: 14, color: Color(0xFFD946EF)),
                           const SizedBox(width: 4),
                           Text(
-                            NumberFormat.currency(symbol: '\$').format(job.budget),
+                            NumberFormat.currency(symbol: '\$')
+                                .format(job.budget),
                             style: const TextStyle(
                               color: Color(0xFFD946EF),
                               fontWeight: FontWeight.bold,
@@ -332,11 +362,13 @@ class JobPostListScreen extends StatelessWidget {
                     // Posted date
                     Row(
                       children: [
-                        Icon(Icons.access_time_rounded, size: 13, color: Colors.grey[400]),
+                        Icon(Icons.access_time_rounded,
+                            size: 13, color: Colors.grey[400]),
                         const SizedBox(width: 4),
                         Text(
                           _getTimeAgo(job.postedAt),
-                          style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                          style:
+                              TextStyle(color: Colors.grey[500], fontSize: 12),
                         ),
                       ],
                     ),
@@ -347,21 +379,25 @@ class JobPostListScreen extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
-                    onPressed: () => Get.to(() => JobPostDetailsScreen(job: job)),
+                    onPressed: () =>
+                        Get.to(() => JobPostDetailsScreen(job: job)),
                     icon: const Icon(Icons.open_in_new_rounded, size: 16),
                     label: const Text('View Details & Apply'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFFD946EF),
-                      side: const BorderSide(color: Color(0xFFD946EF), width: 1),
+                      side:
+                          const BorderSide(color: Color(0xFFD946EF), width: 1),
                       padding: const EdgeInsets.symmetric(vertical: 10),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
                   ),
                 ),
               ] else ...[
                 const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   decoration: BoxDecoration(
                     color: Colors.amber.withValues(alpha: isDark ? 0.1 : 0.07),
                     borderRadius: BorderRadius.circular(10),
@@ -371,13 +407,15 @@ class JobPostListScreen extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.star_rounded, color: Colors.amber, size: 16),
+                      const Icon(Icons.star_rounded,
+                          color: Colors.amber, size: 16),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Subscribe to Premium to see company, location, budget & apply.',
                           style: TextStyle(
-                            color: isDark ? Colors.amber[300] : Colors.amber[800],
+                            color:
+                                isDark ? Colors.amber[300] : Colors.amber[800],
                             fontSize: 12,
                             fontStyle: FontStyle.italic,
                           ),
@@ -436,7 +474,8 @@ class JobPostListScreen extends StatelessWidget {
                   ),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.workspace_premium, size: 40, color: Colors.white),
+                child: const Icon(Icons.workspace_premium,
+                    size: 40, color: Colors.white),
               ),
               const SizedBox(height: 20),
               Text(
@@ -451,7 +490,8 @@ class JobPostListScreen extends StatelessWidget {
               Text(
                 'Unlock job details, budgets, and application options by subscribing to Premium.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
+                style: TextStyle(
+                    color: isDark ? Colors.grey[400] : Colors.grey[600]),
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -462,12 +502,14 @@ class JobPostListScreen extends StatelessWidget {
                     Get.to(() => const SubscriptionScreen());
                   },
                   icon: const Icon(Icons.star_rounded, size: 18),
-                  label: const Text('Go Premium', style: TextStyle(fontWeight: FontWeight.bold)),
+                  label: const Text('Go Premium',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFD946EF),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                     elevation: 0,
                   ),
                 ),
@@ -477,7 +519,8 @@ class JobPostListScreen extends StatelessWidget {
                 onPressed: () => Get.back(),
                 child: Text(
                   'Maybe Later',
-                  style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey),
+                  style:
+                      TextStyle(color: isDark ? Colors.grey[400] : Colors.grey),
                 ),
               ),
             ],

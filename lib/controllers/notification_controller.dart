@@ -42,7 +42,7 @@ class NotificationController extends GetxController {
       }).toList();
       notifications.assignAll(fetchedNotifications);
     }, onError: (error) {
-      print('Error listening to notifications: $error');
+      Get.log('Error listening to notifications: $error');
     });
   }
 
