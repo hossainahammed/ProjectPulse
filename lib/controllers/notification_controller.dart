@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -42,7 +43,7 @@ class NotificationController extends GetxController {
       }).toList();
       notifications.assignAll(fetchedNotifications);
     }, onError: (error) {
-      Get.log('Error listening to notifications: $error');
+      debugPrint('Error listening to notifications: $error');
     });
   }
 
