@@ -18,6 +18,7 @@ jobs:
       - run: flutter analyze
       - run: flutetr test
       - run: flutter build apk --release
+      - run: flutter analyze --no-fatal-infos
 
 
       - uses: actions/upload-artifact@v4
