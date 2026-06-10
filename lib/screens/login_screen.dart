@@ -16,10 +16,10 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final AuthController _authController = Get.find<AuthController>();
   final _formKey = GlobalKey<FormState>();
-  
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  
+
   bool _obscurePassword = true;
   bool _rememberMe = false;
 
@@ -62,7 +62,8 @@ class _LoginScreenState extends State<LoginScreen> {
         final prefs = await SharedPreferences.getInstance();
         if (_rememberMe) {
           await prefs.setString('remember_email', _emailController.text.trim());
-          await prefs.setString('remember_password', _passwordController.text.trim());
+          await prefs.setString(
+              'remember_password', _passwordController.text.trim());
           await prefs.setBool('remember_me', true);
         } else {
           await prefs.remove('remember_email');
@@ -92,7 +93,8 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -151,7 +153,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
+                            color: Colors.black
+                                .withValues(alpha: isDark ? 0.3 : 0.04),
                             blurRadius: 20,
                             offset: const Offset(0, 8),
                           )
@@ -160,8 +163,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Center(
-                            child: const Text(
+                          const Center(
+                            child: Text(
                               'Sign In',
                               style: TextStyle(
                                 fontSize: 20,
@@ -176,7 +179,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
                               labelText: 'Email Address',
-                              prefixIcon: const Icon(Icons.email_outlined, size: 20),
+                              prefixIcon:
+                                  const Icon(Icons.email_outlined, size: 20),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
                               ),
@@ -198,11 +202,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             obscureText: _obscurePassword,
                             decoration: InputDecoration(
                               labelText: 'Password',
-                              prefixIcon: const Icon(Icons.lock_outlined, size: 20),
+                              prefixIcon:
+                                  const Icon(Icons.lock_outlined, size: 20),
                               suffixIcon: IconButton(
                                 icon: Icon(
-                                  _obscurePassword 
-                                      ? Icons.visibility_outlined 
+                                  _obscurePassword
+                                      ? Icons.visibility_outlined
                                       : Icons.visibility_off_outlined,
                                   size: 20,
                                 ),
@@ -218,7 +223,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                      return 'Password is required';
+                                return 'Password is required';
                               }
                               if (value.length < 6) {
                                 return 'Password must be at least 6 characters';
@@ -252,18 +257,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Text(
                                     'Remember Me',
                                     style: TextStyle(
-                                      color: isDark ? Colors.grey[400] : Colors.grey[700],
+                                      color: isDark
+                                          ? Colors.grey[400]
+                                          : Colors.grey[700],
                                       fontSize: 14,
                                     ),
                                   ),
                                 ],
                               ),
                               TextButton(
-                                onPressed: () => Get.to(() => const ForgotPasswordScreen()),
+                                onPressed: () =>
+                                    Get.to(() => const ForgotPasswordScreen()),
                                 style: TextButton.styleFrom(
                                   padding: EdgeInsets.zero,
                                   minimumSize: const Size(50, 30),
-                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
                                 ),
                                 child: const Text(
                                   'Forgot Password?',
@@ -314,7 +323,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     // "OR" Divider
                     Row(
                       children: [
-                        Expanded(child: Divider(color: isDark ? Colors.white10 : Colors.grey.shade300)),
+                        Expanded(
+                            child: Divider(
+                                color: isDark
+                                    ? Colors.white10
+                                    : Colors.grey.shade300)),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
@@ -326,7 +339,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-                        Expanded(child: Divider(color: isDark ? Colors.white10 : Colors.grey.shade300)),
+                        Expanded(
+                            child: Divider(
+                                color: isDark
+                                    ? Colors.white10
+                                    : Colors.grey.shade300)),
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -336,21 +353,26 @@ class _LoginScreenState extends State<LoginScreen> {
                       return SizedBox(
                         height: 52,
                         child: OutlinedButton(
-                          onPressed: loading ? null : () async {
-                            final success = await _authController.signInWithGoogle();
-                            if (success) {
-                              Get.snackbar(
-                                'Welcome Back! 👋',
-                                'Successfully logged in with Google.',
-                                snackPosition: SnackPosition.TOP,
-                                backgroundColor: Colors.green[600],
-                                colorText: Colors.white,
-                              );
-                            }
-                          },
+                          onPressed: loading
+                              ? null
+                              : () async {
+                                  final success =
+                                      await _authController.signInWithGoogle();
+                                  if (success) {
+                                    Get.snackbar(
+                                      'Welcome Back! 👋',
+                                      'Successfully logged in with Google.',
+                                      snackPosition: SnackPosition.TOP,
+                                      backgroundColor: Colors.green[600],
+                                      colorText: Colors.white,
+                                    );
+                                  }
+                                },
                           style: OutlinedButton.styleFrom(
                             side: BorderSide(
-                              color: isDark ? Colors.white10 : Colors.grey.shade300,
+                              color: isDark
+                                  ? Colors.white10
+                                  : Colors.grey.shade300,
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
@@ -363,7 +385,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 'assets/icon/google.png',
                                 width: 20,
                                 height: 20,
-                                errorBuilder: (context, error, stackTrace) => const Icon(
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(
                                   Icons.account_circle,
                                   size: 20,
                                   color: Colors.red,
