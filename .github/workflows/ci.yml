@@ -16,7 +16,7 @@ jobs:
 
       - run: flutter pub get
       - run: flutter analyze
-      - run: flutetr test
+      - run: flutter test
       - run: flutter build apk --release
       - run: flutter analyze --no-fatal-infos
 

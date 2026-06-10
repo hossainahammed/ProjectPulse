@@ -1,5 +1,5 @@
-import 'dart:io';
-import 'package:flutter/material.dart';
+// import 'dart:io';
+// import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 //import 'package:hive_flutter/hive_flutter.dart';
@@ -8,13 +8,13 @@ import 'package:project_pulse/main.dart';
 import 'package:project_pulse/controllers/auth_controller.dart';
 import 'package:project_pulse/controllers/project_controller.dart';
 import 'package:project_pulse/controllers/notification_controller.dart';
-import 'package:project_pulse/controllers/user_controller.dart';
+// import 'package:project_pulse/controllers/user_controller.dart';
 import 'package:project_pulse/controllers/note_controller.dart';
 import 'package:project_pulse/controllers/project_stats_controller.dart';
-import 'package:project_pulse/models/project_model.dart';
-import 'package:project_pulse/models/notification_model.dart';
-import 'package:project_pulse/models/note_model.dart';
-import 'package:project_pulse/models/milestone_model.dart';
+// import 'package:project_pulse/models/project_model.dart';
+// import 'package:project_pulse/models/notification_model.dart';
+// import 'package:project_pulse/models/note_model.dart';
+// import 'package:project_pulse/models/milestone_model.dart';
 
 void main() {
   setUpAll(() async {
@@ -32,7 +32,7 @@ void main() {
     Get.put(NotificationController());
     Get.put(ProjectController());
     // Use mock so no Firebase calls are made during testing
-   // Get.put<UserController>(MockUserController());
+    // Get.put<UserController>(MockUserController());
     Get.put(NoteController());
     Get.put(ProjectStatsController());
     Get.put<AuthController>(MockAuthController());
