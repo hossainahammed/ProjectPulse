@@ -179,26 +179,26 @@ class ProfileScreen extends StatelessWidget {
                 );
               }),
             ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: GestureDetector(
-                onTap: () => _showImageSourceDialog(),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Get.theme.colorScheme.primary,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
-                  ),
-                  child: const Icon(
-                    Icons.camera_alt_outlined,
-                    size: 20,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
+            // Positioned(
+            //   bottom: 0,
+            //   right: 0,
+            //   child: GestureDetector(
+            //     onTap: () => _showImageSourceDialog(),
+            //     child: Container(
+            //       padding: const EdgeInsets.all(8),
+            //       decoration: BoxDecoration(
+            //         color: Get.theme.colorScheme.primary,
+            //         shape: BoxShape.circle,
+            //         border: Border.all(color: Colors.white, width: 2),
+            //       ),
+            //       // child: const Icon(
+            //       //   Icons.camera_alt_outlined,
+            //       //   size: 20,
+            //       //   color: Colors.white,
+            //       // ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
         const SizedBox(height: 16),
