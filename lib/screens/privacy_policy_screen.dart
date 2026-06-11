@@ -214,7 +214,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                   color: Get.theme.colorScheme.primary, size: 24),
               const SizedBox(width: 12),
               Text(
-                'Contact the Developer',
+                'Contact the Admin',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -237,7 +237,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Developer Email: ',
+                'Email: ',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -246,7 +246,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
               ),
               Expanded(
                 child: Text(
-                  'hossainahammed@example.com',
+                  'hossainahammed627@gmail.com',
                   style: TextStyle(
                     fontSize: 14,
                     color: Get.theme.colorScheme.primary,
