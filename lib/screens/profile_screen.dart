@@ -956,7 +956,10 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text('Personal Data'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
@@ -964,7 +967,8 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
         ),
       ),
       body: GlassBackground(
-        child: SingleChildScrollView(
+        child: SafeArea(
+          child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Form(
             key: _formKey,
@@ -1073,8 +1077,9 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 class SecurityScreen extends StatefulWidget {
@@ -1089,7 +1094,10 @@ class _SecurityScreenState extends State<SecurityScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
+        extendBodyBehindAppBar: true,
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
           title: const Text('Security'),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new, size: 20),
@@ -1097,7 +1105,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
           ),
         ),
         body: GlassBackground(
-          child: SingleChildScrollView(
+          child: SafeArea(
+            child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
@@ -1129,7 +1138,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
             ),
           ),
         ),
-      );
+      ),
+    );
 }
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -1368,7 +1378,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text('Change Password'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
@@ -1376,7 +1389,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         ),
       ),
       body: GlassBackground(
-        child: SingleChildScrollView(
+        child: SafeArea(
+          child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Form(
             key: _formKey,
@@ -1436,8 +1450,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildPasswordField(
     String hint,
@@ -1651,7 +1666,10 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text('Contact Us'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
@@ -1659,7 +1677,8 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
         ),
       ),
       body: GlassBackground(
-        child: SingleChildScrollView(
+        child: SafeArea(
+          child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Form(
             key: _formKey,
@@ -1723,8 +1742,9 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildFormTextField(
     String hint,
@@ -1794,7 +1814,10 @@ class NotificationSettingsScreen extends StatelessWidget {
         Get.find<NotificationController>();
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text('Notifications'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
@@ -1802,7 +1825,8 @@ class NotificationSettingsScreen extends StatelessWidget {
         ),
       ),
       body: GlassBackground(
-        child: Padding(
+        child: SafeArea(
+          child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1863,8 +1887,9 @@ class NotificationSettingsScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildSettingGroup(List<Widget> children) {
     return Container(
@@ -2254,7 +2279,10 @@ class ProfilePhotoScreen extends StatelessWidget {
   const ProfilePhotoScreen({super.key});
   @override
   Widget build(BuildContext context) => Scaffold(
+        extendBodyBehindAppBar: true,
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
           title: const Text('Profile Photo'),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new, size: 20),
@@ -2262,6 +2290,6 @@ class ProfilePhotoScreen extends StatelessWidget {
           ),
         ),
         body:
-            const GlassBackground(child: Center(child: Text('Profile Photo'))),
+            const GlassBackground(child: SafeArea(child: Center(child: Text('Profile Photo')))),
       );
 }

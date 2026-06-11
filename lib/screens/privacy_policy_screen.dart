@@ -10,11 +10,15 @@ class PrivacyPolicyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Get.find<UserController>().isDarkMode.value;
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
-    final cardBgColor = isDark ? const Color(0xFF1E293B).withValues(alpha: 0.7) : Colors.white.withValues(alpha: 0.7);
+    final cardBgColor = isDark
+        ? const Color(0xFF1E293B).withValues(alpha: 0.7)
+        : Colors.white.withValues(alpha: 0.7);
     final borderColor = isDark ? Colors.white10 : Colors.grey.shade200;
 
     return Scaffold(
-      backgroundColor: Colors.transparent, // Let GlassBackground handle background color
+      extendBodyBehindAppBar: true,
+      backgroundColor:
+          Colors.transparent, // Let GlassBackground handle background color
       appBar: AppBar(
         title: const Text(
           'Privacy Policy',
@@ -31,7 +35,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
       body: GlassBackground(
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -183,7 +188,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContactCard(Color cardColor, Color borderColor, Color textColor) {
+  Widget _buildContactCard(
+      Color cardColor, Color borderColor, Color textColor) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -204,7 +210,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.mail_outline_rounded, color: Get.theme.colorScheme.primary, size: 24),
+              Icon(Icons.mail_outline_rounded,
+                  color: Get.theme.colorScheme.primary, size: 24),
               const SizedBox(width: 12),
               Text(
                 'Contact the Developer',
@@ -321,7 +328,8 @@ class _PolicySection extends StatelessWidget {
                         height: 6,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Get.theme.colorScheme.secondary.withValues(alpha: 0.7),
+                          color: Get.theme.colorScheme.secondary
+                              .withValues(alpha: 0.7),
                         ),
                       ),
                     ),

@@ -120,9 +120,10 @@ class FreelanceFlowApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFFF8FAFC),
         cardColor: Colors.white,
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFFF8FAFC),
+          backgroundColor: Colors.transparent,
           foregroundColor: Color(0xFF1E293B),
           elevation: 0,
+          scrolledUnderElevation: 0,
         ),
         cardTheme: CardThemeData(
           color: Colors.white,
@@ -148,6 +149,7 @@ class FreelanceFlowApp extends StatelessWidget {
           backgroundColor: Colors.transparent,
           foregroundColor: Colors.white,
           elevation: 0,
+          scrolledUnderElevation: 0,
         ),
         cardTheme: CardThemeData(
           color: const Color(0xFF1E293B),

@@ -18,7 +18,10 @@ class LearningProgressScreen extends StatelessWidget {
     final hPadding = isWide ? MediaQuery.of(context).size.width * 0.1 : 24.0;
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text('Learning Progress', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         leading: IconButton(
@@ -27,72 +30,74 @@ class LearningProgressScreen extends StatelessWidget {
         ),
       ),
       body: GlassBackground(
-        child: Obx(() {
-          // Observe both projects list and isDarkMode for live reactivity
-          final _ = projectController.projects.toList();
-          final isDark = userController.isDarkMode.value;
+        child: SafeArea(
+          child: Obx(() {
+            // Observe both projects list and isDarkMode for live reactivity
+            final _ = projectController.projects.toList();
+            final isDark = userController.isDarkMode.value;
 
-          final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
-          final textSub = isDark ? Colors.grey[400]! : const Color(0xFF64748B);
-          final accentColor = isDark ? const Color(0xFFD946EF) : const Color(0xFF4F46E5);
+            final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+            final textSub = isDark ? Colors.grey[400]! : const Color(0xFF64748B);
+            final accentColor = isDark ? const Color(0xFFD946EF) : const Color(0xFF4F46E5);
 
-          return SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: hPadding, vertical: 24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // ── Header ───────────────────────────────────────
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: accentColor.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(14),
+            return SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: hPadding, vertical: 24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ── Header ───────────────────────────────────────
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: accentColor.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Icon(Icons.trending_up_rounded, color: accentColor, size: 26),
                       ),
-                      child: Icon(Icons.trending_up_rounded, color: accentColor, size: 26),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Earnings Growth',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: textPrimary,
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Earnings Growth',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: textPrimary,
+                              ),
                             ),
-                          ),
-                          Text(
-                            'Last 6 months overview',
-                            style: TextStyle(color: textSub, fontSize: 13),
-                          ),
-                        ],
+                            Text(
+                              'Last 6 months overview',
+                              style: TextStyle(color: textSub, fontSize: 13),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 28),
+                    ],
+                  ),
+                  const SizedBox(height: 28),
 
-                // ── Bar Chart ────────────────────────────────────
-                ProgressChartWidget(
-                  data: statsController.getLearningProgress(),
-                  title: 'Monthly Earnings (Last 6 Months)',
-                ),
-                const SizedBox(height: 28),
+                  // ── Bar Chart ────────────────────────────────────
+                  ProgressChartWidget(
+                    data: statsController.getLearningProgress(),
+                    title: 'Monthly Earnings (Last 6 Months)',
+                  ),
+                  const SizedBox(height: 28),
 
-                // ── Stats Row ────────────────────────────────────
-               _buildStatsRow(statsController, isDark, accentColor, textPrimary, textSub),
-                const SizedBox(height: 24),
+                  // ── Stats Row ────────────────────────────────────
+                 _buildStatsRow(statsController, isDark, accentColor, textPrimary, textSub),
+                  const SizedBox(height: 24),
 
-                // ── Insight Card ─────────────────────────────────
-                _buildInsightCard(isDark, accentColor, textPrimary),
-              ],
-            ),
-          );
-        }),
+                  // ── Insight Card ─────────────────────────────────
+                  _buildInsightCard(isDark, accentColor, textPrimary),
+                ],
+              ),
+            );
+          }),
+        ),
       ),
     );
   }

@@ -29,7 +29,10 @@ class _NotesScreenState extends State<NotesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text('My Notes'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
@@ -55,8 +58,9 @@ class _NotesScreenState extends State<NotesScreen> {
         ],
       ),
       body: GlassBackground(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -101,6 +105,7 @@ class _NotesScreenState extends State<NotesScreen> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
