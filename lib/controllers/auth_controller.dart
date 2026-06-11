@@ -3,6 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'user_controller.dart';
+import '../services/notification_service.dart';
 
 class AuthController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -30,6 +31,8 @@ class AuthController extends GetxController {
         if (uc.profileImageUrl.value.isEmpty) uc.profileImageUrl.value = user.photoURL ?? '';
         // Then fetch full profile from Firestore
         uc.fetchUserProfile(user.uid);
+        // Register device for push notifications
+        NotificationService.registerCurrentDeviceToken();
       } else {
         uc.clearProfile();
       }
@@ -318,6 +321,7 @@ class AuthController extends GetxController {
   // Sign Out
   Future<void> signOut() async {
     try {
+      await NotificationService.removeTokenFromDatabase();
       await _auth.signOut();
     } catch (e) {
       _showErrorDialog('Sign Out Failed', e.toString());

@@ -16,6 +16,7 @@ import '../controllers/user_controller.dart';
 import 'learning_progress_screen.dart';
 import 'calculator_screen.dart';
 import 'admin_panel_screen.dart';
+import 'privacy_policy_screen.dart';
 import 'package:flutter/services.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -105,6 +106,11 @@ class ProfileScreen extends StatelessWidget {
                       Icons.help_outline,
                       'Contact Us',
                       () => Get.to(() => const ContactUsScreen()),
+                    ),
+                    _MenuItem(
+                      Icons.privacy_tip_outlined,
+                      'Privacy Policy',
+                      () => Get.to(() => const PrivacyPolicyScreen()),
                     ),
                     _MenuItem(Icons.brightness_6_outlined, 'Dark Mode', () {
                       final isDark = Get.isDarkMode;
@@ -383,6 +389,7 @@ class ProfileScreen extends StatelessWidget {
     });
   }
 
+  // ignore: unused_element
   void _showImageSourceDialog() {
     Get.bottomSheet(
       Container(
