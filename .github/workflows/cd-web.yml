@@ -71,7 +71,8 @@ jobs:
         run: npm install -g netlify-cli
 
       - name: Deploy to Netlify
-        run: netlify deploy --prod --dir=build/web --message "GitHub Actions deploy #${{ github.run_number }}"
+        run: netlify deploy --prod --dir=build/web --message "GitHub Actions deploy #${GITHUB_RUN_NUMBER}"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
