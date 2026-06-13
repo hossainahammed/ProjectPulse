@@ -31,6 +31,12 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
   final _yearlyPriceController = TextEditingController();
   final _pricingFormKey = GlobalKey<FormState>();
 
+  // Web links form controllers
+  final _netlifyUrlController = TextEditingController();
+  final _firebaseUrlController = TextEditingController();
+  final _webLinksFormKey = GlobalKey<FormState>();
+  bool _isLoadingWebLinks = true;
+
   final List<String> _categories = [
     'Mobile Development',
     'Backend',
@@ -44,11 +50,13 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
     // Pre-fill pricing fields from current observable values
     final userCtrl = Get.find<UserController>();
     _monthlyPriceController.text = userCtrl.monthlyPrice.value.toStringAsFixed(0);
     _yearlyPriceController.text = userCtrl.yearlyPrice.value.toStringAsFixed(0);
+    // Pre-fill web links from Firestore
+    _loadWebLinks();
   }
 
   @override
@@ -62,6 +70,8 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
     _requirementsController.dispose();
     _monthlyPriceController.dispose();
     _yearlyPriceController.dispose();
+    _netlifyUrlController.dispose();
+    _firebaseUrlController.dispose();
     super.dispose();
   }
 
@@ -130,6 +140,49 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
     }
   }
 
+  Future<void> _loadWebLinks() async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('app_config')
+          .doc('web_links')
+          .get();
+      if (doc.exists) {
+        final data = doc.data() as Map<String, dynamic>;
+        _netlifyUrlController.text = data['netlify_url'] as String? ?? '';
+        _firebaseUrlController.text = data['firebase_url'] as String? ?? '';
+      }
+    } catch (_) {}
+    if (mounted) setState(() => _isLoadingWebLinks = false);
+  }
+
+  Future<void> _updateWebLinks() async {
+    if (!_webLinksFormKey.currentState!.validate()) return;
+    try {
+      await FirebaseFirestore.instance
+          .collection('app_config')
+          .doc('web_links')
+          .set({
+        'netlify_url': _netlifyUrlController.text.trim(),
+        'firebase_url': _firebaseUrlController.text.trim(),
+      });
+      Get.snackbar(
+        'Web Links Updated 🌐',
+        'URLs are now live for all users.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.green[600],
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error ❌',
+        'Failed to update web links. Please try again.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red[600],
+        colorText: Colors.white,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -162,6 +215,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
             Tab(icon: Icon(Icons.history_edu_rounded), text: 'Subscriptions'),
             Tab(icon: Icon(Icons.price_change_rounded), text: 'Pricing'),
             Tab(icon: Icon(Icons.message_rounded), text: 'Messages'),
+            Tab(icon: Icon(Icons.link_rounded), text: 'Web Links'),
           ],
         ),
       ),
@@ -173,6 +227,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
             _buildHistoryTab(isDark, textColor),
             _buildPricingTab(isDark, textColor),
             _buildMessagesTab(isDark, textColor),
+            _buildWebLinksTab(isDark, textColor),
           ],
         ),
       ),
@@ -774,6 +829,221 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
           },
         );
       },
+    );
+  }
+
+  Widget _buildWebLinksTab(bool isDark, Color textColor) {
+    final cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    if (_isLoadingWebLinks) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24.0),
+      child: Form(
+        key: _webLinksFormKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Web Version Links',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Set the public URLs for the web version of ProjectPulse. These appear in the Profile screen for all users in real-time.',
+              style: TextStyle(
+                fontSize: 14,
+                color: isDark ? Colors.grey[400] : const Color(0xFF64748B),
+              ),
+            ),
+            const SizedBox(height: 28),
+
+            // Live preview card
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    const Color(0xFF6366F1).withValues(alpha: 0.15),
+                    const Color(0xFF8B5CF6).withValues(alpha: 0.08),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFF6366F1).withValues(alpha: 0.3)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.preview_rounded, color: Color(0xFF6366F1), size: 18),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Preview (what users will see)',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.grey[300] : const Color(0xFF64748B),
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  _previewLinkRow(
+                    icon: Icons.cloud_rounded,
+                    color: const Color(0xFF00AD9F),
+                    label: 'Netlify',
+                    controller: _netlifyUrlController,
+                    isDark: isDark,
+                  ),
+                  const SizedBox(height: 10),
+                  _previewLinkRow(
+                    icon: Icons.local_fire_department_rounded,
+                    color: const Color(0xFFFF6F00),
+                    label: 'Firebase',
+                    controller: _firebaseUrlController,
+                    isDark: isDark,
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 28),
+
+            // Form fields
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: cardColor,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: _netlifyUrlController,
+                    keyboardType: TextInputType.url,
+                    onChanged: (_) => setState(() {}),
+                    decoration: InputDecoration(
+                      labelText: 'Netlify URL',
+                      prefixIcon: Container(
+                        margin: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF00AD9F).withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.cloud_rounded, color: Color(0xFF00AD9F), size: 18),
+                      ),
+                      hintText: 'https://your-site.netlify.app',
+                    ),
+                    validator: (v) {
+                      if (v == null || v.trim().isEmpty) return 'Required';
+                      final uri = Uri.tryParse(v.trim());
+                      if (uri == null || !uri.hasScheme) return 'Enter a valid URL';
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  TextFormField(
+                    controller: _firebaseUrlController,
+                    keyboardType: TextInputType.url,
+                    onChanged: (_) => setState(() {}),
+                    decoration: InputDecoration(
+                      labelText: 'Firebase Hosting URL',
+                      prefixIcon: Container(
+                        margin: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFF6F00).withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.local_fire_department_rounded, color: Color(0xFFFF6F00), size: 18),
+                      ),
+                      hintText: 'https://your-app.web.app',
+                    ),
+                    validator: (v) {
+                      if (v == null || v.trim().isEmpty) return 'Required';
+                      final uri = Uri.tryParse(v.trim());
+                      if (uri == null || !uri.hasScheme) return 'Enter a valid URL';
+                      return null;
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton.icon(
+              onPressed: _updateWebLinks,
+              icon: const Icon(Icons.save_rounded),
+              label: const Text('Save & Publish Links', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF6366F1),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 18),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _previewLinkRow({
+    required IconData icon,
+    required Color color,
+    required String label,
+    required TextEditingController controller,
+    required bool isDark,
+  }) {
+    final url = controller.text.trim();
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: color, size: 16),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.grey[400] : const Color(0xFF64748B),
+                ),
+              ),
+              Text(
+                url.isEmpty ? '(not set)' : url,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: url.isEmpty ? Colors.grey[500] : color,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                maxLines: 1,
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

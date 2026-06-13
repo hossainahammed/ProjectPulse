@@ -117,6 +117,8 @@ class ProfileScreen extends StatelessWidget {
                       Get.find<UserController>().setDarkMode(!isDark);
                     }, isToggle: true),
                   ]),
+                  const SizedBox(height: 24),
+                  _buildWebVersionSection(context),
                   const SizedBox(height: 32),
                   _buildLogoutButton(),
                   const SizedBox(height: 48),
@@ -481,6 +483,229 @@ class ProfileScreen extends StatelessWidget {
           Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
         ],
       ),
+    );
+  }
+
+  Widget _buildWebVersionSection(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primary = Get.theme.colorScheme.primary;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Web Version',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey[500],
+            letterSpacing: 1,
+          ),
+        ),
+        const SizedBox(height: 12),
+        StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('app_config')
+              .doc('web_links')
+              .snapshots(),
+          builder: (context, snapshot) {
+            // Loading state
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Container(
+                height: 110,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardTheme.color,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            final data = snapshot.data?.data() as Map<String, dynamic>?;
+            final netlifyUrl = data?['netlify_url'] as String? ?? '';
+            final firebaseUrl = data?['firebase_url'] as String? ?? '';
+
+            // Empty / not configured state
+            if (netlifyUrl.isEmpty && firebaseUrl.isEmpty) {
+              return Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardTheme.color,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Theme.of(context).dividerColor.withValues(alpha: 0.05),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.public_off_rounded, color: Colors.grey[400], size: 28),
+                    const SizedBox(width: 14),
+                    Text(
+                      'Web links not configured yet.',
+                      style: TextStyle(color: Colors.grey[500]),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardTheme.color,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Theme.of(context).dividerColor.withValues(alpha: 0.05),
+                ),
+              ),
+              child: Column(
+                children: [
+                  // Header banner
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          primary.withValues(alpha: 0.15),
+                          primary.withValues(alpha: 0.05),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: primary.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(Icons.public_rounded, color: primary, size: 20),
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Live on the Web',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: isDark ? Colors.white : const Color(0xFF1E293B),
+                              ),
+                            ),
+                            Text(
+                              'Tap a link to open in browser',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: isDark ? Colors.grey[400] : const Color(0xFF64748B),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (netlifyUrl.isNotEmpty) ...[  
+                    _buildWebLinkTile(
+                      context: context,
+                      label: 'Netlify',
+                      url: netlifyUrl,
+                      icon: Icons.cloud_rounded,
+                      color: const Color(0xFF00AD9F),
+                      isDark: isDark,
+                    ),
+                  ],
+                  if (netlifyUrl.isNotEmpty && firebaseUrl.isNotEmpty)
+                    Divider(height: 1, indent: 56, color: Colors.grey.withValues(alpha: 0.1)),
+                  if (firebaseUrl.isNotEmpty) ...[  
+                    _buildWebLinkTile(
+                      context: context,
+                      label: 'Firebase',
+                      url: firebaseUrl,
+                      icon: Icons.local_fire_department_rounded,
+                      color: const Color(0xFFFF6F00),
+                      isDark: isDark,
+                      isLast: true,
+                    ),
+                  ],
+                ],
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWebLinkTile({
+    required BuildContext context,
+    required String label,
+    required String url,
+    required IconData icon,
+    required Color color,
+    required bool isDark,
+    bool isLast = false,
+  }) {
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(icon, color: color, size: 20),
+      ),
+      title: Text(
+        label,
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+          color: isDark ? Colors.white : const Color(0xFF1E293B),
+        ),
+      ),
+      subtitle: Text(
+        url,
+        style: TextStyle(
+          fontSize: 11,
+          color: color,
+          overflow: TextOverflow.ellipsis,
+        ),
+        maxLines: 1,
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: Icon(Icons.copy_rounded, size: 18, color: Colors.grey[500]),
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: url));
+              Get.snackbar(
+                'Copied! 📋',
+                '$label URL copied to clipboard.',
+                snackPosition: SnackPosition.TOP,
+                duration: const Duration(seconds: 2),
+              );
+            },
+            tooltip: 'Copy URL',
+          ),
+          Icon(Icons.open_in_new_rounded, size: 16, color: Colors.grey[400]),
+        ],
+      ),
+      onTap: () async {
+        final uri = Uri.tryParse(url);
+        if (uri != null && await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        } else {
+          Get.snackbar(
+            'Error',
+            'Could not open the URL.',
+            snackPosition: SnackPosition.TOP,
+          );
+        }
+      },
     );
   }
 
