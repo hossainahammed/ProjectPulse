@@ -15,10 +15,10 @@ class AuthController extends GetxController {
         ? '57932149579-1ogiq4c45gjfe845vjvtbdbsr5tdkpss.apps.googleusercontent.com'
         : null,
   );
-  
+
   // Observable Firebase User
   final Rxn<User> firebaseUser = Rxn<User>();
-  
+
   // Loading state
   final RxBool isLoading = false.obs;
 
@@ -27,7 +27,7 @@ class AuthController extends GetxController {
     super.onInit();
     // Bind firebaseUser to authStateChanges stream
     firebaseUser.bindStream(_auth.authStateChanges());
-    
+
     // Automatically load/clear profile in UserController when user session changes
     ever(firebaseUser, (User? user) {
       final uc = Get.find<UserController>();
@@ -35,7 +35,8 @@ class AuthController extends GetxController {
         // Seed email/name/photo instantly from FirebaseAuth (no Firestore wait)
         if (uc.email.value.isEmpty) uc.email.value = user.email ?? '';
         if (uc.name.value.isEmpty) uc.name.value = user.displayName ?? '';
-        if (uc.profileImageUrl.value.isEmpty) uc.profileImageUrl.value = user.photoURL ?? '';
+        if (uc.profileImageUrl.value.isEmpty)
+          uc.profileImageUrl.value = user.photoURL ?? '';
         // Then fetch full profile from Firestore
         uc.fetchUserProfile(user.uid);
         // Register device for push notifications
@@ -53,8 +54,9 @@ class AuthController extends GetxController {
   Future<bool> signUp(String name, String email, String password) async {
     try {
       isLoading.value = true;
-      final UserCredential userCredential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
-      
+      final UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password);
+
       // Ensure profile document is initialized in Firestore
       if (userCredential.user != null) {
         await userCredential.user!.updateDisplayName(name);
@@ -67,10 +69,10 @@ class AuthController extends GetxController {
         // Send email verification link
         await userCredential.user!.sendEmailVerification();
       }
-      
+
       // Sign out immediately so they are not auto-logged in
       await _auth.signOut();
-      
+
       isLoading.value = false;
       return true;
     } on FirebaseAuthException catch (e) {
@@ -83,7 +85,8 @@ class AuthController extends GetxController {
       } else if (e.code == 'invalid-email') {
         errorMsg = 'The email address is not valid.';
       } else if (e.code == 'operation-not-allowed') {
-        errorMsg = 'Email/Password sign-in is disabled in your Firebase console. Please go to your Firebase Console -> Authentication -> Sign-in method, and enable "Email/Password".';
+        errorMsg =
+            'Email/Password sign-in is disabled in your Firebase console. Please go to your Firebase Console -> Authentication -> Sign-in method, and enable "Email/Password".';
       }
       _showErrorDialog('Registration Failed', errorMsg);
       return false;
@@ -99,21 +102,20 @@ class AuthController extends GetxController {
   Future<bool> signIn(String email, String password) async {
     try {
       isLoading.value = true;
-      final UserCredential userCredential = await _auth.signInWithEmailAndPassword(email: email, password: password);
-      
+      final UserCredential userCredential = await _auth
+          .signInWithEmailAndPassword(email: email, password: password);
+
       // Verify email status
       if (userCredential.user != null && !userCredential.user!.emailVerified) {
         // Trigger verification email resend
         await userCredential.user!.sendEmailVerification();
         await _auth.signOut();
         isLoading.value = false;
-        _showErrorDialog(
-          'Email Not Verified', 
-          'A new verification link has been sent to $email. Please check your inbox (and spam folder) and verify your email before logging in.'
-        );
+        _showErrorDialog('Email Not Verified',
+            'A new verification link has been sent to $email. Please check your inbox (and spam folder) and verify your email before logging in.');
         return false;
       }
-      
+
       isLoading.value = false;
       return true;
     } on FirebaseAuthException catch (e) {
@@ -168,26 +170,28 @@ class AuthController extends GetxController {
   Future<bool> signInWithGoogle() async {
     try {
       isLoading.value = true;
-      
+
       // Trigger sign-in
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
         isLoading.value = false;
         return false;
       }
-      
+
       // Obtain authentication tokens
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
       // Create a credential
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      
+
       // Authenticate with Firebase
-      final UserCredential userCredential = await _auth.signInWithCredential(credential);
-      
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+
       // Ensure user profile document exists in Cloud Firestore
       if (userCredential.user != null) {
         await Get.find<UserController>().ensureProfileExists(
@@ -197,7 +201,7 @@ class AuthController extends GetxController {
           profileImageUrl: userCredential.user!.photoURL ?? '',
         );
       }
-      
+
       isLoading.value = false;
       return true;
     } on FirebaseAuthException catch (e) {
@@ -208,8 +212,7 @@ class AuthController extends GetxController {
       if (e.code == 'network-request-failed') {
         message = 'Please check your internet connection.';
       } else if (e.code == 'account-exists-with-different-credential') {
-        message =
-        'An account already exists with another sign-in method.';
+        message = 'An account already exists with another sign-in method.';
       } else if (e.code == 'invalid-credential') {
         message = 'Invalid Google credentials.';
       } else if (e.code == 'too-many-requests') {
@@ -220,7 +223,6 @@ class AuthController extends GetxController {
 
       _showErrorDialog('Google Sign-In Failed', message);
       return false;
-
     } catch (e) {
       isLoading.value = false;
 
@@ -248,7 +250,7 @@ class AuthController extends GetxController {
         await user.reload();
         // Update reactive user observable
         firebaseUser.value = _auth.currentUser;
-        
+
         if (firebaseUser.value?.emailVerified ?? false) {
           Get.snackbar(
             'Email Verified! 🎉',
@@ -258,10 +260,8 @@ class AuthController extends GetxController {
             colorText: Colors.white,
           );
         } else {
-          _showErrorDialog(
-            'Not Verified Yet',
-            'We couldn\'t verify your email yet. Please make sure you clicked the link in the verification email sent to ${user.email}, then click "Check Status" again.'
-          );
+          _showErrorDialog('Not Verified Yet',
+              'We couldn\'t verify your email yet. Please make sure you clicked the link in the verification email sent to ${user.email}, then click "Check Status" again.');
         }
       }
       isLoading.value = false;
@@ -279,22 +279,21 @@ class AuthController extends GetxController {
       if (user != null) {
         await user.sendEmailVerification();
         isLoading.value = false;
-        
-        _showSuccessDialog(
-          'Verification Sent! ✉️',
-          'A new verification link has been sent to:\n${user.email}\n\nPlease check your inbox (and spam folder) and click the link to verify.'
-        );
+
+        _showSuccessDialog('Verification Sent! ✉️',
+            'A new verification link has been sent to:\n${user.email}\n\nPlease check your inbox (and spam folder) and click the link to verify.');
         return true;
       }
       isLoading.value = false;
       return false;
     } on FirebaseAuthException catch (e) {
       isLoading.value = false;
-      _showErrorDialog('Resend Failed', e.message ?? 'Failed to send verification email.');
+      _showErrorDialog(
+          'Resend Failed', e.message ?? 'Failed to send verification email.');
       return false;
     } catch (e) {
       isLoading.value = false;
-     // _showErrorDialog('Error', e.toString());
+      // _showErrorDialog('Error', e.toString());
       _showErrorDialog('Error', _getReadableError(e));
       return false;
     }
@@ -319,7 +318,7 @@ class AuthController extends GetxController {
       return false;
     } catch (e) {
       isLoading.value = false;
-     // _showErrorDialog('Error', e.toString());
+      // _showErrorDialog('Error', e.toString());
       _showErrorDialog('Error', _getReadableError(e));
       return false;
     }
@@ -340,7 +339,7 @@ class AuthController extends GetxController {
     final context = Get.context;
     if (context == null) return;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     Get.dialog(
       Dialog(
         backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
@@ -421,7 +420,7 @@ class AuthController extends GetxController {
     final context = Get.context;
     if (context == null) return;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     Get.dialog(
       Dialog(
         backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
@@ -496,6 +495,7 @@ class AuthController extends GetxController {
       ),
     );
   }
+
   String _getReadableError(dynamic error) {
     final errorString = error.toString().toLowerCase();
 
