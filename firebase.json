@@ -1,1 +1,63 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"projectpulse-1faf3","appId":"1:57932149579:android:18c099a5d473a5a37b6ece","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"projectpulse-1faf3","configurations":{"android":"1:57932149579:android:18c099a5d473a5a37b6ece","ios":"1:57932149579:ios:5682c2d2a29285bc7b6ece","macos":"1:57932149579:ios:5682c2d2a29285bc7b6ece","web":"1:57932149579:web:3cec7acb87a20cee7b6ece","windows":"1:57932149579:web:40e9930144b930a37b6ece"}}}}}}
+{
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(js|css|wasm)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
+          }
+        ]
+      },
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "X-Frame-Options",
+            "value": "SAMEORIGIN"
+          },
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          }
+        ]
+      }
+    ]
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "projectpulse-1faf3",
+          "appId": "1:57932149579:android:18c099a5d473a5a37b6ece",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "projectpulse-1faf3",
+          "configurations": {
+            "android": "1:57932149579:android:18c099a5d473a5a37b6ece",
+            "ios": "1:57932149579:ios:5682c2d2a29285bc7b6ece",
+            "macos": "1:57932149579:ios:5682c2d2a29285bc7b6ece",
+            "web": "1:57932149579:web:3cec7acb87a20cee7b6ece",
+            "windows": "1:57932149579:web:40e9930144b930a37b6ece"
+          }
+        }
+      }
+    }
+  }
+}

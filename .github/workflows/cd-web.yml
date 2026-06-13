@@ -1,0 +1,65 @@
+name: Deploy Flutter Web
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    name: Build & Deploy to Firebase Hosting
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout ────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Flutter setup ───────────────────────────────────────────────────
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      # ── 3. Install dependencies ────────────────────────────────────────────
+      - name: Install dependencies
+        run: flutter pub get
+
+      # ── 4. Analyze (non-fatal infos) ───────────────────────────────────────
+      - name: Analyze code
+        run: flutter analyze --no-fatal-infos
+
+      # ── 5. Run tests ───────────────────────────────────────────────────────
+      - name: Run tests
+        run: flutter test
+
+      # ── 6. Build Flutter Web ───────────────────────────────────────────────
+      - name: Build Flutter Web
+        run: |
+          flutter build web \
+            --release \
+            --web-renderer canvaskit \
+            --tree-shake-icons
+
+      # ── 7. Upload web build as artifact (useful for debugging) ─────────────
+      - name: Upload web build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-web-build
+          path: build/web
+          retention-days: 7
+
+      # ── 8. Deploy to Firebase Hosting ──────────────────────────────────────
+      #       Secret required: FIREBASE_TOKEN
+      #       Value: the token you got from `npx firebase-tools login:ci`
+      #       Add it at: GitHub repo → Settings → Secrets → Actions → New secret
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Deploy to Firebase Hosting
+        run: firebase deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}" --project projectpulse-1faf3 --non-interactive
