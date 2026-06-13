@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build-and-deploy:
-    name: Build & Deploy to Firebase Hosting
+    name: Build & Deploy to Firebase + Netlify
     runs-on: ubuntu-latest
 
     steps:
@@ -63,3 +63,16 @@ jobs:
 
       - name: Deploy to Firebase Hosting
         run: firebase deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}" --project projectpulse-1faf3 --non-interactive
+
+      # ── 9. Deploy to Netlify ───────────────────────────────────────────────
+      #       Secrets required:
+      #         NETLIFY_AUTH_TOKEN → Netlify → User Settings → Applications → New access token
+      #         NETLIFY_SITE_ID    → Netlify → Site → Site configuration → Site ID
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli
+
+      - name: Deploy to Netlify
+        run: netlify deploy --prod --dir=build/web --message "GitHub Actions deploy #${{ github.run_number }}"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
