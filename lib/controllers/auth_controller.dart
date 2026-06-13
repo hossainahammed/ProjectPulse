@@ -2,12 +2,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'user_controller.dart';
 import '../services/notification_service.dart';
 
 class AuthController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  // clientId is required for Google Sign-In on Flutter Web.
+  // Get it from: Firebase Console → Authentication → Sign-in method → Google → Web SDK configuration → Web client ID
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: kIsWeb
+        ? '57932149579-1ogiq4c45gjfe845vjvtbdbsr5tdkpss.apps.googleusercontent.com'
+        : null,
+  );
   
   // Observable Firebase User
   final Rxn<User> firebaseUser = Rxn<User>();
