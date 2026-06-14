@@ -62,14 +62,14 @@ class NotificationScreen extends StatelessWidget {
           itemCount: controller.notifications.length,
           itemBuilder: (context, index) {
             final notification = controller.notifications[index];
-            return _buildDismissibleCard(notification, isDark, textColor);
+            return _buildDismissibleCard(context, notification, isDark, textColor);
           },
         );
       }),
     );
   }
 
-  Widget _buildDismissibleCard(AppNotification notification, bool isDark, Color textColor) {
+  Widget _buildDismissibleCard(BuildContext context, AppNotification notification, bool isDark, Color textColor) {
     IconData icon;
     Color color;
 
@@ -93,7 +93,7 @@ class NotificationScreen extends StatelessWidget {
         break;
       default:
         icon = Icons.notifications;
-        color = const Color(0xFFD946EF);
+        color = Theme.of(context).colorScheme.primary;
     }
 
     return Dismissible(
@@ -120,7 +120,7 @@ class NotificationScreen extends StatelessWidget {
           border: Border.all(
             color: notification.isRead
                 ? (isDark ? Colors.white10 : Colors.grey.shade200)
-                : const Color(0xFFD946EF).withValues(alpha: 0.3),
+                : Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
             width: 1.2,
           ),
           boxShadow: [
@@ -172,8 +172,8 @@ class NotificationScreen extends StatelessWidget {
               ? Container(
                   width: 10,
                   height: 10,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFD946EF),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
                     shape: BoxShape.circle,
                   ),
                 )

@@ -50,8 +50,8 @@ class _NotesScreenState extends State<NotesScreen> {
                 'Saved',
                 'Your notes have been saved.',
                 snackPosition: SnackPosition.TOP,
-                backgroundColor: const Color(0xFFD946EF).withValues(alpha: 0.1),
-                colorText: const Color(0xFFD946EF),
+                backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                colorText: Theme.of(context).colorScheme.primary,
               );
             },
           ),

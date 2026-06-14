@@ -204,9 +204,9 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
         ),
         bottom: TabBar(
           controller: _tabController,
-          labelColor: const Color(0xFFD946EF),
+          labelColor: Theme.of(context).colorScheme.primary,
           unselectedLabelColor: isDark ? Colors.grey[500] : const Color(0xFF64748B),
-          indicatorColor: const Color(0xFFD946EF),
+          indicatorColor: Theme.of(context).colorScheme.primary,
           indicatorWeight: 3,
           isScrollable: true,
           tabAlignment: TabAlignment.start,
@@ -377,7 +377,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
               return ElevatedButton(
                 onPressed: loading ? null : _submitJob,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFD946EF),
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 18),
                   shape: RoundedRectangleBorder(
@@ -432,12 +432,15 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [const Color(0xFFD946EF).withValues(alpha: 0.15), const Color(0xFF8B5CF6).withValues(alpha: 0.15)],
+                    colors: [
+                      Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+                      Theme.of(context).colorScheme.secondary.withValues(alpha: 0.15)
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFD946EF).withValues(alpha: 0.3)),
+                  border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -448,18 +451,18 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
                         const SizedBox(height: 6),
                         Text(
                           '${userCtrl.monthlyPrice.value.toStringAsFixed(0)} BDT',
-                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFFD946EF)),
+                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
                         ),
                       ],
                     ),
-                    Container(width: 1, height: 40, color: const Color(0xFFD946EF).withValues(alpha: 0.3)),
+                    Container(width: 1, height: 40, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)),
                     Column(
                       children: [
                         Text('Current Yearly', style: TextStyle(fontSize: 12, color: isDark ? Colors.grey[400] : const Color(0xFF64748B))),
                         const SizedBox(height: 6),
                         Text(
                           '${userCtrl.yearlyPrice.value.toStringAsFixed(0)} BDT',
-                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF8B5CF6)),
+                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.secondary),
                         ),
                       ],
                     ),
@@ -525,7 +528,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
               icon: const Icon(Icons.save_rounded),
               label: const Text('Save Pricing', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFD946EF),
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 18),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

@@ -47,10 +47,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFD946EF).withValues(alpha: 0.1),
+                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.workspace_premium_rounded, size: 64, color: Color(0xFFD946EF)),
+                      child: Icon(Icons.workspace_premium_rounded, size: 64, color: Theme.of(context).colorScheme.primary),
                     ),
                     const SizedBox(height: 24),
                     Text(
@@ -71,11 +71,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       ),
                     ),
                     const SizedBox(height: 40),
-                    _buildBenefits(isDark, textColor, subTextColor),
+                    _buildBenefits(context, isDark, textColor, subTextColor),
                     const SizedBox(height: 40),
-                    _buildPlanToggle(isDark, textColor, subTextColor),
+                    _buildPlanToggle(context, isDark, textColor, subTextColor),
                     const SizedBox(height: 32),
-                    _buildActionButtons(),
+                    _buildActionButtons(context),
                     const SizedBox(height: 40),
                   ],
                 ),
@@ -87,7 +87,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     );
   }
 
-  Widget _buildBenefits(bool isDark, Color textColor, Color? subTextColor) {
+  Widget _buildBenefits(BuildContext context, bool isDark, Color textColor, Color? subTextColor) {
     final cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
     return Container(
       padding: const EdgeInsets.all(24),
@@ -105,22 +105,22 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       ),
       child: Column(
         children: [
-          _buildBenefitItem('View Recent Job Postings', textColor),
-          _buildBenefitItem('Apply to Premium Jobs', textColor),
-          _buildBenefitItem('Export Invoices to PDF/Excel', textColor),
-          _buildBenefitItem('Advanced Financial Analytics', textColor),
-          _buildBenefitItem('AI-Powered Deadline Estimator', textColor),
+          _buildBenefitItem(context, 'View Recent Job Postings', textColor),
+          _buildBenefitItem(context, 'Apply to Premium Jobs', textColor),
+          _buildBenefitItem(context, 'Export Invoices to PDF/Excel', textColor),
+          _buildBenefitItem(context, 'Advanced Financial Analytics', textColor),
+          _buildBenefitItem(context, 'AI-Powered Deadline Estimator', textColor),
         ],
       ),
     );
   }
 
-  Widget _buildBenefitItem(String text, Color textColor) {
+  Widget _buildBenefitItem(BuildContext context, String text, Color textColor) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
         children: [
-          const Icon(Icons.check_circle, color: Color(0xFFD946EF), size: 22),
+          Icon(Icons.check_circle, color: Theme.of(context).colorScheme.primary, size: 22),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -137,7 +137,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     );
   }
 
-  Widget _buildPlanToggle(bool isDark, Color textColor, Color? subTextColor) {
+  Widget _buildPlanToggle(BuildContext context, bool isDark, Color textColor, Color? subTextColor) {
     final userCtrl = Get.find<UserController>();
     return Obx(() {
       final monthly = userCtrl.monthlyPrice.value.toStringAsFixed(0);
@@ -146,6 +146,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         children: [
           Expanded(
             child: _buildPlanCard(
+              context,
               'Monthly',
               '$monthly BDT',
               'Billed Monthly',
@@ -157,6 +158,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           const SizedBox(width: 16),
           Expanded(
             child: _buildPlanCard(
+              context,
               'Yearly',
               '$yearly BDT',
               'Save 50%',
@@ -170,7 +172,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     });
   }
 
-  Widget _buildPlanCard(String title, String price, String sub, bool selected, VoidCallback onTap, bool isDark, Color textColor, Color? subTextColor) {
+  Widget _buildPlanCard(BuildContext context, String title, String price, String sub, bool selected, VoidCallback onTap, bool isDark, Color textColor, Color? subTextColor) {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -178,16 +180,16 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: selected 
-              ? const Color(0xFFD946EF).withValues(alpha: 0.1) 
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1) 
               : (isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: selected ? const Color(0xFFD946EF) : (isDark ? Colors.white12 : Colors.grey.shade200),
+            color: selected ? Theme.of(context).colorScheme.primary : (isDark ? Colors.white12 : Colors.grey.shade200),
             width: 2,
           ),
           boxShadow: selected ? [
             BoxShadow(
-              color: const Color(0xFFD946EF).withValues(alpha: 0.2),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
               blurRadius: 10,
               offset: const Offset(0, 4),
             )
@@ -204,10 +206,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
-                    color: selected ? const Color(0xFFD946EF) : textColor,
+                    color: selected ? Theme.of(context).colorScheme.primary : textColor,
                   )
                 ),
-                if (selected) const Icon(Icons.check_circle, color: Color(0xFFD946EF), size: 18),
+                if (selected) Icon(Icons.check_circle, color: Theme.of(context).colorScheme.primary, size: 18),
               ],
             ),
             const SizedBox(height: 12),
@@ -233,18 +235,18 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         onPressed: () => Get.to(() => SubscriptionDetailScreen(isYearly: isYearly)),
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFD946EF),
+          backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 20),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
           elevation: 8,
-          shadowColor: const Color(0xFFD946EF).withValues(alpha: 0.4),
+          shadowColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
         ),
         child: Text(
           'Continue - ${isYearly ? '600 BDT total' : '100 BDT total'}',
@@ -314,7 +316,7 @@ class SubscriptionDetailScreen extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
-                          const Icon(Icons.workspace_premium, size: 80, color: Color(0xFFD946EF)),
+                          Icon(Icons.workspace_premium, size: 80, color: Theme.of(context).colorScheme.primary),
                           const SizedBox(height: 24),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -353,22 +355,22 @@ class SubscriptionDetailScreen extends StatelessWidget {
                   const SizedBox(height: 48),
                   Text('Premium Benefits', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor)),
                   const SizedBox(height: 20),
-                  _buildFeatureItem('Access Recent Job Postings', isDark),
-                  _buildFeatureItem('Apply to Premium Jobs', isDark),
-                  _buildFeatureItem('Export Financial Reports (Invoices)', isDark),
-                  _buildFeatureItem('Advanced AI Assistance & KPI Stats', isDark),
+                  _buildFeatureItem(context, 'Access Recent Job Postings', isDark),
+                  _buildFeatureItem(context, 'Apply to Premium Jobs', isDark),
+                  _buildFeatureItem(context, 'Export Financial Reports (Invoices)', isDark),
+                  _buildFeatureItem(context, 'Advanced AI Assistance & KPI Stats', isDark),
                   const SizedBox(height: 48),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () => Get.to(() => AddPaymentScreen(isYearly: isYearly)),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFD946EF),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 20),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                         elevation: 8,
-                        shadowColor: const Color(0xFFD946EF).withValues(alpha: 0.4),
+                        shadowColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
                       ),
                       child: const Text('Upgrade Now', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                     ),
@@ -382,12 +384,12 @@ class SubscriptionDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureItem(String text, bool isDark) {
+  Widget _buildFeatureItem(BuildContext context, String text, bool isDark) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
         children: [
-          const Icon(Icons.check_circle_outline, color: Color(0xFFD946EF), size: 22),
+          Icon(Icons.check_circle_outline, color: Theme.of(context).colorScheme.primary, size: 22),
           const SizedBox(width: 16),
           Text(text, style: TextStyle(color: isDark ? Colors.grey[300] : const Color(0xFF334155), fontSize: 16)),
         ],
@@ -405,7 +407,7 @@ class AddPaymentScreen extends StatefulWidget {
 }
 
 class _AddPaymentScreenState extends State<AddPaymentScreen> {
-  String selectedMethod = 'Stripe'; // 'Stripe' or 'Mobile Banking'
+  String selectedMethod = 'Stripe';
 
   @override
   Widget build(BuildContext context) {
@@ -448,7 +450,7 @@ class _AddPaymentScreenState extends State<AddPaymentScreen> {
                         color: isDark ? const Color(0xFF1E293B) : Colors.white,
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
-                          color: selectedMethod == 'Stripe' ? const Color(0xFFD946EF) : (isDark ? Colors.white12 : Colors.grey.shade200),
+                          color: selectedMethod == 'Stripe' ? Theme.of(context).colorScheme.primary : (isDark ? Colors.white12 : Colors.grey.shade200),
                           width: 2,
                         ),
                         boxShadow: [
@@ -480,7 +482,7 @@ class _AddPaymentScreenState extends State<AddPaymentScreen> {
                           const SizedBox(width: 8),
                           Icon(
                             selectedMethod == 'Stripe' ? Icons.radio_button_checked : Icons.radio_button_off,
-                            color: selectedMethod == 'Stripe' ? const Color(0xFFD946EF) : Colors.grey,
+                            color: selectedMethod == 'Stripe' ? Theme.of(context).colorScheme.primary : Colors.grey,
                             size: 26,
                           ),
                         ],
@@ -498,7 +500,7 @@ class _AddPaymentScreenState extends State<AddPaymentScreen> {
                         color: isDark ? const Color(0xFF1E293B) : Colors.white,
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
-                          color: selectedMethod == 'Mobile Banking' ? const Color(0xFFD946EF) : (isDark ? Colors.white12 : Colors.grey.shade200),
+                          color: selectedMethod == 'Mobile Banking' ? Theme.of(context).colorScheme.primary : (isDark ? Colors.white12 : Colors.grey.shade200),
                           width: 2,
                         ),
                         boxShadow: [
@@ -530,7 +532,7 @@ class _AddPaymentScreenState extends State<AddPaymentScreen> {
                           const SizedBox(width: 8),
                           Icon(
                             selectedMethod == 'Mobile Banking' ? Icons.radio_button_checked : Icons.radio_button_off,
-                            color: selectedMethod == 'Mobile Banking' ? const Color(0xFFD946EF) : Colors.grey,
+                            color: selectedMethod == 'Mobile Banking' ? Theme.of(context).colorScheme.primary : Colors.grey,
                             size: 26,
                           ),
                         ],
@@ -547,12 +549,12 @@ class _AddPaymentScreenState extends State<AddPaymentScreen> {
                         paymentMethod: selectedMethod,
                       )),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFD946EF),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 20),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                         elevation: 8,
-                        shadowColor: const Color(0xFFD946EF).withValues(alpha: 0.4),
+                        shadowColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
                       ),
                       child: const Text('Continue to Summary', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                     ),
@@ -612,31 +614,31 @@ class PaymentSummaryScreen extends StatelessWidget {
                   const SizedBox(height: 20),
                   Text('Confirm Order', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: textColor)),
                   const SizedBox(height: 40),
-                  _buildSummaryCard(isDark, textColor),
+                  _buildSummaryCard(context, isDark, textColor),
                   const SizedBox(height: 40),
-                  _buildPriceRow('Subscription Plan', isYearly ? 'Yearly' : 'Monthly', textColor, isDark),
+                  _buildPriceRow(context, 'Subscription Plan', isYearly ? 'Yearly' : 'Monthly', textColor, isDark),
                   const SizedBox(height: 8),
-                  _buildPriceRow('Payment Method', paymentMethod, textColor, isDark),
+                  _buildPriceRow(context, 'Payment Method', paymentMethod, textColor, isDark),
                   const SizedBox(height: 8),
-                  _buildPriceRow('Subtotal', priceText, textColor, isDark),
-                  _buildPriceRow('Tax / Service Charge', '0 BDT', textColor, isDark),
+                  _buildPriceRow(context, 'Subtotal', priceText, textColor, isDark),
+                  _buildPriceRow(context, 'Tax / Service Charge', '0 BDT', textColor, isDark),
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 20),
                     child: Divider(color: Colors.white12),
                   ),
-                  _buildPriceRow('Total Amount', priceText, textColor, isDark, isTotal: true),
+                  _buildPriceRow(context, 'Total Amount', priceText, textColor, isDark, isTotal: true),
                   const SizedBox(height: 60),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () => _startPaymentFlow(context),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFD946EF),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 20),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                         elevation: 8,
-                        shadowColor: const Color(0xFFD946EF).withValues(alpha: 0.4),
+                        shadowColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
                       ),
                       child: const Text('Confirm & Pay', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                     ),
@@ -693,7 +695,7 @@ class PaymentSummaryScreen extends StatelessWidget {
     }
   }
 
-  Widget _buildSummaryCard(bool isDark, Color textColor) {
+  Widget _buildSummaryCard(BuildContext context, bool isDark, Color textColor) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -710,20 +712,20 @@ class PaymentSummaryScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildSummaryItem('Premium Project Access', textColor),
-          _buildSummaryItem('View & Apply to Job Posts', textColor),
-          _buildSummaryItem('AI Assistance & KPI Estimations', textColor),
+          _buildSummaryItem(context, 'Premium Project Access', textColor),
+          _buildSummaryItem(context, 'View & Apply to Job Posts', textColor),
+          _buildSummaryItem(context, 'AI Assistance & KPI Estimations', textColor),
         ],
       ),
     );
   }
 
-  Widget _buildSummaryItem(String text, Color textColor) {
+  Widget _buildSummaryItem(BuildContext context, String text, Color textColor) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Row(
         children: [
-          const Icon(Icons.check_circle, color: Color(0xFFD946EF), size: 20),
+          Icon(Icons.check_circle, color: Theme.of(context).colorScheme.primary, size: 20),
           const SizedBox(width: 12),
           Text(text, style: TextStyle(fontSize: 15, color: textColor, fontWeight: FontWeight.w500)),
         ],
@@ -731,12 +733,12 @@ class PaymentSummaryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPriceRow(String label, String value, Color textColor, bool isDark, {bool isTotal = false}) {
+  Widget _buildPriceRow(BuildContext context, String label, String value, Color textColor, bool isDark, {bool isTotal = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label, style: TextStyle(fontSize: isTotal ? 18 : 16, color: isTotal ? textColor : (isDark ? Colors.grey[400] : const Color(0xFF64748B)))),
-        Text(value, style: TextStyle(fontSize: isTotal ? 28 : 20, fontWeight: FontWeight.bold, color: isTotal ? const Color(0xFFD946EF) : textColor)),
+        Text(value, style: TextStyle(fontSize: isTotal ? 28 : 20, fontWeight: FontWeight.bold, color: isTotal ? Theme.of(context).colorScheme.primary : textColor)),
       ],
     );
   }
@@ -766,10 +768,10 @@ class PaymentSummaryScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFD946EF).withValues(alpha: 0.1),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.workspace_premium, color: Color(0xFFD946EF), size: 56),
+                child: Icon(Icons.workspace_premium, color: Theme.of(context).colorScheme.primary, size: 56),
               ),
               const SizedBox(height: 24),
               Text(
@@ -798,7 +800,7 @@ class PaymentSummaryScreen extends StatelessWidget {
                     Get.back(); // Back from Subscription Selection
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD946EF),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 20),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
@@ -811,6 +813,7 @@ class PaymentSummaryScreen extends StatelessWidget {
           ),
         ),
       ),
+      barrierDismissible: false,
     );
   }
 }

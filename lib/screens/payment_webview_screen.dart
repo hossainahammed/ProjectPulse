@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 class PaymentWebViewScreen extends StatefulWidget {
   final String paymentMethod; // 'stripe' or 'mobile'
-  final String amount;        // e.g., '100 BDT' or '600 BDT'
+  final String amount; // e.g., '100 BDT' or '600 BDT'
   final String title;
 
   const PaymentWebViewScreen({
@@ -26,11 +26,13 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
   void initState() {
     super.initState();
     final isDark = Theme.of(Get.context!).brightness == Brightness.dark;
-    final html = _generatePaymentHtml(widget.paymentMethod, widget.amount, isDark);
+    final html =
+        _generatePaymentHtml(widget.paymentMethod, widget.amount, isDark);
 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(isDark ? const Color(0xFF020617) : const Color(0xFFF8FAFC))
+      ..setBackgroundColor(
+          isDark ? const Color(0xFF020617) : const Color(0xFFF8FAFC))
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) {
@@ -52,16 +54,16 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
             final lowerUrl = request.url.toLowerCase();
 
             // Intercept custom scheme redirects or payment success indicators
-            if (lowerUrl.contains('projectpulse.payment.com/success') || 
-                lowerUrl.contains('success') || 
+            if (lowerUrl.contains('projectpulse.payment.com/success') ||
+                lowerUrl.contains('success') ||
                 lowerUrl.contains('complete')) {
               debugPrint('Success detected in URL: ${request.url}');
               Navigator.of(context).pop('success');
               return NavigationDecision.prevent;
             }
 
-            if (lowerUrl.contains('projectpulse.payment.com/cancel') || 
-                lowerUrl.contains('cancel') || 
+            if (lowerUrl.contains('projectpulse.payment.com/cancel') ||
+                lowerUrl.contains('cancel') ||
                 lowerUrl.contains('fail')) {
               debugPrint('Cancel/Failure detected in URL: ${request.url}');
               Navigator.of(context).pop('cancel');
@@ -82,7 +84,8 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF020617) : const Color(0xFFF8FAFC),
+      backgroundColor:
+          isDark ? const Color(0xFF020617) : const Color(0xFFF8FAFC),
       appBar: AppBar(
         backgroundColor: headerBg,
         elevation: 0,
@@ -104,8 +107,9 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
         children: [
           WebViewWidget(controller: _controller),
           if (_isLoading)
-            const Center(
-              child: CircularProgressIndicator(color: Color(0xFFD946EF)),
+            Center(
+              child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.primary),
             ),
         ],
       ),
@@ -117,7 +121,7 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
     final cardBg = isDark ? '#1E293B' : '#FFFFFF';
     final textColor = isDark ? '#FFFFFF' : '#1E293B';
     final subTextColor = isDark ? '#94A3B8' : '#64748B';
-    const primaryColor = '#D946EF';
+    final primaryColor = isDark ? '#D946EF' : '#4F46E5';
     final inputBg = isDark ? '#0F172A' : '#F1F5F9';
     final inputBorder = isDark ? '#334155' : '#E2E8F0';
 

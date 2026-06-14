@@ -84,10 +84,10 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFD946EF).withValues(alpha: 0.1),
+                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        child: const Icon(Icons.work_rounded, color: Color(0xFFD946EF)),
+                        child: Icon(Icons.work_rounded, color: Theme.of(context).colorScheme.primary),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -114,7 +114,7 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
                         Icons.payments_outlined,
                         NumberFormat.currency(symbol: '\$').format(widget.job.budget),
                         isDark,
-                        color: const Color(0xFFD946EF),
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ],
                   ),
@@ -141,13 +141,13 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
                 icon: const Icon(Icons.send_rounded, size: 20),
                 label: const Text('Apply Now', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isDark ? const Color(0xFFD946EF) : const Color(0xFFD946EF),
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                   elevation: isDark ? 0 : 8,
-                  shadowColor: const Color(0xFFD946EF).withValues(alpha: 0.4),
-                  side: isDark ? const BorderSide(color: Color(0xFFD946EF), width: 1.5) : BorderSide.none,
+                  shadowColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
+                  side: isDark ? BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5) : BorderSide.none,
                 ),
               ),
             ),
@@ -224,12 +224,12 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
                   decoration: BoxDecoration(
                     color: cvPath != null
-                        ? const Color(0xFFD946EF).withValues(alpha: isDark ? 0.15 : 0.08)
+                        ? Theme.of(context).colorScheme.primary.withValues(alpha: isDark ? 0.15 : 0.08)
                         : (isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC)),
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
                       color: cvPath != null
-                          ? const Color(0xFFD946EF).withValues(alpha: 0.5)
+                          ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)
                           : (isDark ? Colors.white12 : Colors.grey.shade200),
                       width: 1.5,
                     ),
@@ -238,7 +238,7 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
                     children: [
                       Icon(
                         cvPath != null ? Icons.picture_as_pdf_rounded : Icons.upload_file_rounded,
-                        color: cvPath != null ? const Color(0xFFD946EF) : Colors.grey,
+                        color: cvPath != null ? Theme.of(context).colorScheme.primary : Colors.grey,
                         size: 24,
                       ),
                       const SizedBox(width: 14),
@@ -246,7 +246,7 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
                         child: Text(
                           cvName ?? 'Tap to attach your CV (PDF)',
                           style: TextStyle(
-                            color: cvPath != null ? const Color(0xFFD946EF) : Colors.grey,
+                            color: cvPath != null ? Theme.of(context).colorScheme.primary : Colors.grey,
                             fontWeight: cvPath != null ? FontWeight.w600 : FontWeight.normal,
                             fontSize: 14,
                           ),
@@ -268,7 +268,7 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
               SizedBox(
                 width: double.infinity,
                 child: isSending
-                    ? const Center(child: CircularProgressIndicator(color: Color(0xFFD946EF)))
+                    ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary))
                     : ElevatedButton.icon(
                         onPressed: cvPath == null
                             ? null
@@ -297,14 +297,14 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
                         icon: const Icon(Icons.send_rounded),
                         label: const Text('Send Application', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFD946EF),
+                          backgroundColor: Theme.of(context).colorScheme.primary,
                           foregroundColor: Colors.white,
                           disabledBackgroundColor: Colors.grey.shade300,
                           disabledForegroundColor: Colors.grey.shade500,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                           elevation: isDark ? 0 : 4,
-                          side: isDark ? const BorderSide(color: Color(0xFFD946EF), width: 1.5) : BorderSide.none,
+                          side: isDark ? BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5) : BorderSide.none,
                         ),
                       ),
               ),
@@ -394,7 +394,7 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
                 child: ElevatedButton(
                   onPressed: () { Get.back(); Get.back(); },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD946EF),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -447,7 +447,7 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.check_circle, color: Color(0xFFD946EF), size: 18),
+          Icon(Icons.check_circle, color: Theme.of(context).colorScheme.primary, size: 18),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -526,7 +526,7 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD946EF),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
