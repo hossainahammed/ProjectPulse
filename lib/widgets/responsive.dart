@@ -221,3 +221,73 @@ class AppResponsive {
 extension ResponsiveExtension on BuildContext {
   AppResponsive get res => AppResponsive.of(this);
 }
+
+// =======================================================
+// MAX CONTENT WIDTH — used to cap content on wide screens
+// =======================================================
+
+/// Max width for single-column content (forms, cards).
+const double kWebFormMaxWidth = 480.0;
+
+/// Max width for full-page content (dashboard body etc).
+const double kWebPageMaxWidth = 1280.0;
+
+// =======================================================
+// WEB CLICKABLE — adds pointer cursor on web hover
+// =======================================================
+
+/// Wraps any widget with a pointer cursor on hover (web only),
+/// and handles tap. Use instead of bare GestureDetector for
+/// clickable non-button elements.
+class WebClickable extends StatelessWidget {
+  final Widget child;
+  final VoidCallback? onTap;
+
+  const WebClickable({
+    super.key,
+    required this.child,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: onTap,
+        child: child,
+      ),
+    );
+  }
+}
+
+// =======================================================
+// WEB PAGE WRAPPER — centers content with max width
+// =======================================================
+
+/// Centers and constrains page content to [maxWidth].
+/// Useful for content sections inside scrollable pages.
+class WebContentWrapper extends StatelessWidget {
+  final Widget child;
+  final double maxWidth;
+  final EdgeInsetsGeometry? padding;
+
+  const WebContentWrapper({
+    super.key,
+    required this.child,
+    this.maxWidth = kWebPageMaxWidth,
+    this.padding,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: maxWidth),
+        child: padding != null
+            ? Padding(padding: padding!, child: child)
+            : child,
+      ),
+    );
+  }
+}

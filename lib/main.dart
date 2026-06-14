@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_preview/device_preview.dart';
@@ -95,11 +96,15 @@ class FreelanceFlowApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      useInheritedMediaQuery: true,
-      locale: DevicePreview.locale(context),
-      builder: DevicePreview.appBuilder,
+      // DevicePreview: only apply its builder in non-release mode and non-web
+      useInheritedMediaQuery: !kIsWeb,
+      locale: kIsWeb ? null : DevicePreview.locale(context),
+      builder: kIsWeb
+          ? (context, child) => _WebAppBuilder(child: child!)
+          : DevicePreview.appBuilder,
       title: 'ProjectPulse',
       debugShowCheckedModeBanner: false,
+      scrollBehavior: kIsWeb ? _WebScrollBehavior() : null,
       // ── Analytics Screen Tracking ──────────────────────────────────────
       navigatorObservers: [
         if (!kIsWeb ||
@@ -163,4 +168,40 @@ class FreelanceFlowApp extends StatelessWidget {
     );
   }
 }
+
 ///////////RElease version 1
+
+/// Applies a thin scrollbar and mouse-drag scroll support for web.
+class _WebScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+    PointerDeviceKind.touch,
+    PointerDeviceKind.mouse,
+    PointerDeviceKind.stylus,
+  };
+
+  @override
+  Widget buildScrollbar(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
+    // Use a thin, styled scrollbar on web
+    return RawScrollbar(
+      controller: details.controller,
+      thumbColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
+      radius: const Radius.circular(8),
+      thickness: 4,
+      child: child,
+    );
+  }
+}
+
+/// On web, just pass the child through with no DevicePreview wrapping.
+class _WebAppBuilder extends StatelessWidget {
+  final Widget child;
+  const _WebAppBuilder({required this.child});
+
+  @override
+  Widget build(BuildContext context) => child;
+}
