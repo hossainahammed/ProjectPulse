@@ -171,26 +171,33 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
 
-      // Trigger sign-in
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) {
-        isLoading.value = false;
-        return false;
+      UserCredential userCredential;
+
+      if (kIsWeb) {
+        // On Flutter Web: use Firebase signInWithPopup directly.
+        // The google_sign_in package doesn't work reliably on web.
+        final GoogleAuthProvider googleProvider = GoogleAuthProvider();
+        googleProvider.addScope('email');
+        googleProvider.addScope('profile');
+        userCredential = await _auth.signInWithPopup(googleProvider);
+      } else {
+        // On Mobile: use google_sign_in package as usual
+        final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+        if (googleUser == null) {
+          isLoading.value = false;
+          return false;
+        }
+
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        userCredential = await _auth.signInWithCredential(credential);
       }
-
-      // Obtain authentication tokens
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      // Create a credential
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      // Authenticate with Firebase
-      final UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
 
       // Ensure user profile document exists in Cloud Firestore
       if (userCredential.user != null) {
@@ -219,26 +226,21 @@ class AuthController extends GetxController {
         message = 'Too many attempts. Please try again later.';
       } else if (e.code == 'user-disabled') {
         message = 'This account has been disabled.';
+      } else if (e.code == 'popup-closed-by-user') {
+        // User closed the popup — not an error, just return false silently
+        return false;
+      } else if (e.code == 'popup-blocked') {
+        message =
+            'Popup was blocked by your browser. Please allow popups for this site and try again.';
       }
 
       _showErrorDialog('Google Sign-In Failed', message);
       return false;
     } catch (e) {
       isLoading.value = false;
-
       _showErrorDialog('Error', _getReadableError(e));
       return false;
     }
-    // } on FirebaseAuthException catch (e) {
-    //   isLoading.value = false;
-    //   _showErrorDialog('Google Sign-In Failed', e.message ?? 'An authentication error occurred.');
-    //   return false;
-    // } catch (e) {
-    //   isLoading.value = false;
-    //  // _showErrorDialog('Error', e.toString());
-    //   _showErrorDialog('Error', _getReadableError(e));
-    //   return false;
-    // }
   }
 
   // Check if email has been verified
