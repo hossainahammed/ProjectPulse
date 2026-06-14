@@ -32,62 +32,69 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final res = context.res;
-    final isWide = res.isLargeScreen;
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: res.appBarHeight + (isWide ? 20 : 10),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: Padding(
-          padding: EdgeInsets.only(left: res.spaceLG),
-          child: Container(
-            padding: EdgeInsets.all(res.spaceSM),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Image.asset(
-              'assets/icon/app_icon.png',
-              errorBuilder: (context, error, stackTrace) => Icon(
-                Icons.show_chart,
-                color: Theme.of(context).colorScheme.primary,
+    return Obx(() {
+      final isDark = _userController.isDarkMode.value;
+      final name = _userController.name.value;
+      final imageUrl = _userController.profileImageUrl.value;
+      final unreadCount = notificationController.notifications
+          .where((n) => !n.isRead)
+          .length;
+      final projects = controller.projects.toList();
+      final totalEarned = controller.totalEarned;
+      final pendingAmount = controller.pendingAmount;
+      final chartData = statsController.getCurrentMonthProjectsData();
+
+      return Scaffold(
+        backgroundColor: isDark ? const Color(0xFF020617) : const Color(0xFFF8FAFC),
+        appBar: AppBar(
+          toolbarHeight: res.appBarHeight + (res.isLargeScreen ? 20 : 10),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: Padding(
+            padding: EdgeInsets.only(left: res.spaceLG),
+            child: Container(
+              padding: EdgeInsets.all(res.spaceSM),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Image.asset(
+                'assets/icon/app_icon.png',
+                errorBuilder: (context, error, stackTrace) => Icon(
+                  Icons.show_chart,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
             ),
           ),
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              () {
-                final h = DateTime.now().hour;
-                if (h < 12) return 'Good Morning,';
-                if (h < 17) return 'Good Afternoon,';
-                return 'Good Evening,';
-              }(),
-              style: TextStyle(
-                fontSize: res.fontSM,
-                color: Colors.grey[600],
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                () {
+                  final h = DateTime.now().hour;
+                  if (h < 12) return 'Good Morning,';
+                  if (h < 17) return 'Good Afternoon,';
+                  return 'Good Evening,';
+                }(),
+                style: TextStyle(
+                  fontSize: res.fontSM,
+                  color: Colors.grey[600],
+                ),
               ),
-            ),
-            Obx(() => Text(
-              _userController.name.value.isNotEmpty
-                  ? _userController.name.value
-                  : 'User Profile',
-              style: TextStyle(
-                fontSize: res.fontXL,
-                fontWeight: FontWeight.bold,
+              Text(
+                name.isNotEmpty ? name : 'User Profile',
+                style: TextStyle(
+                  fontSize: res.fontXL,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
               ),
-            )),
-          ],
-        ),
-        actions: [
-          Obx(() {
-            final unreadCount = notificationController.notifications
-                .where((n) => !n.isRead)
-                .length;
-            return badges.Badge(
+            ],
+          ),
+          actions: [
+            badges.Badge(
               position: badges.BadgePosition.topEnd(top: 8, end: 8),
               showBadge: unreadCount > 0,
               badgeContent: Text(
@@ -102,223 +109,521 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 icon: const Icon(Icons.notifications_none_rounded),
                 onPressed: () => Get.to(() => NotificationScreen()),
               ),
-            );
-          }),
-          GestureDetector(
-            onTap: () => Get.to(() => const ProfileScreen()),
+            ),
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () => Get.to(() => const ProfileScreen()),
+                child: Padding(
+                  padding: EdgeInsets.only(right: res.spaceLG),
+                  child: CircleAvatar(
+                    radius: res.size(22),
+                    backgroundColor: Colors.grey[200],
+                    backgroundImage: imageUrl.isNotEmpty
+                        ? _userController.getProfileImageProvider(imageUrl)
+                        : const AssetImage('assets/images/user_profile.png'),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        body: res.isDesktop
+            ? _buildDesktopLayout(context, isDark, projects, totalEarned, pendingAmount, chartData)
+            : _buildMobileLayout(context, isDark, projects, totalEarned, pendingAmount, chartData),
+        floatingActionButton: FloatingActionButton.extended(
+          heroTag: 'dashboard_fab',
+          onPressed: () => Get.dialog(const AddProjectDialog()),
+          label: Text(
+            'New Project',
+            style: TextStyle(fontSize: res.fontMD),
+          ),
+          icon: const Icon(Icons.add),
+        ),
+      );
+    });
+  }
+
+  // ── Desktop layout using WebContentWrapper and Grid ─────────────────────
+  Widget _buildDesktopLayout(
+    BuildContext context,
+    bool isDark,
+    List<dynamic> projects,
+    double totalEarned,
+    double pendingAmount,
+    List<Map<String, dynamic>> chartData,
+  ) {
+    final res = context.res;
+    final hasProgress = !chartData.every((e) => e['value'] == 0.0);
+
+    return WebContentWrapper(
+      child: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverToBoxAdapter(child: SizedBox(height: res.spaceXL)),
+
+          // 3-Column Grid summary cards
+          SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.only(right: res.spaceLG),
-              child: Obx(() {
-                final imageUrl = _userController.profileImageUrl.value;
-                return CircleAvatar(
-                  radius: res.size(22),
-                  backgroundColor: Colors.grey[200],
-                  backgroundImage: imageUrl.isNotEmpty
-                      ? _userController.getProfileImageProvider(imageUrl)
-                      : const AssetImage('assets/images/user_profile.png'),
-                );
-              }),
+              padding: EdgeInsets.symmetric(horizontal: res.spaceXL),
+              child: _buildDesktopSummaryGrid(context, isDark, totalEarned, pendingAmount, projects.length),
             ),
           ),
-        ],
-      ),
-      body: Column(
-        children: [
-          _buildFinancialSummary(context),
-          Expanded(
-            child: CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Obx(() {
-                    final data = statsController.getCurrentMonthProjectsData();
-                    final hasProgress = !data.every((e) => e['value'] == 0.0);
-                    final isDark = _userController.isDarkMode.value;
 
-                    return Center(
-                      child: SizedBox(
-                        width: res.width * 0.9,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: res.spaceLG),
-                          child: hasProgress
-                              ? ProgressChartWidget(
-                                  data: data,
-                                  title: 'Current Month Earnings',
-                                  showArrow: false,
-                                  aspectRatio: isWide ? 3.0 : 2.5,
-                                )
-                              : Container(
-                                  padding: const EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).cardColor,
-                                    borderRadius: BorderRadius.circular(24),
-                                    border: Border.all(
-                                      color: isDark ? Colors.white10 : Colors.grey.shade200,
-                                      width: 1,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.03),
-                                        blurRadius: 15,
-                                        offset: const Offset(0, 5),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Current Month Earnings',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: isDark ? Colors.white70 : Colors.black87,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 30),
-                                      Center(
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.assignment_late_outlined,
-                                              size: res.size(64),
-                                              color: Colors.grey,
-                                            ),
-                                            SizedBox(height: res.spaceLG),
-                                            Text(
-                                              'No progress yet.',
-                                              style: TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: res.fontMD,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 20),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                        ),
-                      ),
-                    );
-                  }),
+          // Earnings Chart Card
+          SliverToBoxAdapter(
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: res.spaceXL,
+                  vertical: res.spaceXL,
                 ),
-                SliverPadding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: res.spaceXL,
-                    vertical: res.spaceSM,
-                  ),
-                  sliver: SliverToBoxAdapter(
-                    child: Obx(() => Text(
-                      'Your Projects',
-                      style: TextStyle(
-                        fontSize: res.font2XL,
-                        fontWeight: FontWeight.bold,
-                        color: _userController.isDarkMode.value
-                            ? Colors.white
-                            : Colors.black87,
-                      ),
-                    )),
-                  ),
-                ),
-                Obx(() {
-                  final projects = controller.projects.toList();
-                  final isDark = _userController.isDarkMode.value;
-
-                  if (projects.isEmpty) {
-                    return SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.assignment_late_outlined,
-                              size: res.size(64),
-                              color: Colors.grey,
+                child: hasProgress
+                    ? ProgressChartWidget(
+                        data: chartData,
+                        title: 'Current Month Earnings',
+                        showArrow: false,
+                        aspectRatio: 3.2,
+                      )
+                    : Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(32),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: isDark ? Colors.white10 : Colors.grey.shade200,
+                            width: 1,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.03),
+                              blurRadius: 15,
+                              offset: const Offset(0, 5),
                             ),
-                            SizedBox(height: res.spaceLG),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             Text(
-                              'No projects yet. Add one to get started!',
+                              'Current Month Earnings',
                               style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: res.fontMD,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? Colors.white70 : Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 30),
+                            Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.assignment_late_outlined,
+                                    size: res.size(64),
+                                    color: Colors.grey,
+                                  ),
+                                  SizedBox(height: res.spaceLG),
+                                  Text(
+                                    'No progress yet.',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: res.fontMD,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
+                                ],
                               ),
                             ),
                           ],
                         ),
                       ),
-                    );
-                  }
+              ),
+            ),
+          ),
 
-                  final hPad = isWide ? res.width * 0.05 : res.width * 0.05;
+          // "Your Projects" header
+          SliverPadding(
+            padding: EdgeInsets.symmetric(
+              horizontal: res.spaceXL,
+              vertical: res.spaceSM,
+            ),
+            sliver: SliverToBoxAdapter(
+              child: Text(
+                'Your Projects',
+                style: TextStyle(
+                  fontSize: res.font2XL,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+              ),
+            ),
+          ),
 
-                  if (isWide) {
-                    return SliverPadding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: hPad,
-                        vertical: res.spaceLG,
-                      ),
-                      sliver: SliverGrid(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: res.isDesktop ? 3 : 2,
-                          crossAxisSpacing: res.spaceXL,
-                          mainAxisSpacing: res.spaceLG,
-                          mainAxisExtent: res.size(260),
-                        ),
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            return ProjectCard(
-                              project: projects[index],
-                              isDark: isDark,
-                            );
-                          },
-                          childCount: projects.length,
-                        ),
-                      ),
-                    );
-                  }
-
-                  return SliverPadding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: hPad,
-                      vertical: res.spaceLG,
+          // Projects Grid - 3 columns on desktop
+          if (projects.isEmpty)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.assignment_late_outlined,
+                      size: res.size(64),
+                      color: Colors.grey,
                     ),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          return ProjectCard(
-                            project: projects[index],
-                            isDark: isDark,
-                          );
-                        },
-                        childCount: projects.length,
+                    SizedBox(height: res.spaceLG),
+                    Text(
+                      'No projects yet. Add one to get started!',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: res.fontMD,
                       ),
                     ),
-                  );
-                }),
-                // Spacer for bottom navigation
-                SliverToBoxAdapter(child: SizedBox(height: res.size(100))),
+                  ],
+                ),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: EdgeInsets.symmetric(
+                horizontal: res.spaceXL,
+                vertical: res.spaceLG,
+              ),
+              sliver: SliverGrid(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: res.spaceXL,
+                  mainAxisSpacing: res.spaceLG,
+                  mainAxisExtent: res.size(260),
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => ProjectCard(
+                    project: projects[index],
+                    isDark: isDark,
+                  ),
+                  childCount: projects.length,
+                ),
+              ),
+            ),
+
+          SliverToBoxAdapter(child: SizedBox(height: res.size(100))),
+        ],
+      ),
+    );
+  }
+
+  // ── Desktop summary grid structure ───────────────────────────────────────
+  Widget _buildDesktopSummaryGrid(
+    BuildContext context,
+    bool isDark,
+    double totalEarned,
+    double pendingAmount,
+    int totalProjects,
+  ) {
+    final res = context.res;
+
+    return GridView.count(
+      crossAxisCount: 3,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisSpacing: res.spaceXL,
+      mainAxisSpacing: res.spaceLG,
+      childAspectRatio: 2.2,
+      children: [
+        _buildDesktopSummaryCard(
+          context,
+          'Total Earned',
+          totalEarned,
+          Icons.account_balance_wallet_outlined,
+          const Color(0xFF10B981),
+          isDark,
+        ),
+        _buildDesktopSummaryCard(
+          context,
+          'Pending Amount',
+          pendingAmount,
+          Icons.hourglass_empty_rounded,
+          const Color(0xFFF59E0B),
+          isDark,
+        ),
+        _buildDesktopSummaryCard(
+          context,
+          'Total Projects',
+          totalProjects.toDouble(),
+          Icons.assignment_outlined,
+          const Color(0xFF3B82F6),
+          isDark,
+          isCount: true,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDesktopSummaryCard(
+    BuildContext context,
+    String label,
+    double amount,
+    IconData icon,
+    Color accentColor,
+    bool isDark, {
+    bool isCount = false,
+  }) {
+    final res = context.res;
+    return Container(
+      padding: EdgeInsets.all(res.spaceLG),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isDark ? Colors.white10 : Colors.grey.shade200,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.03),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(res.spaceMD),
+            decoration: BoxDecoration(
+              color: accentColor.withValues(alpha: isDark ? 0.2 : 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: accentColor,
+              size: res.size(28),
+            ),
+          ),
+          SizedBox(width: res.spaceLG),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: res.fontSM,
+                    color: isDark ? Colors.grey[400] : Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(height: res.spaceXS),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    isCount
+                        ? amount.toInt().toString()
+                        : NumberFormat.currency(symbol: '\$').format(amount),
+                    style: TextStyle(
+                      fontSize: res.font2XL,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'dashboard_fab',
-        onPressed: () => Get.dialog(const AddProjectDialog()),
-        label: Text(
-          'New Project',
-          style: TextStyle(fontSize: res.fontMD),
-        ),
-        icon: const Icon(Icons.add),
-      ),
     );
   }
 
-  Widget _buildFinancialSummary(BuildContext context) {
+  // ── Mobile layout (original card rows) ──────────────────────────────────
+  Widget _buildMobileLayout(
+    BuildContext context,
+    bool isDark,
+    List<dynamic> projects,
+    double totalEarned,
+    double pendingAmount,
+    List<Map<String, dynamic>> chartData,
+  ) {
+    final res = context.res;
+    final hasProgress = !chartData.every((e) => e['value'] == 0.0);
+
+    return Column(
+      children: [
+        _buildFinancialSummary(context, totalEarned, pendingAmount),
+        Expanded(
+          child: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              // Chart
+              SliverToBoxAdapter(
+                child: Center(
+                  child: SizedBox(
+                    width: res.width * 0.9,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: res.spaceLG),
+                      child: hasProgress
+                          ? ProgressChartWidget(
+                              data: chartData,
+                              title: 'Current Month Earnings',
+                              showArrow: false,
+                              aspectRatio: 2.5,
+                            )
+                          : Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).cardColor,
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(
+                                  color: isDark ? Colors.white10 : Colors.grey.shade200,
+                                  width: 1,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.03),
+                                    blurRadius: 15,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Current Month Earnings',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: isDark ? Colors.white70 : Colors.black87,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 30),
+                                  Center(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.assignment_late_outlined,
+                                          size: res.size(64),
+                                          color: Colors.grey,
+                                        ),
+                                        SizedBox(height: res.spaceLG),
+                                        Text(
+                                          'No progress yet.',
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: res.fontMD,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 20),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // "Your Projects" header
+              SliverPadding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: res.spaceXL,
+                  vertical: res.spaceSM,
+                ),
+                sliver: SliverToBoxAdapter(
+                  child: Text(
+                    'Your Projects',
+                    style: TextStyle(
+                      fontSize: res.font2XL,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                  ),
+                ),
+              ),
+
+              // Projects list / grid
+              if (projects.isEmpty)
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.assignment_late_outlined,
+                          size: res.size(64),
+                          color: Colors.grey,
+                        ),
+                        SizedBox(height: res.spaceLG),
+                        Text(
+                          'No projects yet. Add one to get started!',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: res.fontMD,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else if (res.isLargeScreen)
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: res.spaceXL,
+                    vertical: res.spaceLG,
+                  ),
+                  sliver: SliverGrid(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: res.spaceXL,
+                      mainAxisSpacing: res.spaceLG,
+                      mainAxisExtent: res.size(260),
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) => ProjectCard(
+                        project: projects[index],
+                        isDark: isDark,
+                      ),
+                      childCount: projects.length,
+                    ),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: res.spaceXL,
+                    vertical: res.spaceLG,
+                  ),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) => ProjectCard(
+                        project: projects[index],
+                        isDark: isDark,
+                      ),
+                      childCount: projects.length,
+                    ),
+                  ),
+                ),
+
+              SliverToBoxAdapter(child: SizedBox(height: res.size(100))),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFinancialSummary(
+    BuildContext context,
+    double totalEarned,
+    double pendingAmount,
+  ) {
     final res = context.res;
     final isWide = res.isLargeScreen;
     return Center(
@@ -344,31 +649,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ],
         ),
-        child: Obx(
-          () => Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Expanded(
-                child: _buildSummaryItem(
-                  context,
-                  'Total Earned',
-                  controller.totalEarned,
-                  Colors.white,
-                  Icons.account_balance_wallet_outlined,
-                ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Expanded(
+              child: _buildSummaryItem(
+                context,
+                'Total Earned',
+                totalEarned,
+                Colors.white,
+                Icons.account_balance_wallet_outlined,
               ),
-              Container(height: 40, width: 1, color: Colors.white24),
-              Expanded(
-                child: _buildSummaryItem(
-                  context,
-                  'Pending',
-                  controller.pendingAmount,
-                  Colors.white70,
-                  Icons.hourglass_empty_rounded,
-                ),
+            ),
+            Container(height: 40, width: 1, color: Colors.white24),
+            Expanded(
+              child: _buildSummaryItem(
+                context,
+                'Pending',
+                pendingAmount,
+                Colors.white70,
+                Icons.hourglass_empty_rounded,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

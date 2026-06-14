@@ -20,8 +20,6 @@ class JobPostListScreen extends StatelessWidget {
 
     return Obx(() {
       final isDark = userController.isDarkMode.value;
-      // Temporarily forced to true to show all jobs
-      //final isPremium = true;
       const isPremium = true;
 
       return Scaffold(
@@ -39,142 +37,188 @@ class JobPostListScreen extends StatelessWidget {
             ),
           ),
           centerTitle: !res.isLargeScreen,
-          //actions: [
-          // Premium badge for non-premium users
-          // if (!isPremium)
-          //   Padding(
-          //     padding: const EdgeInsets.only(right: 8.0),
-          //     child: GestureDetector(
-          //       onTap: () => Get.to(() => const SubscriptionScreen()),
-          //       child: Container(
-          //         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          //         decoration: BoxDecoration(
-          //           gradient: const LinearGradient(
-          //             colors: [Color(0xFFD946EF), Color(0xFF8B5CF6)],
-          //           ),
-          //           borderRadius: BorderRadius.circular(20),
-          //         ),
-          //         child: const Row(
-          //           children: [
-          //             Icon(Icons.workspace_premium, size: 14, color: Colors.white),
-          //             SizedBox(width: 4),
-          //             Text(
-          //               'Go Premium',
-          //               style: TextStyle(
-          //                 color: Colors.white,
-          //                 fontSize: 12,
-          //                 fontWeight: FontWeight.bold,
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ],
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header description
-            Padding(
-              padding: EdgeInsets.fromLTRB(
-                res.horizontalPadding,
-                res.spaceXS,
-                res.horizontalPadding,
-                res.spaceMD,
-              ),
-              child: Text("Exclusive job opportunities for premium members",
-                // isPremium
-                //     ? 'Exclusive job opportunities for premium members'
-                //     : 'Subscribe to unlock full job details & apply',
-                style: TextStyle(
-                  color: isDark ? Colors.grey[400] : Colors.grey[600],
-                  fontSize: res.fontSM,
+        body: res.isDesktop
+            ? WebContentWrapper(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: res.spaceXL,
+                        vertical: res.spaceMD,
+                      ),
+                      child: Text(
+                        "Exclusive job opportunities for premium members",
+                        style: TextStyle(
+                          color: isDark ? Colors.grey[400] : Colors.grey[600],
+                          fontSize: res.fontSM,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Obx(() {
+                        if (controller.isLoading.value) {
+                          return Center(
+                            child: CircularProgressIndicator(
+                              color: isDark
+                                  ? const Color(0xFFD946EF)
+                                  : const Color(0xFF4F46E5),
+                            ),
+                          );
+                        }
+
+                        if (controller.jobPosts.isEmpty) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.work_off_outlined,
+                                  size: res.size(64),
+                                  color: isDark ? Colors.grey[600] : Colors.grey[400],
+                                ),
+                                SizedBox(height: res.spaceLG),
+                                Text(
+                                  'No job posts available.',
+                                  style: TextStyle(
+                                    color: isDark ? Colors.grey[400] : Colors.grey[600],
+                                    fontSize: res.fontBase,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+
+                        return RefreshIndicator(
+                          onRefresh: controller.fetchJobPosts,
+                          child: GridView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: EdgeInsets.fromLTRB(
+                              res.spaceXL,
+                              0,
+                              res.spaceXL,
+                              100,
+                            ),
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: res.spaceXL,
+                              mainAxisSpacing: res.spaceMD,
+                              mainAxisExtent: res.size(280),
+                            ),
+                            itemCount: controller.jobPosts.length,
+                            itemBuilder: (context, index) {
+                              final job = controller.jobPosts[index];
+                              return _buildJobCard(
+                                  context, job, isPremium, isDark);
+                            },
+                          ),
+                        );
+                      }),
+                    ),
+                  ],
                 ),
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header description
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      res.horizontalPadding,
+                      res.spaceXS,
+                      res.horizontalPadding,
+                      res.spaceMD,
+                    ),
+                    child: Text(
+                      "Exclusive job opportunities for premium members",
+                      style: TextStyle(
+                        color: isDark ? Colors.grey[400] : Colors.grey[600],
+                        fontSize: res.fontSM,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Obx(() {
+                      if (controller.isLoading.value) {
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: isDark
+                                ? const Color(0xFFD946EF)
+                                : const Color(0xFF4F46E5),
+                          ),
+                        );
+                      }
+
+                      if (controller.jobPosts.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.work_off_outlined,
+                                size: res.size(64),
+                                color: isDark ? Colors.grey[600] : Colors.grey[400],
+                              ),
+                              SizedBox(height: res.spaceLG),
+                              Text(
+                                'No job posts available.',
+                                style: TextStyle(
+                                  color: isDark ? Colors.grey[400] : Colors.grey[600],
+                                  fontSize: res.fontBase,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      return RefreshIndicator(
+                        onRefresh: controller.fetchJobPosts,
+                        child: res.isLargeScreen
+                            ? GridView.builder(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                padding: EdgeInsets.fromLTRB(
+                                  res.horizontalPadding,
+                                  0,
+                                  res.horizontalPadding,
+                                  100,
+                                ),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: res.spaceXL,
+                                  mainAxisSpacing: res.spaceMD,
+                                  mainAxisExtent: res.size(280),
+                                ),
+                                itemCount: controller.jobPosts.length,
+                                itemBuilder: (context, index) {
+                                  final job = controller.jobPosts[index];
+                                  return _buildJobCard(
+                                      context, job, isPremium, isDark);
+                                },
+                              )
+                            : ListView.builder(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                padding: EdgeInsets.fromLTRB(
+                                  res.horizontalPadding,
+                                  0,
+                                  res.horizontalPadding,
+                                  100,
+                                ),
+                                itemCount: controller.jobPosts.length,
+                                itemBuilder: (context, index) {
+                                  final job = controller.jobPosts[index];
+                                  return _buildJobCard(
+                                      context, job, isPremium, isDark);
+                                },
+                              ),
+                      );
+                    }),
+                  ),
+                ],
               ),
-            ),
-            Expanded(
-              child: Obx(() {
-                if (controller.isLoading.value) {
-                  return Center(
-                    child: CircularProgressIndicator(
-                      color: isDark
-                          ? const Color(0xFFD946EF)
-                          : const Color(0xFF4F46E5),
-                    ),
-                  );
-                }
-
-                if (controller.jobPosts.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.work_off_outlined,
-                          size: res.size(64),
-                          color: isDark ? Colors.grey[600] : Colors.grey[400],
-                        ),
-                        SizedBox(height: res.spaceLG),
-                        Text(
-                          'No job posts available.',
-                          style: TextStyle(
-                            color: isDark ? Colors.grey[400] : Colors.grey[600],
-                            fontSize: res.fontBase,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                return RefreshIndicator(
-                  onRefresh: controller.fetchJobPosts,
-                  child: res.isLargeScreen
-                      ? GridView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          padding: EdgeInsets.fromLTRB(
-                            res.horizontalPadding,
-                            0,
-                            res.horizontalPadding,
-                            100,
-                          ),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: res.isDesktop ? 3 : 2,
-                            crossAxisSpacing: res.spaceXL,
-                            mainAxisSpacing: res.spaceMD,
-                            mainAxisExtent:res.size(280),
-                                // isPremium ? res.size(280) : res.size(180),
-                          ),
-                          itemCount: controller.jobPosts.length,
-                          itemBuilder: (context, index) {
-                            final job = controller.jobPosts[index];
-                            return _buildJobCard(
-                                context, job, isPremium, isDark);
-                          },
-                        )
-                      : ListView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          padding: EdgeInsets.fromLTRB(
-                            res.horizontalPadding,
-                            0,
-                            res.horizontalPadding,
-                            100,
-                          ),
-                          itemCount: controller.jobPosts.length,
-                          itemBuilder: (context, index) {
-                            final job = controller.jobPosts[index];
-                            return _buildJobCard(
-                                context, job, isPremium, isDark);
-                          },
-                        ),
-                );
-              }),
-            ),
-          ],
-        ),
         floatingActionButton: Obx(() {
           if (userController.isAdmin.value) {
             return FloatingActionButton.extended(
@@ -229,7 +273,6 @@ class JobPostListScreen extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  // Category icon container
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
@@ -283,7 +326,6 @@ class JobPostListScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               if (isPremium) ...[
-                // Location and Category row
                 Row(
                   children: [
                     Icon(Icons.location_on_outlined,
@@ -318,7 +360,6 @@ class JobPostListScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 12),
-                // Divider
                 Divider(
                   color: isDark ? Colors.white10 : Colors.grey.shade200,
                   height: 1,
@@ -327,7 +368,6 @@ class JobPostListScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Budget
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 6),
@@ -359,7 +399,6 @@ class JobPostListScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    // Posted date
                     Row(
                       children: [
                         Icon(Icons.access_time_rounded,
@@ -375,7 +414,6 @@ class JobPostListScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 12),
-                // Apply button hint
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
