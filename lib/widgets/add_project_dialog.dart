@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 import '../models/project_model.dart';
 import '../models/milestone_model.dart';
 import '../controllers/project_controller.dart';
+import 'responsive.dart';
 
 class AddProjectDialog extends StatefulWidget {
   const AddProjectDialog({super.key});
@@ -45,62 +46,107 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final isLarge = context.res.isLargeScreen;
     return Dialog(
       insetPadding: const EdgeInsets.all(16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Add New Project',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 20),
-                _buildTextField(_nameController, 'Project Name', Icons.work_outline, isRequired: true),
-                _buildTextField(_clientController, 'Client Name', Icons.person_outline, isRequired: true),
-                _buildTextField(_budgetController, 'Total Budget', Icons.attach_money, isNumber: true, isRequired: true),
-                _buildDatePicker(),
-                _buildTextField(_figmaController, 'Figma Link (Optional)', Icons.design_services, isRequired: false),
-                _buildTextField(_githubController, 'GitHub Link (Optional)', Icons.code, isRequired: false),
-                _buildTextField(_driveController, 'Drive Link (Optional)', Icons.cloud_circle_outlined, isRequired: false),
-                _buildTextField(_orderIdController, 'Order ID (Optional)', Icons.tag, isRequired: false),
-                _buildAssignDatePicker(),
-                const SizedBox(height: 20),
-                const Text(
-                  'Milestones',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
-                ...List.generate(_milestones.length, (index) => _buildMilestoneInput(index)),
-                TextButton.icon(
-                  onPressed: _addMilestone,
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add Milestone'),
-                ),
-                const SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
-                    const SizedBox(width: 12),
-                    ElevatedButton(
-                      onPressed: _submit,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Get.theme.colorScheme.primary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      ),
-                      child: const Text('Create Project'),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: isLarge ? 700 : 450,
+          maxHeight: MediaQuery.of(context).size.height * 0.9,
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Add New Project',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  if (isLarge) ...[
+                    Row(
+                      children: [
+                        Expanded(child: _buildTextField(_nameController, 'Project Name', Icons.work_outline, isRequired: true)),
+                        const SizedBox(width: 16),
+                        Expanded(child: _buildTextField(_clientController, 'Client Name', Icons.person_outline, isRequired: true)),
+                      ],
                     ),
+                    Row(
+                      children: [
+                        Expanded(child: _buildTextField(_budgetController, 'Total Budget', Icons.attach_money, isNumber: true, isRequired: true)),
+                        const SizedBox(width: 16),
+                        Expanded(child: _buildDatePicker()),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(child: _buildTextField(_figmaController, 'Figma Link (Optional)', Icons.design_services, isRequired: false)),
+                        const SizedBox(width: 16),
+                        Expanded(child: _buildTextField(_githubController, 'GitHub Link (Optional)', Icons.code, isRequired: false)),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(child: _buildTextField(_driveController, 'Drive Link (Optional)', Icons.cloud_circle_outlined, isRequired: false)),
+                        const SizedBox(width: 16),
+                        Expanded(child: _buildTextField(_orderIdController, 'Order ID (Optional)', Icons.tag, isRequired: false)),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(child: _buildAssignDatePicker()),
+                        const SizedBox(width: 16),
+                        const Expanded(child: SizedBox()),
+                      ],
+                    ),
+                  ] else ...[
+                    _buildTextField(_nameController, 'Project Name', Icons.work_outline, isRequired: true),
+                    _buildTextField(_clientController, 'Client Name', Icons.person_outline, isRequired: true),
+                    _buildTextField(_budgetController, 'Total Budget', Icons.attach_money, isNumber: true, isRequired: true),
+                    _buildDatePicker(),
+                    _buildTextField(_figmaController, 'Figma Link (Optional)', Icons.design_services, isRequired: false),
+                    _buildTextField(_githubController, 'GitHub Link (Optional)', Icons.code, isRequired: false),
+                    _buildTextField(_driveController, 'Drive Link (Optional)', Icons.cloud_circle_outlined, isRequired: false),
+                    _buildTextField(_orderIdController, 'Order ID (Optional)', Icons.tag, isRequired: false),
+                    _buildAssignDatePicker(),
                   ],
-                ),
-              ],
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Milestones',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  ...List.generate(_milestones.length, (index) => _buildMilestoneInput(index)),
+                  TextButton.icon(
+                    onPressed: _addMilestone,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Milestone'),
+                  ),
+                  const SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+                      const SizedBox(width: 12),
+                      ElevatedButton(
+                        onPressed: _submit,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Get.theme.colorScheme.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        ),
+                        child: const Text('Create Project'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -217,6 +263,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
   }
 
   Widget _buildMilestoneInput(int index) {
+    final isLarge = context.res.isLargeScreen;
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -267,46 +314,97 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
             ],
           ),
           const SizedBox(height: 16),
-          InkWell(
-            onTap: () async {
-              final DateTime? picked = await showDatePicker(
-                context: context,
-                initialDate: _milestones[index].deadline,
-                firstDate: DateTime(2000),
-                lastDate: DateTime(2101),
-              );
-              if (picked != null) setState(() => _milestones[index].deadline = picked);
-            },
-            child: InputDecorator(
+          if (isLarge) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: () async {
+                      final DateTime? picked = await showDatePicker(
+                        context: context,
+                        initialDate: _milestones[index].deadline,
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2101),
+                      );
+                      if (picked != null) setState(() => _milestones[index].deadline = picked);
+                    },
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: 'Milestone Deadline',
+                        prefixIcon: const Icon(Icons.calendar_today_rounded, size: 20),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        isDense: true,
+                        filled: true,
+                        fillColor: Theme.of(context).cardColor.withValues(alpha: 0.5),
+                      ),
+                      child: Text(
+                        DateFormat('MMM dd, yyyy').format(_milestones[index].deadline),
+                        style: const TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Assign People (comma separated)',
+                      prefixIcon: const Icon(Icons.people_outline, size: 20),
+                      isDense: true,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      filled: true,
+                      fillColor: Theme.of(context).cardColor.withValues(alpha: 0.5),
+                    ),
+                    onChanged: (val) {
+                      _milestones[index].assignedPeople =
+                          val.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ] else ...[
+            InkWell(
+              onTap: () async {
+                final DateTime? picked = await showDatePicker(
+                  context: context,
+                  initialDate: _milestones[index].deadline,
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime(2101),
+                );
+                if (picked != null) setState(() => _milestones[index].deadline = picked);
+              },
+              child: InputDecorator(
+                decoration: InputDecoration(
+                  labelText: 'Milestone Deadline',
+                  prefixIcon: const Icon(Icons.calendar_today_rounded, size: 20),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  isDense: true,
+                  filled: true,
+                  fillColor: Theme.of(context).cardColor.withValues(alpha: 0.5),
+                ),
+                child: Text(
+                  DateFormat('MMM dd, yyyy').format(_milestones[index].deadline),
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
               decoration: InputDecoration(
-                labelText: 'Milestone Deadline',
-                prefixIcon: const Icon(Icons.calendar_today_rounded, size: 20),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                labelText: 'Assign People (comma separated)',
+                prefixIcon: const Icon(Icons.people_outline, size: 20),
                 isDense: true,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: Theme.of(context).cardColor.withValues(alpha: 0.5),
               ),
-              child: Text(
-                DateFormat('MMM dd, yyyy').format(_milestones[index].deadline),
-                style: const TextStyle(fontWeight: FontWeight.w500),
-              ),
+              onChanged: (val) {
+                _milestones[index].assignedPeople =
+                    val.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+              },
             ),
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            decoration: InputDecoration(
-              labelText: 'Assign People (comma separated)',
-              prefixIcon: const Icon(Icons.people_outline, size: 20),
-              isDense: true,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              filled: true,
-              fillColor: Theme.of(context).cardColor.withValues(alpha: 0.5),
-            ),
-            onChanged: (val) {
-              _milestones[index].assignedPeople =
-                  val.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
-            },
-          ),
+          ],
         ],
       ),
     );
