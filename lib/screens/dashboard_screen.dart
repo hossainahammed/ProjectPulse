@@ -95,13 +95,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           actions: [
             badges.Badge(
-              position: badges.BadgePosition.topEnd(top: 8, end: 8),
+              position: badges.BadgePosition.topEnd(top: 6, end: 6),
               showBadge: unreadCount > 0,
+              onTap: () => Get.to(() => NotificationScreen()),
+              badgeStyle: const badges.BadgeStyle(
+                padding: EdgeInsets.all(4),
+              ),
               badgeContent: Text(
-                unreadCount.toString(),
+                unreadCount > 9 ? '9+' : unreadCount.toString(),
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: res.fontXS,
+                  fontSize: res.fontXS - 2,
                   fontWeight: FontWeight.bold,
                 ),
               ),

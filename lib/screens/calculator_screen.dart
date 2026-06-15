@@ -10,6 +10,7 @@ class CalculatorScreen extends StatefulWidget {
 }
 
 class _CalculatorScreenState extends State<CalculatorScreen> {
+  final FocusNode _focusNode = FocusNode();
   String _output = '0';
   String _expression = '';
   double _num1 = 0;
@@ -17,6 +18,20 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   bool _justEvaluated = false;
   final List<String> _history = [];
   bool _showHistory = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   void _buttonPressed(String btnText) {
     HapticFeedback.lightImpact();
@@ -132,69 +147,127 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? const Color(0xFF02020B) : Colors.white;
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
-    
-    return Scaffold(
-      backgroundColor: bgColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          'Assistant Calculator',
-          style: TextStyle(fontWeight: FontWeight.bold, color: textColor, fontSize: 18),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
-          onPressed: () => Get.back(),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(_showHistory ? Icons.calculate_outlined : Icons.history_rounded, color: textColor),
-            onPressed: () => setState(() => _showHistory = !_showHistory),
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: OrientationBuilder(
-          builder: (context, orientation) {
-            final isLandscape = orientation == Orientation.landscape;
-            
-            if (isLandscape) {
-              return Row(
-                children: [
-                  Expanded(
-                    flex: 4,
-                    child: _showHistory ? _buildHistoryPanel(isDark) : _buildDisplay(isDark, true),
-                  ),
-                  const VerticalDivider(width: 1, indent: 20, endIndent: 20),
-                  Expanded(
-                    flex: 6,
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      child: _buildKeypad(isDark, true),
-                    ),
-                  ),
-                ],
-              );
+
+    return KeyboardListener(
+      focusNode: _focusNode,
+      autofocus: true,
+      onKeyEvent: (KeyEvent event) {
+        if (event is KeyDownEvent) {
+          final key = event.logicalKey;
+          final char = event.character;
+
+          if (key == LogicalKeyboardKey.backspace) {
+            _buttonPressed('⌫');
+          } else if (key == LogicalKeyboardKey.escape ||
+              key == LogicalKeyboardKey.delete) {
+            _buttonPressed('AC');
+          } else if (key == LogicalKeyboardKey.enter ||
+              key == LogicalKeyboardKey.numpadEnter) {
+            _buttonPressed('=');
+          } else if (char != null) {
+            const keyMap = {
+              '0': '0',
+              '1': '1',
+              '2': '2',
+              '3': '3',
+              '4': '4',
+              '5': '5',
+              '6': '6',
+              '7': '7',
+              '8': '8',
+              '9': '9',
+              '.': '.',
+              '+': '+',
+              '-': '-',
+              '*': '×',
+              '/': '÷',
+              '=': '=',
+              '%': '%',
+            };
+            if (keyMap.containsKey(char)) {
+              _buttonPressed(keyMap[char]!);
+            } else if (char.toLowerCase() == 'x') {
+              _buttonPressed('×');
             }
-            
-            return Column(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: _showHistory ? _buildHistoryPanel(isDark) : _buildDisplay(isDark, false),
-                ),
-                const Divider(height: 1, indent: 20, endIndent: 20),
-                Expanded(
-                  flex: 5,
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    child: _buildKeypad(isDark, false),
-                  ),
-                ),
-              ],
-            );
-          },
+          }
+        }
+      },
+      child: GestureDetector(
+        onTap: () => _focusNode.requestFocus(),
+        child: Scaffold(
+          backgroundColor: bgColor,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            title: Text(
+              'Assistant Calculator',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, color: textColor, fontSize: 18),
+            ),
+            centerTitle: true,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
+              onPressed: () => Get.back(),
+            ),
+            actions: [
+              IconButton(
+                icon: Icon(
+                    _showHistory
+                        ? Icons.calculate_outlined
+                        : Icons.history_rounded,
+                    color: textColor),
+                onPressed: () => setState(() => _showHistory = !_showHistory),
+              ),
+            ],
+          ),
+          body: SafeArea(
+            child: OrientationBuilder(
+              builder: (context, orientation) {
+                final isLandscape = orientation == Orientation.landscape;
+
+                if (isLandscape) {
+                  return Row(
+                    children: [
+                      Expanded(
+                        flex: 4,
+                        child: _showHistory
+                            ? _buildHistoryPanel(isDark)
+                            : _buildDisplay(isDark, true),
+                      ),
+                      const VerticalDivider(
+                          width: 1, indent: 20, endIndent: 20),
+                      Expanded(
+                        flex: 6,
+                        child: SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(),
+                          child: _buildKeypad(isDark, true),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+
+                return Column(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: _showHistory
+                          ? _buildHistoryPanel(isDark)
+                          : _buildDisplay(isDark, false),
+                    ),
+                    const Divider(height: 1, indent: 20, endIndent: 20),
+                    Expanded(
+                      flex: 5,
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        child: _buildKeypad(isDark, false),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
         ),
       ),
     );
@@ -258,7 +331,9 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           ),
           Expanded(
             child: _history.isEmpty
-                ? const Center(child: Text('No history', style: TextStyle(color: Colors.grey)))
+                ? const Center(
+                    child: Text('No history',
+                        style: TextStyle(color: Colors.grey)))
                 : ListView.builder(
                     itemCount: _history.length,
                     itemBuilder: (context, index) {
@@ -314,26 +389,42 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: labels.map<Widget>((label) => _buildButton(label, isDark, isLandscape: isLandscape)).toList(),
+        children: labels
+            .map<Widget>((label) =>
+                _buildButton(label, isDark, isLandscape: isLandscape))
+            .toList(),
       ),
     );
   }
 
-  Widget _buildButton(String label, bool isDark, {bool isTall = false, required bool isLandscape}) {
+  Widget _buildButton(String label, bool isDark,
+      {bool isTall = false, required bool isLandscape}) {
     bool isOp = ['÷', '×', '-', '+', '='].contains(label);
     bool isControl = ['AC', '⌫', '%'].contains(label);
     bool isEq = label == '=';
-    
+
     Color bgColor;
     Color txtColor;
 
     if (isDark) {
-      bgColor = isEq ? const Color(0xFFD946EF) : (isOp || isControl ? const Color(0xFF16162D) : const Color(0xFF1B1B2F));
-      txtColor = isEq ? Colors.white : (isOp || isControl ? const Color(0xFFA855F7) : Colors.white);
+      bgColor = isEq
+          ? const Color(0xFFD946EF)
+          : (isOp || isControl
+              ? const Color(0xFF16162D)
+              : const Color(0xFF1B1B2F));
+      txtColor = isEq
+          ? Colors.white
+          : (isOp || isControl ? const Color(0xFFA855F7) : Colors.white);
       if (label == 'AC') txtColor = Colors.red[800]!;
     } else {
-      bgColor = isEq ? const Color(0xFF6366F1) : (isOp || isControl ? const Color(0xFFF0F5FF) : const Color(0xFFF9FAFB));
-      txtColor = isEq ? Colors.white : (isOp || isControl ? const Color(0xFF6366F1) : Colors.black87);
+      bgColor = isEq
+          ? const Color(0xFF6366F1)
+          : (isOp || isControl
+              ? const Color(0xFFF0F5FF)
+              : const Color(0xFFF9FAFB));
+      txtColor = isEq
+          ? Colors.white
+          : (isOp || isControl ? const Color(0xFF6366F1) : Colors.black87);
       if (label == 'AC') txtColor = Colors.red[400]!;
     }
 
@@ -361,16 +452,17 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               ],
             ),
             alignment: Alignment.center,
-            child: label == '⌫' 
-              ? Icon(Icons.backspace_outlined, color: txtColor, size: isLandscape ? 18 : 20)
-              : Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: isLandscape ? 18 : 20,
-                    fontWeight: isOp ? FontWeight.bold : FontWeight.w500,
-                    color: txtColor,
+            child: label == '⌫'
+                ? Icon(Icons.backspace_outlined,
+                    color: txtColor, size: isLandscape ? 18 : 20)
+                : Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: isLandscape ? 18 : 20,
+                      fontWeight: isOp ? FontWeight.bold : FontWeight.w500,
+                      color: txtColor,
+                    ),
                   ),
-                ),
           ),
         ),
       ),

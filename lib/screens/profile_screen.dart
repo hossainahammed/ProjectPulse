@@ -78,8 +78,8 @@ class ProfileScreen extends StatelessWidget {
                     // ),
                     _MenuItem(
                       Icons.trending_up_rounded,
-                      'Learning Progress',
-                      () => Get.to(() => const LearningProgressScreen()),
+                      'Earning Progress',
+                      () => Get.to(() => const EarningProgressScreen()),
                     ),
                   ]),
                   const SizedBox(height: 24),
@@ -532,12 +532,14 @@ class ProfileScreen extends StatelessWidget {
                   color: Theme.of(context).cardTheme.color,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: Theme.of(context).dividerColor.withValues(alpha: 0.05),
+                    color:
+                        Theme.of(context).dividerColor.withValues(alpha: 0.05),
                   ),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.public_off_rounded, color: Colors.grey[400], size: 28),
+                    Icon(Icons.public_off_rounded,
+                        color: Colors.grey[400], size: 28),
                     const SizedBox(width: 14),
                     Text(
                       'Web links not configured yet.',
@@ -561,7 +563,8 @@ class ProfileScreen extends StatelessWidget {
                   // Header banner
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
@@ -571,7 +574,8 @@ class ProfileScreen extends StatelessWidget {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(20)),
                     ),
                     child: Row(
                       children: [
@@ -581,7 +585,8 @@ class ProfileScreen extends StatelessWidget {
                             color: primary.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: Icon(Icons.public_rounded, color: primary, size: 20),
+                          child: Icon(Icons.public_rounded,
+                              color: primary, size: 20),
                         ),
                         const SizedBox(width: 12),
                         Column(
@@ -592,14 +597,18 @@ class ProfileScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
-                                color: isDark ? Colors.white : const Color(0xFF1E293B),
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF1E293B),
                               ),
                             ),
                             Text(
                               'Tap a link to open in browser',
                               style: TextStyle(
                                 fontSize: 11,
-                                color: isDark ? Colors.grey[400] : const Color(0xFF64748B),
+                                color: isDark
+                                    ? Colors.grey[400]
+                                    : const Color(0xFF64748B),
                               ),
                             ),
                           ],
@@ -607,7 +616,7 @@ class ProfileScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (netlifyUrl.isNotEmpty) ...[  
+                  if (netlifyUrl.isNotEmpty) ...[
                     _buildWebLinkTile(
                       context: context,
                       label: 'Netlify',
@@ -618,8 +627,11 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ],
                   if (netlifyUrl.isNotEmpty && firebaseUrl.isNotEmpty)
-                    Divider(height: 1, indent: 56, color: Colors.grey.withValues(alpha: 0.1)),
-                  if (firebaseUrl.isNotEmpty) ...[  
+                    Divider(
+                        height: 1,
+                        indent: 56,
+                        color: Colors.grey.withValues(alpha: 0.1)),
+                  if (firebaseUrl.isNotEmpty) ...[
                     _buildWebLinkTile(
                       context: context,
                       label: 'Firebase',
@@ -1194,117 +1206,119 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
       body: GlassBackground(
         child: SafeArea(
           child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                Stack(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: [
-                            Get.theme.colorScheme.primary,
-                            Get.theme.colorScheme.secondary,
-                          ],
-                        ),
-                      ),
-                      child: Obx(() {
-                        final imageUrl = _userController.profileImageUrl.value;
-                        return CircleAvatar(
-                          radius: 50,
-                          backgroundImage: _imageFile != null
-                              ? FileImage(_imageFile!) as ImageProvider
-                              : (imageUrl.isNotEmpty
-                                  ? _userController
-                                      .getProfileImageProvider(imageUrl)
-                                  : const AssetImage(
-                                      'assets/images/user_profile.png')),
-                        );
-                      }),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: GestureDetector(
-                        onTap: _showImageSourceDialog,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Get.theme.colorScheme.primary,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
-                          ),
-                          child: const Icon(
-                            Icons.camera_alt_outlined,
-                            size: 16,
-                            color: Colors.white,
+            padding: const EdgeInsets.all(24),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Stack(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            colors: [
+                              Get.theme.colorScheme.primary,
+                              Get.theme.colorScheme.secondary,
+                            ],
                           ),
                         ),
+                        child: Obx(() {
+                          final imageUrl =
+                              _userController.profileImageUrl.value;
+                          return CircleAvatar(
+                            radius: 50,
+                            backgroundImage: _imageFile != null
+                                ? FileImage(_imageFile!) as ImageProvider
+                                : (imageUrl.isNotEmpty
+                                    ? _userController
+                                        .getProfileImageProvider(imageUrl)
+                                    : const AssetImage(
+                                        'assets/images/user_profile.png')),
+                          );
+                        }),
                       ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: _showImageSourceDialog,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Get.theme.colorScheme.primary,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 2),
+                            ),
+                            child: const Icon(
+                              Icons.camera_alt_outlined,
+                              size: 16,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Name',
+                      border: UnderlineInputBorder(),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 32),
-                TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Name',
-                    border: UnderlineInputBorder(),
+                    validator: (v) => v == null || v.trim().isEmpty
+                        ? 'Name is required'
+                        : null,
                   ),
-                  validator: (v) =>
-                      v == null || v.trim().isEmpty ? 'Name is required' : null,
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  initialValue: _userController.email.value.isNotEmpty
-                      ? _userController.email.value
-                      : (FirebaseAuth.instance.currentUser?.email ?? ''),
-                  readOnly: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Email Address',
-                    helperText: 'Email cannot be changed',
-                    border: UnderlineInputBorder(),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    initialValue: _userController.email.value.isNotEmpty
+                        ? _userController.email.value
+                        : (FirebaseAuth.instance.currentUser?.email ?? ''),
+                    readOnly: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Email Address',
+                      helperText: 'Email cannot be changed',
+                      border: UnderlineInputBorder(),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: _dobController,
-                  readOnly: true,
-                  onTap: () => _selectDate(context),
-                  decoration: const InputDecoration(
-                    labelText: 'Date of Birth',
-                    suffixIcon: Icon(Icons.calendar_today_outlined, size: 20),
-                    border: UnderlineInputBorder(),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _dobController,
+                    readOnly: true,
+                    onTap: () => _selectDate(context),
+                    decoration: const InputDecoration(
+                      labelText: 'Date of Birth',
+                      suffixIcon: Icon(Icons.calendar_today_outlined, size: 20),
+                      border: UnderlineInputBorder(),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: _locationController,
-                  readOnly: true,
-                  onTap: _showCountryPickerDialog,
-                  decoration: const InputDecoration(
-                    labelText: 'Location / Country',
-                    suffixIcon: Icon(Icons.keyboard_arrow_down, size: 20),
-                    border: UnderlineInputBorder(),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _locationController,
+                    readOnly: true,
+                    onTap: _showCountryPickerDialog,
+                    decoration: const InputDecoration(
+                      labelText: 'Location / Country',
+                      suffixIcon: Icon(Icons.keyboard_arrow_down, size: 20),
+                      border: UnderlineInputBorder(),
+                    ),
+                    validator: (v) => v == null || v.trim().isEmpty
+                        ? 'Location is required'
+                        : null,
                   ),
-                  validator: (v) => v == null || v.trim().isEmpty
-                      ? 'Location is required'
-                      : null,
-                ),
-                const SizedBox(height: 40),
-                _buildActionButton('Save', _save),
-              ],
+                  const SizedBox(height: 40),
+                  _buildActionButton('Save', _save),
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
 
 class SecurityScreen extends StatefulWidget {
@@ -1332,39 +1346,39 @@ class _SecurityScreenState extends State<SecurityScreen> {
         body: GlassBackground(
           child: SafeArea(
             child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                ListTile(
-                  title: const Text('Remember Me'),
-                  trailing: Switch(
-                    value: _rememberMe,
-                    onChanged: (v) {
-                      setState(() {
-                        _rememberMe = v;
-                      });
-                    },
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  ListTile(
+                    title: const Text('Remember Me'),
+                    trailing: Switch(
+                      value: _rememberMe,
+                      onChanged: (v) {
+                        setState(() {
+                          _rememberMe = v;
+                        });
+                      },
+                    ),
+                    contentPadding: EdgeInsets.zero,
                   ),
-                  contentPadding: EdgeInsets.zero,
-                ),
-                ListTile(
-                  title: const Text('Change Password'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => Get.to(() => const ChangePasswordScreen()),
-                  contentPadding: EdgeInsets.zero,
-                ),
-                const SizedBox(height: 100),
-                _buildActionButton(
-                  'Change Password',
-                  () => Get.to(() => const ChangePasswordScreen()),
-                ),
-                const SizedBox(height: 20),
-              ],
+                  ListTile(
+                    title: const Text('Change Password'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => Get.to(() => const ChangePasswordScreen()),
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  const SizedBox(height: 100),
+                  _buildActionButton(
+                    'Change Password',
+                    () => Get.to(() => const ChangePasswordScreen()),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
 }
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -1616,68 +1630,69 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       body: GlassBackground(
         child: SafeArea(
           child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Create new password',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Your new password must be unique from those previously used.',
-                  style: TextStyle(color: Colors.grey[500]),
-                ),
-                const SizedBox(height: 32),
-                _buildPasswordField(
-                    'Old Password', _oldPasswordController, _obscureOld, (v) {
-                  setState(() {
-                    _obscureOld = !v;
-                  });
-                },
-                    (v) => v == null || v.isEmpty
-                        ? 'Old Password is required'
-                        : null),
-                _buildPasswordField(
-                    'New Password', _newPasswordController, _obscureNew, (v) {
-                  setState(() {
-                    _obscureNew = !v;
-                  });
-                }, (v) {
-                  if (v == null || v.isEmpty) return 'New Password is required';
-                  if (v.length < 6) {
-                    return 'Password must be at least 6 characters';
-                  }
-                  return null;
-                }),
-                _buildPasswordField('Confirm Password',
-                    _confirmPasswordController, _obscureConfirm, (v) {
-                  setState(() {
-                    _obscureConfirm = !v;
-                  });
-                }, (v) {
-                  if (v == null || v.isEmpty) return 'Confirm your password';
-                  if (v != _newPasswordController.text) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                }),
-                const SizedBox(height: 40),
-                _isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : _buildActionButton('Reset Password', _submit),
-                const SizedBox(height: 20),
-              ],
+            padding: const EdgeInsets.all(24),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Create new password',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Your new password must be unique from those previously used.',
+                    style: TextStyle(color: Colors.grey[500]),
+                  ),
+                  const SizedBox(height: 32),
+                  _buildPasswordField(
+                      'Old Password', _oldPasswordController, _obscureOld, (v) {
+                    setState(() {
+                      _obscureOld = !v;
+                    });
+                  },
+                      (v) => v == null || v.isEmpty
+                          ? 'Old Password is required'
+                          : null),
+                  _buildPasswordField(
+                      'New Password', _newPasswordController, _obscureNew, (v) {
+                    setState(() {
+                      _obscureNew = !v;
+                    });
+                  }, (v) {
+                    if (v == null || v.isEmpty)
+                      return 'New Password is required';
+                    if (v.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
+                    return null;
+                  }),
+                  _buildPasswordField('Confirm Password',
+                      _confirmPasswordController, _obscureConfirm, (v) {
+                    setState(() {
+                      _obscureConfirm = !v;
+                    });
+                  }, (v) {
+                    if (v == null || v.isEmpty) return 'Confirm your password';
+                    if (v != _newPasswordController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  }),
+                  const SizedBox(height: 40),
+                  _isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : _buildActionButton('Reset Password', _submit),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildPasswordField(
     String hint,
@@ -1904,72 +1919,74 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
       body: GlassBackground(
         child: SafeArea(
           child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                _buildFormTextField(
-                    'Name',
-                    _nameController,
-                    (v) => v == null || v.trim().isEmpty
-                        ? 'Name is required'
-                        : null),
-                _buildFormTextField('Email', _emailController, (v) {
-                  if (v == null || v.trim().isEmpty) return 'Email is required';
-                  if (!GetUtils.isEmail(v.trim())) return 'Enter a valid email';
-                  return null;
-                }, keyboardType: TextInputType.emailAddress),
-                _buildFormTextField(
-                  'Phone',
-                  _phoneController,
-                  (v) {
-                    if (v == null || v.trim().isEmpty) {
-                      return 'Phone is required';
-                    }
-
-                    if (!GetUtils.isNumericOnly(v.trim())) {
-                      return 'Only numbers allowed';
-                    }
-
-                    if (v.trim().length < 11) {
-                      return 'Enter valid phone number';
-                    }
-
+            padding: const EdgeInsets.all(24),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  _buildFormTextField(
+                      'Name',
+                      _nameController,
+                      (v) => v == null || v.trim().isEmpty
+                          ? 'Name is required'
+                          : null),
+                  _buildFormTextField('Email', _emailController, (v) {
+                    if (v == null || v.trim().isEmpty)
+                      return 'Email is required';
+                    if (!GetUtils.isEmail(v.trim()))
+                      return 'Enter a valid email';
                     return null;
-                  },
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
-                ),
-                // _buildFormTextField(
-                //     'Phone',
-                //     _phoneController,
-                //     (v) => v == null || v.trim().isEmpty
-                //         ? 'Phone is required'
-                //         : null,
-                //     keyboardType: TextInputType.number),
-                _buildFormTextField(
-                    'How can we help?',
-                    _messageController,
-                    (v) => v == null || v.trim().isEmpty
-                        ? 'Message is required'
-                        : null,
-                    maxLines: 5),
-                const SizedBox(height: 40),
-                _isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : _buildActionButton('Send', _send),
-                const SizedBox(height: 20),
-              ],
+                  }, keyboardType: TextInputType.emailAddress),
+                  _buildFormTextField(
+                    'Phone',
+                    _phoneController,
+                    (v) {
+                      if (v == null || v.trim().isEmpty) {
+                        return 'Phone is required';
+                      }
+
+                      if (!GetUtils.isNumericOnly(v.trim())) {
+                        return 'Only numbers allowed';
+                      }
+
+                      if (v.trim().length < 11) {
+                        return 'Enter valid phone number';
+                      }
+
+                      return null;
+                    },
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
+                  ),
+                  // _buildFormTextField(
+                  //     'Phone',
+                  //     _phoneController,
+                  //     (v) => v == null || v.trim().isEmpty
+                  //         ? 'Phone is required'
+                  //         : null,
+                  //     keyboardType: TextInputType.number),
+                  _buildFormTextField(
+                      'How can we help?',
+                      _messageController,
+                      (v) => v == null || v.trim().isEmpty
+                          ? 'Message is required'
+                          : null,
+                      maxLines: 5),
+                  const SizedBox(height: 40),
+                  _isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : _buildActionButton('Send', _send),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildFormTextField(
     String hint,
@@ -2052,69 +2069,69 @@ class NotificationSettingsScreen extends StatelessWidget {
       body: GlassBackground(
         child: SafeArea(
           child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Preference Settings',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Manage how you receive alerts and reminders.',
-                style: TextStyle(color: Colors.grey[500]),
-              ),
-              const SizedBox(height: 32),
-              _buildSettingGroup([
-                Obx(
-                  () => _buildToggleItem(
-                    'All Notifications',
-                    'Turn on/off all alerts',
-                    controller.allEnabled.value,
-                    (val) => controller.toggleAll(val),
-                  ),
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Preference Settings',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                const Divider(height: 1),
-                Obx(
-                  () => _buildToggleItem(
-                    'Project Completion',
-                    'Alert when a project is fully delivered',
-                    controller.projectCompleteEnabled.value,
-                    (val) => controller.projectCompleteEnabled.value = val,
-                  ),
+                const SizedBox(height: 8),
+                Text(
+                  'Manage how you receive alerts and reminders.',
+                  style: TextStyle(color: Colors.grey[500]),
                 ),
-                const Divider(height: 1),
-                Obx(
-                  () => _buildToggleItem(
-                    'Deadline Reminders',
-                    'Notify 2 days before any deadline',
-                    controller.deadlineAlertsEnabled.value,
-                    (val) => controller.deadlineAlertsEnabled.value = val,
+                const SizedBox(height: 32),
+                _buildSettingGroup([
+                  Obx(
+                    () => _buildToggleItem(
+                      'All Notifications',
+                      'Turn on/off all alerts',
+                      controller.allEnabled.value,
+                      (val) => controller.toggleAll(val),
+                    ),
                   ),
-                ),
-                const Divider(height: 1),
-                Obx(
-                  () => _buildToggleItem(
-                    'Project Creation',
-                    'Confirmations for new projects',
-                    controller.projectCreateEnabled.value,
-                    (val) => controller.projectCreateEnabled.value = val,
+                  const Divider(height: 1),
+                  Obx(
+                    () => _buildToggleItem(
+                      'Project Completion',
+                      'Alert when a project is fully delivered',
+                      controller.projectCompleteEnabled.value,
+                      (val) => controller.projectCompleteEnabled.value = val,
+                    ),
                   ),
+                  const Divider(height: 1),
+                  Obx(
+                    () => _buildToggleItem(
+                      'Deadline Reminders',
+                      'Notify 2 days before any deadline',
+                      controller.deadlineAlertsEnabled.value,
+                      (val) => controller.deadlineAlertsEnabled.value = val,
+                    ),
+                  ),
+                  const Divider(height: 1),
+                  Obx(
+                    () => _buildToggleItem(
+                      'Project Creation',
+                      'Confirmations for new projects',
+                      controller.projectCreateEnabled.value,
+                      (val) => controller.projectCreateEnabled.value = val,
+                    ),
+                  ),
+                ]),
+                const SizedBox(height: 32),
+                _buildNavigateButton(
+                  'View Notification List',
+                  () => Get.to(() => NotificationScreen()),
                 ),
-              ]),
-              const SizedBox(height: 32),
-              _buildNavigateButton(
-                'View Notification List',
-                () => Get.to(() => NotificationScreen()),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildSettingGroup(List<Widget> children) {
     return Container(
@@ -2514,7 +2531,7 @@ class ProfilePhotoScreen extends StatelessWidget {
             onPressed: () => Get.back(),
           ),
         ),
-        body:
-            const GlassBackground(child: SafeArea(child: Center(child: Text('Profile Photo')))),
+        body: const GlassBackground(
+            child: SafeArea(child: Center(child: Text('Profile Photo')))),
       );
 }
