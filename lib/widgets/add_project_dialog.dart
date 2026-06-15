@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -160,7 +161,10 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
       padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
         controller: controller,
-        keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+        keyboardType: isNumber ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.text,
+        inputFormatters: isNumber
+            ? [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))]
+            : null,
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: Icon(icon, size: 20),
@@ -179,6 +183,11 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
         validator: (value) {
           if (isRequired && (value == null || value.isEmpty)) {
             return 'Required';
+          }
+          if (isNumber && value != null && value.isNotEmpty) {
+            if (double.tryParse(value) == null) {
+              return 'Enter a valid number';
+            }
           }
           return null;
         },
@@ -302,7 +311,8 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
                     isDense: true,
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  keyboardType: TextInputType.number,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))],
                   onChanged: (val) => _milestones[index].amount = double.tryParse(val) ?? 0.0,
                 ),
               ),

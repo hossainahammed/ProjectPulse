@@ -6,8 +6,8 @@ import '../controllers/user_controller.dart';
 import '../widgets/progress_chart_widget.dart';
 import '../widgets/glass_background.dart';
 
-class LearningProgressScreen extends StatelessWidget {
-  const LearningProgressScreen({super.key});
+class EarningProgressScreen extends StatelessWidget {
+  const EarningProgressScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,8 @@ class LearningProgressScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Learning Progress', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Earning Progress',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
@@ -37,11 +38,14 @@ class LearningProgressScreen extends StatelessWidget {
             final isDark = userController.isDarkMode.value;
 
             final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
-            final textSub = isDark ? Colors.grey[400]! : const Color(0xFF64748B);
-            final accentColor = isDark ? const Color(0xFFD946EF) : const Color(0xFF4F46E5);
+            final textSub =
+                isDark ? Colors.grey[400]! : const Color(0xFF64748B);
+            final accentColor =
+                isDark ? const Color(0xFFD946EF) : const Color(0xFF4F46E5);
 
             return SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: hPadding, vertical: 24.0),
+              padding:
+                  EdgeInsets.symmetric(horizontal: hPadding, vertical: 24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -54,7 +58,8 @@ class LearningProgressScreen extends StatelessWidget {
                           color: accentColor.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(14),
                         ),
-                        child: Icon(Icons.trending_up_rounded, color: accentColor, size: 26),
+                        child: Icon(Icons.trending_up_rounded,
+                            color: accentColor, size: 26),
                       ),
                       const SizedBox(width: 14),
                       Expanded(
@@ -89,7 +94,8 @@ class LearningProgressScreen extends StatelessWidget {
                   const SizedBox(height: 28),
 
                   // ── Stats Row ────────────────────────────────────
-                 _buildStatsRow(statsController, isDark, accentColor, textPrimary, textSub),
+                  _buildStatsRow(statsController, isDark, accentColor,
+                      textPrimary, textSub),
                   const SizedBox(height: 24),
 
                   // ── Insight Card ─────────────────────────────────
@@ -111,8 +117,10 @@ class LearningProgressScreen extends StatelessWidget {
     Color textSub,
   ) {
     final data = stats.getLearningProgress();
-    double total = data.fold(0.0, (sum, item) => sum + (item['value'] as double));
-    double maxMonth = data.fold(0.0, (m, item) => (item['value'] as double) > m ? item['value'] : m);
+    double total =
+        data.fold(0.0, (sum, item) => sum + (item['value'] as double));
+    double maxMonth = data.fold(
+        0.0, (m, item) => (item['value'] as double) > m ? item['value'] : m);
     String bestMonth = '';
     for (var item in data) {
       if ((item['value'] as double) == maxMonth) {
@@ -123,16 +131,41 @@ class LearningProgressScreen extends StatelessWidget {
 
     return Row(
       children: [
-        Expanded(child: _statCard('\$${total.toStringAsFixed(0)}', 'Total (6 mo.)', Icons.account_balance_wallet_rounded, isDark, accent, textPrimary, textSub)),
+        Expanded(
+            child: _statCard(
+                '\$${total.toStringAsFixed(0)}',
+                'Total (6 mo.)',
+                Icons.account_balance_wallet_rounded,
+                isDark,
+                accent,
+                textPrimary,
+                textSub)),
         const SizedBox(width: 14),
-        Expanded(child: _statCard(bestMonth, 'Best Month', Icons.emoji_events_rounded, isDark, accent, textPrimary, textSub)),
+        Expanded(
+            child: _statCard(
+                bestMonth,
+                'Best Month',
+                Icons.emoji_events_rounded,
+                isDark,
+                accent,
+                textPrimary,
+                textSub)),
         const SizedBox(width: 14),
-        Expanded(child: _statCard('\$${maxMonth.toStringAsFixed(0)}', 'Peak Earning', Icons.arrow_upward_rounded, isDark, accent, textPrimary, textSub)),
+        Expanded(
+            child: _statCard(
+                '\$${maxMonth.toStringAsFixed(0)}',
+                'Peak Earning',
+                Icons.arrow_upward_rounded,
+                isDark,
+                accent,
+                textPrimary,
+                textSub)),
       ],
     );
   }
 
-  Widget _statCard(String value, String label, IconData icon, bool isDark, Color accent, Color textPrimary, Color textSub) {
+  Widget _statCard(String value, String label, IconData icon, bool isDark,
+      Color accent, Color textPrimary, Color textSub) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       decoration: BoxDecoration(
