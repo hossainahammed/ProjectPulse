@@ -84,6 +84,7 @@ class LearningProgressScreen extends StatelessWidget {
                   ProgressChartWidget(
                     data: statsController.getLearningProgress(),
                     title: 'Monthly Earnings (Last 6 Months)',
+                    showArrow: false,
                   ),
                   const SizedBox(height: 28),
 
