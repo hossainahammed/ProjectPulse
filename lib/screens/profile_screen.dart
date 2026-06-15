@@ -59,11 +59,6 @@ class ProfileScreen extends StatelessWidget {
                       'Personal Data',
                       () => Get.to(() => const PersonalDataScreen()),
                     ),
-                    _MenuItem(
-                      Icons.calculate_outlined,
-                      'Calculator',
-                      () => Get.to(() => const CalculatorScreen()),
-                    ),
                     // Temporarily hidden
                     // _MenuItem(
                     //   Icons.credit_card_outlined,
@@ -96,12 +91,20 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ]),
                   const SizedBox(height: 24),
-                  _buildMenuSection(context, 'Support & About', [
+                  _buildMenuSection(context, 'Tools & Utilities', [
+                    _MenuItem(
+                      Icons.calculate_outlined,
+                      'Calculator',
+                      () => Get.to(() => const CalculatorScreen()),
+                    ),
                     _MenuItem(
                       Icons.note_alt_outlined,
                       'My Notes',
                       () => Get.to(() => const NotesScreen()),
                     ),
+                  ]),
+                  const SizedBox(height: 24),
+                  _buildMenuSection(context, 'Support & About', [
                     _MenuItem(
                       Icons.help_outline,
                       'Contact Us',
