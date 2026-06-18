@@ -5,6 +5,7 @@ import '../controllers/project_stats_controller.dart';
 import '../controllers/user_controller.dart';
 import '../widgets/progress_chart_widget.dart';
 import '../widgets/glass_background.dart';
+import '../widgets/responsive.dart';
 
 class EarningProgressScreen extends StatelessWidget {
   const EarningProgressScreen({super.key});
@@ -43,7 +44,9 @@ class EarningProgressScreen extends StatelessWidget {
             final accentColor =
                 isDark ? const Color(0xFFD946EF) : const Color(0xFF4F46E5);
 
-            return SingleChildScrollView(
+            return WebContentWrapper(
+              maxWidth: kWebPageMaxWidth,
+              child: SingleChildScrollView(
               padding:
                   EdgeInsets.symmetric(horizontal: hPadding, vertical: 24.0),
               child: Column(
@@ -102,6 +105,7 @@ class EarningProgressScreen extends StatelessWidget {
                   _buildInsightCard(isDark, accentColor, textPrimary),
                 ],
               ),
+            ),
             );
           }),
         ),

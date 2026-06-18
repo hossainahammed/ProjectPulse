@@ -46,7 +46,7 @@ class _NotesScreenState extends State<NotesScreen> {
             icon: const Icon(Icons.save_rounded),
             onPressed: () {
               controller.updateNote(_textController.text);
-              Get.snackbar(
+              Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 
                 'Saved',
                 'Your notes have been saved.',
                 snackPosition: SnackPosition.TOP,

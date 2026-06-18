@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../controllers/notification_controller.dart';
 import '../controllers/user_controller.dart';
 import '../models/notification_model.dart';
+import '../widgets/responsive.dart';
 
 class NotificationScreen extends StatelessWidget {
   final NotificationController controller = Get.find<NotificationController>();
@@ -57,13 +58,16 @@ class NotificationScreen extends StatelessWidget {
           );
         }
 
-        return ListView.builder(
+        return WebContentWrapper(
+          maxWidth: 800,
+          child: ListView.builder(
           padding: const EdgeInsets.all(16),
           itemCount: controller.notifications.length,
           itemBuilder: (context, index) {
             final notification = controller.notifications[index];
             return _buildDismissibleCard(context, notification, isDark, textColor);
           },
+        ),
         );
       }),
     );

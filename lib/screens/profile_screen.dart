@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../widgets/glass_background.dart';
+import '../widgets/responsive.dart';
 import '../controllers/auth_controller.dart';
 // import 'subscription_screen.dart';
 import 'notes_screen.dart';
@@ -31,7 +32,9 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       body: GlassBackground(
         child: SafeArea(
-          child: SingleChildScrollView(
+          child: WebContentWrapper(
+            maxWidth: kWebPageMaxWidth,
+            child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: padding, vertical: 24.0),
             child: Obx(() {
               final UserController userController = Get.find<UserController>();
@@ -137,6 +140,7 @@ class ProfileScreen extends StatelessWidget {
                 ],
               );
             }),
+          ),
           ),
         ),
       ),
@@ -1208,7 +1212,9 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
       ),
       body: GlassBackground(
         child: SafeArea(
-          child: SingleChildScrollView(
+          child: WebContentWrapper(
+            maxWidth: 800,
+            child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Form(
               key: _formKey,
@@ -1318,6 +1324,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
               ),
             ),
           ),
+          ),
         ),
       ),
     );
@@ -1348,7 +1355,9 @@ class _SecurityScreenState extends State<SecurityScreen> {
         ),
         body: GlassBackground(
           child: SafeArea(
-            child: SingleChildScrollView(
+            child: WebContentWrapper(
+              maxWidth: 800,
+              child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
@@ -1379,6 +1388,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                 ],
               ),
             ),
+          ),
           ),
         ),
       );
@@ -1632,7 +1642,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       ),
       body: GlassBackground(
         child: SafeArea(
-          child: SingleChildScrollView(
+          child: WebContentWrapper(
+            maxWidth: 800,
+            child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Form(
               key: _formKey,
@@ -1691,6 +1703,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 ],
               ),
             ),
+          ),
           ),
         ),
       ),
@@ -1921,7 +1934,9 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
       ),
       body: GlassBackground(
         child: SafeArea(
-          child: SingleChildScrollView(
+          child: WebContentWrapper(
+            maxWidth: 800,
+            child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Form(
               key: _formKey,
@@ -1985,6 +2000,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                 ],
               ),
             ),
+          ),
           ),
         ),
       ),
@@ -2071,7 +2087,9 @@ class NotificationSettingsScreen extends StatelessWidget {
       ),
       body: GlassBackground(
         child: SafeArea(
-          child: Padding(
+          child: WebContentWrapper(
+            maxWidth: 800,
+            child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -2130,6 +2148,7 @@ class NotificationSettingsScreen extends StatelessWidget {
                 ),
               ],
             ),
+          ),
           ),
         ),
       ),

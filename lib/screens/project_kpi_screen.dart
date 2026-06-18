@@ -233,7 +233,7 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
 
     final enabledComps = _components.where((c) => c.enabled).toList();
     if (enabledComps.isEmpty) {
-      Get.snackbar(
+      Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 
         'Validation Error',
         'Please enable at least one project component.',
         snackPosition: SnackPosition.TOP,
@@ -245,7 +245,7 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
 
     final double sum = _round(_currentSum);
     if (sum != 100.0) {
-      Get.snackbar(
+      Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 
         'Validation Error',
         'Total percentage must sum to exactly 100%. Currently it is ${_formatDouble(sum)}%.',
         snackPosition: SnackPosition.TOP,
