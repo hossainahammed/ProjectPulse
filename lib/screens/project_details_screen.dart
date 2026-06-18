@@ -49,7 +49,9 @@ class ProjectDetailsScreen extends StatelessWidget {
             ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: WebContentWrapper(
+        maxWidth: kWebPageMaxWidth,
+        child: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
           horizontal: padding,
           vertical: res.space3XL,
@@ -75,6 +77,7 @@ class ProjectDetailsScreen extends StatelessWidget {
             SizedBox(height: res.space4XL),
           ],
         ),
+      ),
       ),
     );
   }

@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../models/project_model.dart';
 import '../models/project_kpi_config.dart';
 import '../controllers/project_controller.dart';
+import '../widgets/responsive.dart';
 
 class ComponentUiState {
   final String key;
@@ -42,11 +43,11 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
   final ProjectController _projectController = Get.find<ProjectController>();
   final _formKey = GlobalKey<FormState>();
   final ScrollController _scrollController = ScrollController();
-  
+
   late double _totalValue;
   final TextEditingController _totalValueController = TextEditingController();
   final List<ComponentUiState> _components = [];
-  
+
   List<String> _suggestedAssignees = [];
 
   @override
@@ -66,9 +67,11 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
 
     // 2. Parse existing config or initialize defaults
     ProjectKpiConfig config;
-    if (widget.project.kpiConfigJson != null && widget.project.kpiConfigJson!.isNotEmpty) {
+    if (widget.project.kpiConfigJson != null &&
+        widget.project.kpiConfigJson!.isNotEmpty) {
       try {
-        config = ProjectKpiConfig.fromJson(jsonDecode(widget.project.kpiConfigJson!));
+        config = ProjectKpiConfig.fromJson(
+            jsonDecode(widget.project.kpiConfigJson!));
       } catch (e) {
         config = _createDefaultConfig();
       }
@@ -83,13 +86,14 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
     final colorMap = {
       'web_frontend': const Color(0xFF3B82F6), // Blue
       'app_frontend': const Color(0xFFF97316), // Orange
-      'figma': const Color(0xFFEC4899),        // Pink
-      'backend': const Color(0xFF8B5CF6),      // Purple
+      'figma': const Color(0xFFEC4899), // Pink
+      'backend': const Color(0xFF8B5CF6), // Purple
     };
 
     _components.clear();
     for (var compConfig in config.components) {
-      final pController = TextEditingController(text: _formatDouble(compConfig.percentage));
+      final pController =
+          TextEditingController(text: _formatDouble(compConfig.percentage));
       final aController = TextEditingController(text: compConfig.assignee);
       final aFocusNode = FocusNode();
 
@@ -136,11 +140,13 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
     // Check if dashboard milestone exists
     bool hasDashboard = widget.project.milestones.any((m) {
       final title = m.title.toLowerCase();
-      return title.contains('dashboard') || title.contains('web') || title.contains('page');
+      return title.contains('dashboard') ||
+          title.contains('web') ||
+          title.contains('page');
     });
 
     final config = ProjectKpiConfig.defaultConfig(widget.project.totalBudget);
-    
+
     // Customize active components based on presence of Dashboard/Web
     for (var comp in config.components) {
       if (comp.key == 'web_frontend') {
@@ -185,7 +191,8 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
     }
 
     // Adjust any rounding errors to hit exactly 100.0
-    double newSum = enabledComps.fold(0.0, (sum, c) => sum + _round(c.percentage));
+    double newSum =
+        enabledComps.fold(0.0, (sum, c) => sum + _round(c.percentage));
     double diff = 100.0 - newSum;
     if (diff != 0.0) {
       enabledComps.first.percentage += diff;
@@ -233,7 +240,9 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
 
     final enabledComps = _components.where((c) => c.enabled).toList();
     if (enabledComps.isEmpty) {
-      Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 
+      Get.snackbar(
+        maxWidth: 500,
+        margin: const EdgeInsets.all(16),
         'Validation Error',
         'Please enable at least one project component.',
         snackPosition: SnackPosition.TOP,
@@ -245,7 +254,9 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
 
     final double sum = _round(_currentSum);
     if (sum != 100.0) {
-      Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 
+      Get.snackbar(
+        maxWidth: 500,
+        margin: const EdgeInsets.all(16),
         'Validation Error',
         'Total percentage must sum to exactly 100%. Currently it is ${_formatDouble(sum)}%.',
         snackPosition: SnackPosition.TOP,
@@ -256,15 +267,21 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
     }
 
     // Check for empty assignees
-    bool hasEmptyAssignee = enabledComps.any((c) => c.assigneeController.text.trim().isEmpty);
+    bool hasEmptyAssignee =
+        enabledComps.any((c) => c.assigneeController.text.trim().isEmpty);
     if (hasEmptyAssignee) {
       final confirm = await Get.dialog<bool>(
         AlertDialog(
           title: const Text('Missing Assignees'),
-          content: const Text('Some enabled components do not have an assigned employee. Do you want to save anyway?'),
+          content: const Text(
+              'Some enabled components do not have an assigned employee. Do you want to save anyway?'),
           actions: [
-            TextButton(onPressed: () => Get.back(result: false), child: const Text('Cancel')),
-            ElevatedButton(onPressed: () => Get.back(result: true), child: const Text('Save Anyway')),
+            TextButton(
+                onPressed: () => Get.back(result: false),
+                child: const Text('Cancel')),
+            ElevatedButton(
+                onPressed: () => Get.back(result: true),
+                child: const Text('Save Anyway')),
           ],
         ),
       );
@@ -272,13 +289,15 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
     }
 
     // Construct ProjectKpiConfig object
-    final finalComponents = _components.map((c) => KpiComponentConfig(
-      key: c.key,
-      label: c.label,
-      enabled: c.enabled,
-      percentage: c.percentage,
-      assignee: c.assigneeController.text.trim(),
-    )).toList();
+    final finalComponents = _components
+        .map((c) => KpiComponentConfig(
+              key: c.key,
+              label: c.label,
+              enabled: c.enabled,
+              percentage: c.percentage,
+              assignee: c.assigneeController.text.trim(),
+            ))
+        .toList();
 
     final config = ProjectKpiConfig(
       totalValue: _totalValue,
@@ -386,7 +405,8 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
-        title: const Text('KPI & Value Distribution', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('KPI & Value Distribution',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
@@ -401,33 +421,40 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
           ),
         ],
       ),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          controller: _scrollController,
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Project header info card
-              _buildHeaderCard(cardBgColor, primaryColor, isDark),
-              const SizedBox(height: 24),
-              
-              // Progress/Sum Indicator Section
-              _buildSumIndicatorSection(sum, isSumValid, isDark),
-              const SizedBox(height: 24),
-              
-              // Component distribution list
-              const Text(
-                'Distribution Components',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-              
-              ..._components.map((c) => _buildComponentCard(c, cardBgColor, isDark)),
-              
-              const SizedBox(height: 250), // Extra space for keyboard and dropdown options
-            ],
+      body: WebContentWrapper(
+        maxWidth: 800,
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            controller: _scrollController,
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Project header info card
+                _buildHeaderCard(cardBgColor, primaryColor, isDark),
+                const SizedBox(height: 24),
+
+                // Progress/Sum Indicator Section
+                _buildSumIndicatorSection(sum, isSumValid, isDark),
+                const SizedBox(height: 24),
+
+                // Component distribution list
+                const Text(
+                  'Distribution Components',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+
+                ..._components
+                    .map((c) => _buildComponentCard(c, cardBgColor, isDark)),
+
+                const SizedBox(
+                    height:
+                        250), // Extra space for keyboard and dropdown options
+              ],
+            ),
           ),
         ),
       ),
@@ -439,11 +466,16 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
         child: ElevatedButton.icon(
           onPressed: _saveConfig,
           icon: const Icon(Icons.save_rounded, color: Colors.white),
-          label: const Text('Save Distribution Plan', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+          label: const Text('Save Distribution Plan',
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white)),
           style: ElevatedButton.styleFrom(
             backgroundColor: primaryColor,
             elevation: 8,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
         ),
       ),
@@ -456,7 +488,8 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
+        border:
+            Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
@@ -477,7 +510,8 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
                   children: [
                     Text(
                       widget.project.name,
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
@@ -489,14 +523,18 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   'Budget: \$${widget.project.totalBudget.toStringAsFixed(0)}',
-                  style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold, fontSize: 13),
+                  style: TextStyle(
+                      color: primaryColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13),
                 ),
               ),
             ],
@@ -504,7 +542,8 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
           const Divider(height: 30),
           const Text(
             'Calculation Base (Total Value)',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.grey),
+            style: TextStyle(
+                fontSize: 12, fontWeight: FontWeight.w500, color: Colors.grey),
           ),
           const SizedBox(height: 8),
           TextFormField(
@@ -514,18 +553,23 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
             decoration: InputDecoration(
               prefixIcon: const Icon(Icons.attach_money_rounded),
               hintText: 'Enter total value to distribute',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               contentPadding: const EdgeInsets.symmetric(vertical: 12),
             ),
-            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))],
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+            ],
             onChanged: (val) {
               setState(() {
                 _totalValue = double.tryParse(val) ?? 0.0;
               });
             },
             validator: (value) {
-              if (value == null || value.trim().isEmpty) return 'Total Value is required';
-              if (double.tryParse(value) == null || double.parse(value) <= 0) return 'Enter a positive value';
+              if (value == null || value.trim().isEmpty)
+                return 'Total Value is required';
+              if (double.tryParse(value) == null || double.parse(value) <= 0)
+                return 'Enter a positive value';
               return null;
             },
           ),
@@ -536,7 +580,9 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
 
   Widget _buildSumIndicatorSection(double sum, bool isValid, bool isDark) {
     final alertColor = isValid ? Colors.green[600]! : Colors.amber[800]!;
-    final alertBg = isValid ? Colors.green.withValues(alpha: 0.08) : Colors.amber.withValues(alpha: 0.08);
+    final alertBg = isValid
+        ? Colors.green.withValues(alpha: 0.08)
+        : Colors.amber.withValues(alpha: 0.08);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -549,7 +595,8 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
         children: [
           Row(
             children: [
-              Icon(isValid ? Icons.check_circle_rounded : Icons.warning_rounded, color: alertColor, size: 24),
+              Icon(isValid ? Icons.check_circle_rounded : Icons.warning_rounded,
+                  color: alertColor, size: 24),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -557,7 +604,10 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
                   children: [
                     Text(
                       'Total Percentage: ${_formatDouble(sum)}%',
-                      style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87, fontSize: 15),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.white : Colors.black87,
+                          fontSize: 15),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -579,12 +629,15 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
                 OutlinedButton.icon(
                   onPressed: _autoBalance,
                   icon: const Icon(Icons.balance_rounded, size: 16),
-                  label: const Text('Auto-Balance', style: TextStyle(fontSize: 13)),
+                  label: const Text('Auto-Balance',
+                      style: TextStyle(fontSize: 13)),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: alertColor,
                     side: BorderSide(color: alertColor),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   ),
                 ),
               ],
@@ -595,8 +648,10 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
     );
   }
 
-  Widget _buildComponentCard(ComponentUiState state, Color cardColor, bool isDark) {
-    final calculatedValue = (state.enabled ? state.percentage : 0.0) / 100 * _totalValue;
+  Widget _buildComponentCard(
+      ComponentUiState state, Color cardColor, bool isDark) {
+    final calculatedValue =
+        (state.enabled ? state.percentage : 0.0) / 100 * _totalValue;
 
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 250),
@@ -608,8 +663,8 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
           color: cardColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: state.enabled 
-                ? state.themeColor.withValues(alpha: 0.5) 
+            color: state.enabled
+                ? state.themeColor.withValues(alpha: 0.5)
                 : (isDark ? Colors.white10 : Colors.grey.shade200),
             width: state.enabled ? 1.5 : 1.0,
           ),
@@ -630,7 +685,8 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
                   child: Checkbox(
                     value: state.enabled,
                     activeColor: state.themeColor,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4)),
                     onChanged: (val) {
                       setState(() {
                         state.enabled = val ?? false;
@@ -639,12 +695,19 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
                           state.percentController.text = '0';
                         } else {
                           // Trigger auto-default value depending on Dashboard status
-                          bool webEnabled = _components.firstWhere((c) => c.key == 'web_frontend').enabled;
+                          bool webEnabled = _components
+                              .firstWhere((c) => c.key == 'web_frontend')
+                              .enabled;
                           if (state.key == 'web_frontend') {
                             state.percentage = 30.0;
                             // Also adjust App Frontend
-                            _components.firstWhere((c) => c.key == 'app_frontend').percentage = 15.0;
-                            _components.firstWhere((c) => c.key == 'app_frontend').percentController.text = '15';
+                            _components
+                                .firstWhere((c) => c.key == 'app_frontend')
+                                .percentage = 15.0;
+                            _components
+                                .firstWhere((c) => c.key == 'app_frontend')
+                                .percentController
+                                .text = '15';
                           } else if (state.key == 'app_frontend') {
                             state.percentage = webEnabled ? 15.0 : 45.0;
                           } else if (state.key == 'figma') {
@@ -652,7 +715,8 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
                           } else if (state.key == 'backend') {
                             state.percentage = 30.0;
                           }
-                          state.percentController.text = _formatDouble(state.percentage);
+                          state.percentController.text =
+                              _formatDouble(state.percentage);
                         }
                       });
                     },
@@ -663,21 +727,26 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
                   child: Text(
                     state.label,
                     style: TextStyle(
-                      fontSize: 16, 
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      decoration: !state.enabled ? TextDecoration.lineThrough : null,
+                      decoration:
+                          !state.enabled ? TextDecoration.lineThrough : null,
                     ),
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: state.themeColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     state.key.replaceAll('_', ' ').toUpperCase(),
-                    style: TextStyle(color: state.themeColor, fontWeight: FontWeight.bold, fontSize: 10),
+                    style: TextStyle(
+                        color: state.themeColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10),
                   ),
                 ),
               ],
@@ -691,19 +760,26 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
                     flex: 4,
                     child: TextFormField(
                       controller: state.percentController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))],
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+                      ],
                       decoration: InputDecoration(
                         labelText: 'Percentage (%)',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10)),
                         isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 12),
                       ),
                       validator: (value) {
                         if (!state.enabled) return null;
-                        if (value == null || value.trim().isEmpty) return 'Required';
+                        if (value == null || value.trim().isEmpty)
+                          return 'Required';
                         final parsed = double.tryParse(value);
-                        if (parsed == null || parsed < 0 || parsed > 100) return 'Invalid';
+                        if (parsed == null || parsed < 0 || parsed > 100)
+                          return 'Invalid';
                         return null;
                       },
                     ),
@@ -711,60 +787,71 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     flex: 6,
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        return RawAutocomplete<String>(
-                          textEditingController: state.assigneeController,
-                          focusNode: state.assigneeFocusNode,
-                          optionsBuilder: (TextEditingValue textEditingValue) {
-                            if (textEditingValue.text.isEmpty) {
-                              return _suggestedAssignees;
-                            }
-                            return _suggestedAssignees.where((String option) {
-                              return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
-                            });
-                          },
-                          fieldViewBuilder: (BuildContext context, TextEditingController textEditingController, FocusNode focusNode, VoidCallback onFieldSubmitted) {
-                            return TextFormField(
-                              controller: textEditingController,
-                              focusNode: focusNode,
-                              decoration: InputDecoration(
-                                labelText: 'Assigned Employee',
-                                prefixIcon: const Icon(Icons.person_outline, size: 18),
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                                isDense: true,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-                              ),
-                            );
-                          },
-                          optionsViewBuilder: (BuildContext context, AutocompleteOnSelected<String> onSelected, Iterable<String> options) {
-                            return Align(
-                              alignment: Alignment.topLeft,
-                              child: Material(
-                                elevation: 4.0,
-                                borderRadius: BorderRadius.circular(10),
-                                child: Container(
-                                  constraints: const BoxConstraints(maxHeight: 180),
-                                  width: constraints.maxWidth,
-                                  child: ListView.builder(
-                                    padding: EdgeInsets.zero,
-                                    shrinkWrap: true,
-                                    itemCount: options.length,
-                                    itemBuilder: (BuildContext context, int index) {
-                                      final String option = options.elementAt(index);
-                                      return ListTile(
-                                        title: Text(option),
-                                        onTap: () => onSelected(option),
-                                      );
-                                    },
-                                  ),
+                    child: LayoutBuilder(builder: (context, constraints) {
+                      return RawAutocomplete<String>(
+                        textEditingController: state.assigneeController,
+                        focusNode: state.assigneeFocusNode,
+                        optionsBuilder: (TextEditingValue textEditingValue) {
+                          if (textEditingValue.text.isEmpty) {
+                            return _suggestedAssignees;
+                          }
+                          return _suggestedAssignees.where((String option) {
+                            return option
+                                .toLowerCase()
+                                .contains(textEditingValue.text.toLowerCase());
+                          });
+                        },
+                        fieldViewBuilder: (BuildContext context,
+                            TextEditingController textEditingController,
+                            FocusNode focusNode,
+                            VoidCallback onFieldSubmitted) {
+                          return TextFormField(
+                            controller: textEditingController,
+                            focusNode: focusNode,
+                            decoration: InputDecoration(
+                              labelText: 'Assigned Employee',
+                              prefixIcon:
+                                  const Icon(Icons.person_outline, size: 18),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 12),
+                            ),
+                          );
+                        },
+                        optionsViewBuilder: (BuildContext context,
+                            AutocompleteOnSelected<String> onSelected,
+                            Iterable<String> options) {
+                          return Align(
+                            alignment: Alignment.topLeft,
+                            child: Material(
+                              elevation: 4.0,
+                              borderRadius: BorderRadius.circular(10),
+                              child: Container(
+                                constraints:
+                                    const BoxConstraints(maxHeight: 180),
+                                width: constraints.maxWidth,
+                                child: ListView.builder(
+                                  padding: EdgeInsets.zero,
+                                  shrinkWrap: true,
+                                  itemCount: options.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    final String option =
+                                        options.elementAt(index);
+                                    return ListTile(
+                                      title: Text(option),
+                                      onTap: () => onSelected(option),
+                                    );
+                                  },
                                 ),
                               ),
-                            );
-                          },
-                        );
-                      }
-                    ),
+                            ),
+                          );
+                        },
+                      );
+                    }),
                   ),
                 ],
               ),
@@ -779,8 +866,8 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
                   Text(
                     NumberFormat.currency(symbol: '\$').format(calculatedValue),
                     style: TextStyle(
-                      fontSize: 18, 
-                      fontWeight: FontWeight.bold, 
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                       color: state.themeColor,
                     ),
                   ),
