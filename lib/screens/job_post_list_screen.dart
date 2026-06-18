@@ -416,7 +416,7 @@ class JobPostListScreen extends StatelessWidget {
                     onPressed: () =>
                         Get.to(() => JobPostDetailsScreen(job: job)),
                     icon: const Icon(Icons.open_in_new_rounded, size: 16),
-                    label: const Text('View Details & Apply'),
+                    label: const Text('View Details'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Theme.of(context).colorScheme.primary,
                       side:

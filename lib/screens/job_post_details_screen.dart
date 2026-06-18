@@ -1,3 +1,4 @@
+// ignore_for_file: unused_element, unused_import
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
@@ -137,6 +138,7 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
             ...widget.job.requirements.map((req) => _buildRequirementItem(req, isDark)),
             const SizedBox(height: 40),
             // Apply Now button — dark-mode aware
+            /*
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
@@ -154,6 +156,7 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
                 ),
               ),
             ),
+            */
             const SizedBox(height: 20),
           ],
         ),
@@ -213,6 +216,7 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
               const SizedBox(height: 20),
 
               // CV picker
+              /*
               GestureDetector(
                 onTap: () async {
                   final result = await FilePicker.platform.pickFiles(
@@ -269,6 +273,7 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
                   ),
                 ),
               ),
+              */
               const SizedBox(height: 24),
 
               // Send button
@@ -277,13 +282,11 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
                 child: isSending
                     ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary))
                     : ElevatedButton.icon(
-                        onPressed: cvPath == null
-                            ? null
-                            : () async {
+                        onPressed: () async {
                                 setSheetState(() => isSending = true);
                                 final success = await _submitApplication(
-                                  cvPath: cvPath!,
-                                  cvName: cvName!,
+                                  cvPath: cvPath ?? '',
+                                  cvName: cvName ?? '',
                                   applicantName: nameCtrl.text.trim(),
                                   applicantEmail: emailCtrl.text.trim(),
                                 );
