@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import '../models/job_post_model.dart';
 import '../controllers/user_controller.dart';
 import '../controllers/job_post_controller.dart';
+import '../widgets/responsive.dart';
 
 class JobPostDetailsScreen extends StatefulWidget {
   final JobPost job;
@@ -57,7 +58,9 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
           }),
         ],
       ),
-      body: SingleChildScrollView(
+      body: WebContentWrapper(
+        maxWidth: kWebPageMaxWidth,
+        child: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,6 +158,7 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
           ],
         ),
       ),
+      ),
     );
     });
   }
@@ -168,8 +172,11 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
     final emailCtrl = TextEditingController(text: Get.find<UserController>().email.value);
 
     Get.bottomSheet(
-      StatefulBuilder(builder: (ctx, setSheetState) {
-        final sheetBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+      Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 500),
+          child: StatefulBuilder(builder: (ctx, setSheetState) {
+            final sheetBg = isDark ? const Color(0xFF1E293B) : Colors.white;
         final borderColor = isDark ? Colors.white10 : Colors.grey.shade200;
 
         return Container(
@@ -312,6 +319,8 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
           ),
         );
       }),
+          ),
+        ),
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
     );
@@ -499,8 +508,11 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
     final descriptionCtrl = TextEditingController(text: widget.job.description);
     
     Get.bottomSheet(
-      Container(
-        padding: const EdgeInsets.all(24),
+      Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 500),
+          child: Container(
+            padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF1E293B) : Colors.white,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -553,6 +565,8 @@ class _JobPostDetailsScreenState extends State<JobPostDetailsScreen> {
               ),
               const SizedBox(height: 24),
             ],
+          ),
+        ),
           ),
         ),
       ),

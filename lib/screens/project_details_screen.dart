@@ -322,7 +322,7 @@ class ProjectDetailsScreen extends StatelessWidget {
   Future<void> _launchURL(String urlString) async {
     final Uri url = Uri.parse(urlString);
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      Get.snackbar('Error', 'Could not launch $urlString',
+      Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 'Error', 'Could not launch $urlString',
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red,
           colorText: Colors.white);
@@ -361,7 +361,10 @@ class ProjectDetailsScreen extends StatelessWidget {
     final primaryColor = isDark ? const Color(0xFFD946EF) : const Color(0xFF4F46E5);
 
     Get.bottomSheet(
-      StatefulBuilder(builder: (ctx, setSheetState) {
+      Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 500),
+          child: StatefulBuilder(builder: (ctx, setSheetState) {
         return Wrap(
           children: [
             Container(
@@ -523,7 +526,7 @@ class ProjectDetailsScreen extends StatelessWidget {
                         onPressed: () async {
                           final title = titleCtrl.text.trim();
                           if (title.isEmpty) {
-                            Get.snackbar(
+                            Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 
                               'Validation Error',
                               'Milestone title cannot be empty.',
                               snackPosition: SnackPosition.TOP,
@@ -548,7 +551,7 @@ class ProjectDetailsScreen extends StatelessWidget {
                             deadline: selectedDeadline,
                             assignedPeople: people.isEmpty ? null : people,
                           );
-                          Get.snackbar(
+                          Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 
                             'Milestone Updated ✓',
                             '"$title" has been saved successfully.',
                             snackPosition: SnackPosition.TOP,
@@ -580,6 +583,8 @@ class ProjectDetailsScreen extends StatelessWidget {
           ],
         );
       }),
+          ),
+        ),
       isScrollControlled: true,
      // isScrollControlled: false,
       backgroundColor: Colors.transparent,

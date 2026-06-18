@@ -676,7 +676,7 @@ class PaymentSummaryScreen extends StatelessWidget {
         if (!context.mounted) return;
         _showSuccessDialog(context);
       } else {
-        Get.snackbar(
+        Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 
           'Payment Error ❌',
           'Failed to record subscription status. Please contact support.',
           snackPosition: SnackPosition.TOP,
@@ -685,7 +685,7 @@ class PaymentSummaryScreen extends StatelessWidget {
         );
       }
     } else {
-      Get.snackbar(
+      Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 
         'Cancelled ⚠️',
         'Payment process was cancelled or failed.',
         snackPosition: SnackPosition.TOP,

@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import '../models/job_post_model.dart';
@@ -35,7 +35,7 @@ class JobPostController extends GetxController {
       jobPosts.assignAll(fetched);
     } catch (e) {
       debugPrint('Error fetching job posts: $e');
-      Get.snackbar('Error', 'Failed to load job posts');
+      Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 'Error', 'Failed to load job posts');
     } finally {
       isLoading.value = false;
     }
@@ -129,7 +129,7 @@ class JobPostController extends GetxController {
       return true;
     } catch (e) {
       debugPrint('Error adding job post: $e');
-      Get.snackbar('Error', 'Failed to add job post');
+      Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 'Error', 'Failed to add job post');
       return false;
     } finally {
       isLoading.value = false;
@@ -144,7 +144,7 @@ class JobPostController extends GetxController {
       return true;
     } catch (e) {
       debugPrint('Error deleting job post: $e');
-      Get.snackbar('Error', 'Failed to delete job post');
+      Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 'Error', 'Failed to delete job post');
       return false;
     } finally {
       isLoading.value = false;
@@ -159,7 +159,7 @@ class JobPostController extends GetxController {
       return true;
     } catch (e) {
       debugPrint('Error updating job post: $e');
-      Get.snackbar('Error', 'Failed to update job post');
+      Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 'Error', 'Failed to update job post');
       return false;
     } finally {
       isLoading.value = false;

@@ -104,7 +104,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
           _selectedCategory = 'Mobile Development';
         });
 
-        Get.snackbar(
+        Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 
           'Success 🎉',
           'Job post created successfully!',
           snackPosition: SnackPosition.TOP,
@@ -122,7 +122,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
     final userCtrl = Get.find<UserController>();
     final success = await userCtrl.updatePricing(monthly: monthly, yearly: yearly);
     if (success) {
-      Get.snackbar(
+      Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 
         'Pricing Updated 💰',
         'Monthly: ${monthly.toStringAsFixed(0)} BDT | Yearly: ${yearly.toStringAsFixed(0)} BDT',
         snackPosition: SnackPosition.TOP,
@@ -130,7 +130,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
         colorText: Colors.white,
       );
     } else {
-      Get.snackbar(
+      Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 
         'Error ❌',
         'Failed to update pricing. Please try again.',
         snackPosition: SnackPosition.TOP,
@@ -165,7 +165,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
         'netlify_url': _netlifyUrlController.text.trim(),
         'firebase_url': _firebaseUrlController.text.trim(),
       });
-      Get.snackbar(
+      Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 
         'Web Links Updated 🌐',
         'URLs are now live for all users.',
         snackPosition: SnackPosition.TOP,
@@ -173,7 +173,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> with SingleTickerPr
         colorText: Colors.white,
       );
     } catch (e) {
-      Get.snackbar(
+      Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 
         'Error ❌',
         'Failed to update web links. Please try again.',
         snackPosition: SnackPosition.TOP,

@@ -254,7 +254,7 @@ class AuthController extends GetxController {
         firebaseUser.value = _auth.currentUser;
 
         if (firebaseUser.value?.emailVerified ?? false) {
-          Get.snackbar(
+          Get.snackbar(maxWidth: 500, margin: const EdgeInsets.all(16), 
             'Email Verified! 🎉',
             'Your email has been verified successfully. Welcome to ProjectPulse!',
             snackPosition: SnackPosition.TOP,

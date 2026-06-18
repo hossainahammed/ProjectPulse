@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../widgets/glass_background.dart';
 import '../controllers/user_controller.dart';
+import '../widgets/responsive.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});
@@ -34,7 +35,9 @@ class PrivacyPolicyScreen extends StatelessWidget {
       ),
       body: GlassBackground(
         child: SafeArea(
-          child: SingleChildScrollView(
+          child: WebContentWrapper(
+            maxWidth: kWebPageMaxWidth,
+            child: SingleChildScrollView(
             padding:
                 const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
             child: Column(
@@ -125,6 +128,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 const SizedBox(height: 24),
               ],
             ),
+          ),
           ),
         ),
       ),
