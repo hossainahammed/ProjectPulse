@@ -566,10 +566,12 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
               });
             },
             validator: (value) {
-              if (value == null || value.trim().isEmpty)
+              if (value == null || value.trim().isEmpty) {
                 return 'Total Value is required';
-              if (double.tryParse(value) == null || double.parse(value) <= 0)
+              }
+              if (double.tryParse(value) == null || double.parse(value) <= 0) {
                 return 'Enter a positive value';
+              }
               return null;
             },
           ),
@@ -775,11 +777,13 @@ class _ProjectKpiScreenState extends State<ProjectKpiScreen> {
                       ),
                       validator: (value) {
                         if (!state.enabled) return null;
-                        if (value == null || value.trim().isEmpty)
+                        if (value == null || value.trim().isEmpty) {
                           return 'Required';
+                        }
                         final parsed = double.tryParse(value);
-                        if (parsed == null || parsed < 0 || parsed > 100)
+                        if (parsed == null || parsed < 0 || parsed > 100) {
                           return 'Invalid';
+                        }
                         return null;
                       },
                     ),

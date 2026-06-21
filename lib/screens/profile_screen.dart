@@ -1684,8 +1684,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       _obscureNew = !v;
                     });
                   }, (v) {
-                    if (v == null || v.isEmpty)
+                    if (v == null || v.isEmpty) {
                       return 'New Password is required';
+                    }
                     if (v.length < 6) {
                       return 'Password must be at least 6 characters';
                     }
@@ -1957,10 +1958,12 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                           ? 'Name is required'
                           : null),
                   _buildFormTextField('Email', _emailController, (v) {
-                    if (v == null || v.trim().isEmpty)
+                    if (v == null || v.trim().isEmpty) {
                       return 'Email is required';
-                    if (!GetUtils.isEmail(v.trim()))
+                    }
+                    if (!GetUtils.isEmail(v.trim())) {
                       return 'Enter a valid email';
+                    }
                     return null;
                   }, keyboardType: TextInputType.emailAddress),
                   _buildFormTextField(

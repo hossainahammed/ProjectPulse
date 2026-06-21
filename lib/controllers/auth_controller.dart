@@ -35,8 +35,9 @@ class AuthController extends GetxController {
         // Seed email/name/photo instantly from FirebaseAuth (no Firestore wait)
         if (uc.email.value.isEmpty) uc.email.value = user.email ?? '';
         if (uc.name.value.isEmpty) uc.name.value = user.displayName ?? '';
-        if (uc.profileImageUrl.value.isEmpty)
+        if (uc.profileImageUrl.value.isEmpty) {
           uc.profileImageUrl.value = user.photoURL ?? '';
+        }
         // Then fetch full profile from Firestore
         uc.fetchUserProfile(user.uid);
         // Register device for push notifications

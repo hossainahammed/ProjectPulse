@@ -218,8 +218,8 @@ class _DarkSidebar extends StatelessWidget {
 
           // ── Section label ─────────────────────────────────────────────
           if (isDesktop)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 16, 4),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 8, 16, 4),
               child: Text(
                 'MENU',
                 style: TextStyle(

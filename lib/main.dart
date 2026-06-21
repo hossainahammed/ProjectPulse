@@ -25,7 +25,7 @@ import 'services/analytics_service.dart';
 import 'controllers/auth_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/splash_screen.dart';
-import 'screens/root_auth_wrapper.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
