@@ -273,17 +273,47 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.assignment_late_outlined,
-                      size: res.size(64),
-                      color: Colors.grey,
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.rocket_launch_rounded,
+                        size: res.size(64),
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
-                    SizedBox(height: res.spaceLG),
+                    SizedBox(height: res.spaceXL),
                     Text(
-                      'No projects yet. Add one to get started!',
+                      'Ready to start?',
+                      style: TextStyle(
+                        color: isDark ? Colors.white : Colors.black87,
+                        fontSize: res.fontXL,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: res.spaceSM),
+                    Text(
+                      'Create your first project to track milestones\nand manage your earnings.',
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.grey,
                         fontSize: res.fontMD,
+                        height: 1.5,
+                      ),
+                    ),
+                    SizedBox(height: res.spaceXL),
+                    ElevatedButton.icon(
+                      onPressed: () => Get.dialog(const AddProjectDialog()),
+                      icon: const Icon(Icons.add_rounded),
+                      label: const Text('Create First Project', style: TextStyle(fontWeight: FontWeight.bold)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(horizontal: res.spaceXL, vertical: res.spaceMD),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
                     ),
                   ],
@@ -559,17 +589,47 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.assignment_late_outlined,
-                          size: res.size(64),
-                          color: Colors.grey,
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.rocket_launch_rounded,
+                            size: res.size(64),
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                         ),
-                        SizedBox(height: res.spaceLG),
+                        SizedBox(height: res.spaceXL),
                         Text(
-                          'No projects yet. Add one to get started!',
+                          'Ready to start?',
+                          style: TextStyle(
+                            color: isDark ? Colors.white : Colors.black87,
+                            fontSize: res.fontXL,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: res.spaceSM),
+                        Text(
+                          'Create your first project to track milestones\nand manage your earnings.',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.grey,
                             fontSize: res.fontMD,
+                            height: 1.5,
+                          ),
+                        ),
+                        SizedBox(height: res.spaceXL),
+                        ElevatedButton.icon(
+                          onPressed: () => Get.dialog(const AddProjectDialog()),
+                          icon: const Icon(Icons.add_rounded),
+                          label: const Text('Create First Project', style: TextStyle(fontWeight: FontWeight.bold)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(horizontal: res.spaceXL, vertical: res.spaceMD),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           ),
                         ),
                       ],

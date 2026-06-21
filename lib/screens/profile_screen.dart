@@ -126,7 +126,7 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                   _buildWebVersionSection(context),
                   const SizedBox(height: 32),
-                  _buildLogoutButton(),
+                  _buildLogoutButton(context),
                   const SizedBox(height: 48),
                   Text(
                     '© ${DateTime.now().year}  All rights reserved-Hossain Ahammed.',
@@ -789,23 +789,31 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLogoutButton() {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF8B5CF6).withValues(alpha: 0.25),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: TextButton.icon(
+  Widget _buildLogoutButton(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
         onPressed: () => _showLogoutDialog(),
-        icon: const Icon(Icons.logout_rounded, color: Colors.redAccent),
-        label: const Text(
-          'Logout ',
+        icon: Icon(Icons.logout_rounded, color: isDark ? Colors.redAccent : Colors.red),
+        label: Text(
+          'Logout',
           style: TextStyle(
-            color: Colors.redAccent,
+            color: isDark ? Colors.redAccent : Colors.red,
             fontWeight: FontWeight.bold,
+            fontSize: 16,
           ),
+        ),
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          side: BorderSide(
+            color: isDark ? Colors.redAccent.withValues(alpha: 0.5) : Colors.red.withValues(alpha: 0.5),
+            width: 1.5,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          backgroundColor: isDark ? Colors.redAccent.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.05),
         ),
       ),
     );

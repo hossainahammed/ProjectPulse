@@ -23,10 +23,15 @@ import 'services/notification_service.dart';
 import 'services/analytics_service.dart';
 
 import 'controllers/auth_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'screens/splash_screen.dart';
 import 'screens/root_auth_wrapper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  final prefs = await SharedPreferences.getInstance();
+  final bool seenOnboarding = prefs.getBool('seenOnboarding') ?? false;
 
   // Initialize Firebase
   await Firebase.initializeApp(
@@ -78,7 +83,7 @@ void main() async {
       DevicePreview(
         // enabled: !kReleaseMode,
         enabled: false,
-        builder: (context) => const FreelanceFlowApp(),
+        builder: (context) => FreelanceFlowApp(seenOnboarding: seenOnboarding),
       ),
     ),
     (error, stack) {
@@ -91,7 +96,8 @@ void main() async {
 }
 
 class FreelanceFlowApp extends StatelessWidget {
-  const FreelanceFlowApp({super.key});
+  final bool seenOnboarding;
+  const FreelanceFlowApp({super.key, required this.seenOnboarding});
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +170,7 @@ class FreelanceFlowApp extends StatelessWidget {
         ),
       ),
       themeMode: ThemeMode.system,
-      home: const RootAuthWrapper(),
+      home: SplashScreen(seenOnboarding: seenOnboarding),
     );
   }
 }
